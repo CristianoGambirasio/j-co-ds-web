@@ -1,37 +1,26 @@
 <template>
   <v-sheet id="body">
-    <v-sheet id="firstRow">
-      <v-row no-gutter>
+      <v-row style="height: 8vh;">
         <v-col cols="2" id="upLeft">
-          Qualcosa
+          Logo
         </v-col>
         <v-col id="upRight">
-          wkdnkòjqcn
+          Funzioni
         </v-col>
       </v-row>
-    </v-sheet>
-    <v-sheet id="secondRow">
-      <v-row no-gutter>
+      <v-row no-gutter style="height: 92vh;">
         <v-col cols="2" id="bottomLeft">
-          Qualcosa
+          Lista DB
+          <ListDB/>
         </v-col>
         <v-col id="bottomRight">
-          wkdnkòjqcn
+          Workspace
         </v-col>
       </v-row>
-    </v-sheet>
   </v-sheet>
 </template>
 
 <style scoped>
-
-#firstRow {
-  height: 50px;
-}
-
-#secondRow {
-
-}
 
 #upLeft {
   background-color: red;
@@ -49,3 +38,13 @@
   background-color: orange;
 }
 </style>
+
+<script>
+import ListDB from './ListDB.vue'
+
+export default {
+  components: {
+    ListDB
+  }
+}
+</script>
