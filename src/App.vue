@@ -16,3 +16,15 @@ export default {
   })
 }
 </script>
+
+<style>
+
+* {
+  margin:0 !important;
+}
+
+#body {
+  min-width: 100px;
+  min-height: 700px;
+}
+</style>

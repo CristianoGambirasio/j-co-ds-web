@@ -3,10 +3,10 @@
 </template>
 
 <script>
-import AppIndex from '../components/HelloWorld'
+import AppIndex from '../components/AppIndex'
 
 export default {
-  name: 'Home',
+  name: 'HomeView',
 
   components: {
     AppIndex
