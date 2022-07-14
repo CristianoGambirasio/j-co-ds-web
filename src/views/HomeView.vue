@@ -1,15 +1,15 @@
 <template>
-  <hello-world />
+  <AppIndex />
 </template>
 
 <script>
-import HelloWorld from '../components/HelloWorld'
+import AppIndex from '../components/HelloWorld'
 
 export default {
   name: 'Home',
 
   components: {
-    HelloWorld
+    AppIndex
   }
 }
 </script>
