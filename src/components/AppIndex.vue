@@ -1,19 +1,19 @@
 <template>
   <v-sheet id="body">
-      <v-row style="height: 8vh;">
-        <v-col cols="2" id="upLeft">
+      <v-row style="height: 10vh;">
+        <v-col cols="2" class="upLeft">
           Logo
         </v-col>
-        <v-col id="upRight">
+        <v-col class="upRight">
           Funzioni
         </v-col>
       </v-row>
       <v-row no-gutter style="height: 92vh;">
-        <v-col cols="2" id="bottomLeft">
+        <v-col cols="2" class="bottomLeft">
           Lista DB
           <ListDB/>
         </v-col>
-        <v-col id="bottomRight">
+        <v-col class="bottomRight">
           Workspace
         </v-col>
       </v-row>
@@ -21,20 +21,20 @@
 </template>
 
 <style scoped>
-
-#upLeft {
+:root {
+  --primary-color: green;
+  --on-primary-color: black;
+}
+.upLeft {
   background-color: red;
 }
-
-#upRight {
+.upRight {
   background-color: green;
 }
-
-#bottomLeft {
+.bottomLeft {
   background-color: blue;
 }
-
-#bottomRight {
+.bottomRight {
   background-color: orange;
 }
 </style>

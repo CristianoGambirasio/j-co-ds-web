@@ -10,10 +10,12 @@
 
 export default {
   name: 'App',
-
   data: () => ({
     //
-  })
+  }),
+  created () {
+    document.title = 'J-CO-DS WEB'
+  }
 }
 </script>
 
