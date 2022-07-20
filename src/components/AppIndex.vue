@@ -9,8 +9,7 @@
         </v-col>
       </v-row>
       <v-row no-gutter style="height: 92vh;">
-        <v-col cols="2" class="bottomLeft">
-          Lista DB
+        <v-col cols="2" id="bottomLeft">
           <ListDB/>
         </v-col>
         <v-col class="bottomRight">
@@ -31,8 +30,10 @@
 .upRight {
   background-color: green;
 }
-.bottomLeft {
-  background-color: blue;
+
+#bottomLeft {
+  padding: 0px;
+  background-color: lightgray;
 }
 .bottomRight {
   background-color: orange;
