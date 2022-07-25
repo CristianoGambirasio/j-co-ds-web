@@ -6,10 +6,8 @@
       </v-col>
       <v-col cols="6">
         <v-btn
-          :loading="loading5"
-          :color="blue"
           fab
-          @click=" getListDatabase()"
+          @click="getListDatabase()"
           >
             <v-icon>
               mdi-refresh
@@ -18,11 +16,12 @@
       </v-col>
     </v-row>
     <v-row style="height: 77vh;">
-      <v-treeview
-          :items="listDatabases"
-          :load-children="getListCollection"
-          open-on-click
-          item-key="name"
+    <v-col style="padding: 0px;">
+        <v-treeview
+            :items="listDatabases"
+            :load-children="getListCollection"
+            open-on-click
+            item-key="name"
           transition
           >
           <template v-slot:prepend="{item,open}">
@@ -31,6 +30,7 @@
             </v-icon>
           </template>
         </v-treeview>
+    </v-col>
     </v-row>
     <v-row style="height: 10vh;">
       <v-container id="meta">
@@ -55,9 +55,12 @@
 
 <script>
 
+import * as tool from '../functions/tools'
+
 export default {
   data () {
     return {
+      id: Math.floor(Math.random() * 10),
       connection: null,
       listDatabases: [],
       icon: {
@@ -75,43 +78,60 @@ export default {
     }
   },
   mounted () {
-    this.connection = new WebSocket('ws://localhost:3000')
+    this.connection = new WebSocket('ws://' + window.location.hostname + ':3000', this.id)
     this.connection.onopen = () => {
       this.getListDatabase()
     }
   },
   methods: {
+    handleResponse (finished) {
+      this.connection.onmessage = async (message) => {
+        const dataBuffer = await message.data.arrayBuffer()
+        let data = new Uint8Array(dataBuffer)
+        const command = data.slice(0, 4)
+        data = data.slice(12)
+        const text = String.fromCharCode(...data)
+        console.log(text)
+        // DB List response
+        if (tool.arrayEquals(command, [0, 1, 0, 2])) {
+          const db = JSON.parse(text)
+          db.databases.forEach(database => {
+            const databaseJSON = {}
+            databaseJSON.name = database
+            databaseJSON.type = 'database'
+            databaseJSON.children = []
+            this.listDatabases.push(databaseJSON)
+          })
+        }
+        // Collection List response
+        if (tool.arrayEquals(command, [0, 2, 0, 2])) {
+          const colls = JSON.parse(text)
+          this.listDatabases.forEach(database => {
+            if (database.name === colls.database) {
+              colls.collections.forEach(collection => {
+                collection = collection.replace('\n', '') // la risposta del server contiene degli \n che vengono rimossi
+                const collectionJSON = {}
+                collectionJSON.name = collection.split(' ')[0]
+                collectionJSON.type = collection.split(' ')[1]
+                database.children.push(collectionJSON)
+              })
+            }
+          })
+          finished()
+        }
+      }
+    },
     getListDatabase () {
       this.listDatabases = []
       this.connection.send('LIST_DATABASE')
-      this.connection.onmessage = (message) => {
-        const text = message.data
-        const db = JSON.parse(JSON.parse(text))
-        db.databases.forEach(database => {
-          const databaseJSON = {}
-          databaseJSON.name = database
-          databaseJSON.type = 'database'
-          databaseJSON.children = []
-          this.listDatabases.push(databaseJSON)
-        })
-      }
+      this.handleResponse()
     },
 
     async getListCollection (item) {
-      this.connection.send('LIST_COLLECTIONS###' + item.name)
       return await new Promise(resolve => {
-        this.connection.onmessage = (message) => {
-          const text = message.data
-          const coll = JSON.parse(JSON.parse(text))
-          coll.collections.forEach(collection => {
-            collection = collection.replace('\n', '') // la risposta del server contiene degli \n che vengono rimossi
-            const collectionJSON = {}
-            collectionJSON.name = collection.split(' ')[0]
-            collectionJSON.type = collection.split(' ')[1]
-            item.children.push(collectionJSON)
-          })
-          resolve()
-        }
+        this.connection.send('LIST_COLLECTIONS###' + item.name)
+        const finished = resolve
+        this.handleResponse(finished)
       })
     }
   }

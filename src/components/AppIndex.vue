@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-      <v-row style="height: 10vh;">
+      <v-row style="height: 8vh;">
         <v-col cols="2" class="upLeft">
           Logo
         </v-col>
