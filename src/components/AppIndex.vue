@@ -5,7 +5,7 @@
           Logo
         </v-col>
         <v-col class="upRight">
-          Funzioni
+          <ListFunctions/>
         </v-col>
       </v-row>
       <v-row no-gutter style="height: 92vh;">
@@ -42,10 +42,12 @@
 
 <script>
 import ListDB from './ListDB.vue'
+import ListFunctions from './ListFunctions.vue'
 
 export default {
   components: {
-    ListDB
+    ListDB,
+    ListFunctions
   }
 }
 </script>
