@@ -2,55 +2,79 @@ const net = require('net')
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 3000 }) // creation of a WebSocket Server for the communication with the WebAppnp
 const encoder = new TextEncoder()
-const client = net.connect(17017, 'localhost')
+let client = net.connect(17017, 'localhost')
+let isOccupied = false
+
+client.on('error', error => console.log(error))
+
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 // Connection with J-CO-DS-Server
 
 // WebApp Connection handling
 wss.on('connection', function (ws) {
-  console.log('Web-App connessa\n')
-  console.log(ws.protocol)
+  console.log('Web-App connessa con ID: ' + ws.protocol + '\n')
 
   // Message from WebApp handling
-  ws.on('message', async (data) => {
-    const message = data.toString()
-    const command = message.split('###')[0]
-    console.log('Recived command: ' + command)
-    const idws = ws.protocol
-    if (command == 'LIST_DATABASE') {
-      reqListDatabase(idws)
-    }
-    if (command == 'LIST_COLLECTIONS') {
-      const dbName = message.split('###')[1]
-      reqListCollection(dbName, idws)
+  ws.on('message', async function sendDataToServer (data) {
+    if(!isOccupied){
+      isOccupied=true
+      const message = data.toString()
+      const command = message.split('###')[0]
+      if (command !== 'PING'){
+        console.log('Recived command: ' + command)
+      }
+      const idws = ws.protocol
+      if (command == 'LIST_DATABASE') {
+        reqListDatabase(idws)
+      }
+      else if (command == 'LIST_COLLECTIONS') {
+        const dbName = message.split('###')[1]
+        reqListCollection(dbName, idws)
+      }
+      else if (command == 'PING') {
+        ping(idws)
+      }
+    } else {
+      await pause(100)
+      sendDataToServer(data)
     }
   })
 })
 
 // JCODS Server Response
 async function getResponse (idws) {
-  client.once('data', function (data) {
-    console.log('prova')
-    bytes = data
-    bytes = bytes.subarray(4)
-    if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
-      console.log('LIST DATABASE: ')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    }
-    if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
-      console.log('LIST_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    }
-    console.log(bytes.subarray(12).toString())
-  })
+    client.once('data', function (data) {
+      bytes = data
+      bytes = bytes.subarray(4)
+      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
+        console.log('LIST DATABASE: ')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      }
+      else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
+        console.log('LIST_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      }
+      else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      }
+      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0){
+        console.log(bytes.subarray(12).toString())
+      }
+      isOccupied = false
+    })
 }
 
 // Communication with JCODS Server functions
@@ -95,6 +119,26 @@ async function reqListCollection (nameDB, idws) {
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function ping (idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00000001'))
+
+  const reqParam = new Uint8Array(0)
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(0))
   const sizeBody = new Uint8Array(toBytesInt32(0))
 
   const message = new Uint8Array(16 + reqParam.length + reqBody.length)

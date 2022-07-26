@@ -24,9 +24,4 @@ export default {
 * {
   margin:0 !important;
 }
-
-#body {
-  min-width: 100px;
-  min-height: 700px;
-}
 </style>

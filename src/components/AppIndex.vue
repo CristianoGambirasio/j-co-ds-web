@@ -2,7 +2,7 @@
   <v-sheet id="body">
       <v-row style="height: 8vh;">
         <v-col cols="2" class="upLeft">
-          Logo
+          <h1 style="color: #4D4646; font-size: 2vw;">J-CO-DS WEB</h1>
         </v-col>
         <v-col class="upRight">
           Funzioni
@@ -25,10 +25,10 @@
   --on-primary-color: black;
 }
 .upLeft {
-  background-color: red;
+  background-color: #7FCD91;
 }
 .upRight {
-  background-color: green;
+  background-color: #F5EAEA;
 }
 
 #bottomLeft {
@@ -36,8 +36,9 @@
   background-color: lightgray;
 }
 .bottomRight {
-  background-color: orange;
+  background-color: #F5EAEA;
 }
+
 </style>
 
 <script>
