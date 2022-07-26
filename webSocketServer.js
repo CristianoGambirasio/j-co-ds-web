@@ -32,7 +32,7 @@ wss.on('connection', function (ws) {
         reqListCollection(dbName, idws)
       } else if (command == 'CREATE_DATABASE') {
         const dbName = message.split('###')[1]
-        reqListCollection(dbName, idws)
+        createDatabase(dbName, idws)
       } else if (command == 'PING') {
         ping(idws)
       }

@@ -10,7 +10,7 @@
       <v-card-title>Creating new database</v-card-title>
       <v-card-text>
         <v-form>
-          <v-card-text label="Name" id="nameDB" type="text"></v-card-text>
+          <v-text-field label="Name" id="nameDB" type="text"></v-text-field>
         </v-form>
       </v-card-text>
 
