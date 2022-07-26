@@ -2,7 +2,7 @@ const net = require('net')
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 3000 }) // creation of a WebSocket Server for the communication with the WebAppnp
 const encoder = new TextEncoder()
-let client = net.connect(17017, 'localhost')
+const client = net.connect(17017, 'localhost')
 let isOccupied = false
 
 client.on('error', error => console.log(error))
@@ -17,22 +17,23 @@ wss.on('connection', function (ws) {
 
   // Message from WebApp handling
   ws.on('message', async function sendDataToServer (data) {
-    if(!isOccupied){
-      isOccupied=true
+    if (!isOccupied) {
+      isOccupied = true
       const message = data.toString()
       const command = message.split('###')[0]
-      if (command !== 'PING'){
+      if (command !== 'PING') {
         console.log('Recived command: ' + command)
       }
       const idws = ws.protocol
       if (command == 'LIST_DATABASE') {
         reqListDatabase(idws)
-      }
-      else if (command == 'LIST_COLLECTIONS') {
+      } else if (command == 'LIST_COLLECTIONS') {
         const dbName = message.split('###')[1]
         reqListCollection(dbName, idws)
-      }
-      else if (command == 'PING') {
+      } else if (command == 'CREATE_DATABASE') {
+        const dbName = message.split('###')[1]
+        reqListCollection(dbName, idws)
+      } else if (command == 'PING') {
         ping(idws)
       }
     } else {
@@ -44,37 +45,42 @@ wss.on('connection', function (ws) {
 
 // JCODS Server Response
 async function getResponse (idws) {
-    client.once('data', function (data) {
-      bytes = data
-      bytes = bytes.subarray(4)
-      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
-        console.log('LIST DATABASE: ')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      }
-      else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
-        console.log('LIST_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      }
-      else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      }
-      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0){
-        console.log(bytes.subarray(12).toString())
-      }
-      isOccupied = false
-    })
+  client.once('data', function (data) {
+    bytes = data
+    bytes = bytes.subarray(4)
+    if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
+      console.log('LIST DATABASE: ')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
+      console.log('LIST_COLLECTION')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 3])) == 0) {
+      console.log('CREATE_DATABASE')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    }
+    if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0) {
+      console.log(bytes.subarray(12).toString())
+    }
+    isOccupied = false
+  })
 }
 
 // Communication with JCODS Server functions
@@ -112,6 +118,28 @@ async function reqListDatabase (idws) {
 
 async function reqListCollection (nameDB, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020001'))
+  const objParam = {}
+  objParam.database = nameDB
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function createDatabase (nameDB, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00010003'))
   const objParam = {}
   objParam.database = nameDB
 
