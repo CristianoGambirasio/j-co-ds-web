@@ -5,7 +5,7 @@
           <h1 style="color: #4D4646; font-size: 2vw;">J-CO-DS WEB</h1>
         </v-col>
         <v-col class="upRight">
-          Funzioni
+          <ListFunctions/>
         </v-col>
       </v-row>
       <v-row no-gutter style="height: 92vh;">
@@ -43,10 +43,12 @@
 
 <script>
 import ListDB from './ListDB.vue'
+import ListFunctions from './ListFunctions.vue'
 
 export default {
   components: {
-    ListDB
+    ListDB,
+    ListFunctions
   }
 }
 </script>
