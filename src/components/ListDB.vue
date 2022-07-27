@@ -179,9 +179,10 @@ export default {
       })
     },
     ping () {
+      /*
       this.connection.send('PING')
       setInterval(() => {
-        if (this.connection.readyState === 2 || this.connection.readyState === 3) {
+          if (this.connection.readyState === 2 || this.connection.readyState === 3) {
           this.online = false
           console.log('Web Socket is closed')
         } else {
@@ -189,7 +190,7 @@ export default {
         }
       }
       , 1000)
-    }
+    */ }
   }
 }
 </script>
