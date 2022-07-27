@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 5vh;">
+    <v-row style="height: 7vh;">
       <v-col cols="8">
         <h2 style="color: #7FCD91; font-size: 1.2vw;">DATABASE LIST:</h2>
       </v-col>

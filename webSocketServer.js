@@ -141,7 +141,7 @@ async function reqListCollection (nameDB, idws) {
 async function createDatabase (nameDB, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00010003'))
   const objParam = {}
-  objParam.database = nameDB
+  objParam.name = nameDB
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
