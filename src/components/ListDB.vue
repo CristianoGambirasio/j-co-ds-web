@@ -58,8 +58,32 @@
     <v-row style="height: 10vh;">
       <v-container id="meta">
         <v-row style="height: 5vh;">
-          <v-col cols="6" id="meta1">
-            {{online}}
+          <v-col cols="6" id="meta1" style="padding: 0px;">
+            <v-container v-if="online" style="padding: 7px;" fill-height>
+              <v-btn
+              depressed
+              block
+              style="background-color: green; padding: 0px;"
+              >
+                ONLINE
+                <v-icon>
+                  mdi-access-point-check
+                </v-icon>
+              </v-btn>
+            </v-container>
+            <v-container v-else style="padding: 7px;" fill-height>
+              <v-btn
+              depressed
+              block
+              style="background-color: red; padding: 0px;"
+              @click="connect()"
+              >
+                OFFLINE
+                <v-icon>
+                  mdi-access-point-remove
+                </v-icon>
+              </v-btn>
+            </v-container>
           </v-col>
           <v-col cols="6" id="meta2">
           </v-col>
@@ -112,14 +136,18 @@ export default {
     }
   },
   mounted () {
-    this.connection = new WebSocket('ws://' + window.location.hostname + ':3000', this.id)
-    this.connection.onopen = () => {
-      this.ping()
-      this.getListDatabase()
-      this.handleResponse()
-    }
+    this.connect()
   },
   methods: {
+    connect () {
+      this.connection = new WebSocket('ws://' + window.location.hostname + ':3000', this.id)
+      this.connection.onopen = () => {
+        console.log('Connecting...')
+        this.ping()
+        this.getListDatabase()
+        this.handleResponse()
+      }
+    },
     handleResponse (finished) {
       this.connection.onmessage = async (message) => {
         const dataBuffer = await message.data.arrayBuffer()
@@ -179,12 +207,18 @@ export default {
       })
     },
     ping () {
+      let errMessageSent = false
       this.connection.send('PING')
       setInterval(() => {
-        if (this.connection.readyState === 2 || this.connection.readyState === 3) {
+        if (this.connection === null || this.connection.readyState === 2 || this.connection.readyState === 3) {
+          // this.connection.close()
           this.online = false
-          console.log('Web Socket is closed')
+          if (!errMessageSent) {
+            console.log('No connection')
+          }
+          errMessageSent = true
         } else {
+          errMessageSent = false
           this.connection.send('PING')
         }
       }
@@ -197,22 +231,7 @@ export default {
 <style>
 #meta{
   padding: 0px;
-}
-
-#meta1{
   background-color: #5B5656
-}
-
-#meta2{
-  background-color: blue;
-}
-
-#meta3{
-  background-color: brown;
-}
-
-#meta4{
-  background-color: salmon;
 }
 
 #body{

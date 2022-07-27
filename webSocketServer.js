@@ -1,19 +1,51 @@
 const net = require('net')
 const WebSocket = require('ws')
-const wss = new WebSocket.Server({ port: 3000 }) // creation of a WebSocket Server for the communication with the WebAppnp
+let wss = new WebSocket.Server({ port: 3000 })// creation of a WebSocket Server for the communication with the WebAppnp
 const encoder = new TextEncoder()
-const client = net.connect(17017, 'localhost')
+
+let isServerOn = false
+let client = net.connect(17017,'localhost', () => {
+  isServerOn = true
+})
 let isOccupied = false
 
-client.on('error', error => console.log(error))
-
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+client.on('error', onError)
+
+function onError() {
+  isServerOn = false
+  console.log('No connection with the server')
+  setTimeout(() => {
+    console.log('Trying reconnecting...')
+    client = new net.connect(17017,'localhost',() => {
+      console.log('Riconnesso al server')
+      isServerOn=true
+    })
+    client.on('error', onError)
+  }, 10000);
+}
 
 // Connection with J-CO-DS-Server
 
 // WebApp Connection handling
 wss.on('connection', function (ws) {
   console.log('Web-App connessa con ID: ' + ws.protocol + '\n')
+
+  if(!isServerOn){
+    wss.clients.forEach((client)=>{
+      client.close()
+    })
+  }
+
+  client.on('error', error => {
+    const err = new Uint8Array([0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    wss.clients.forEach((client)=>{
+      client.send(err)
+      client.close()
+    })
+    onError
+  })
 
   // Message from WebApp handling
   ws.on('message', async function sendDataToServer (data) {
@@ -32,6 +64,7 @@ wss.on('connection', function (ws) {
         reqListCollection(dbName, idws)
       } else if (command == 'CREATE_DATABASE') {
         const dbName = message.split('###')[1]
+        console.log(dbName)
         createDatabase(dbName, idws)
       } else if (command == 'PING') {
         ping(idws)
@@ -70,6 +103,7 @@ async function getResponse (idws) {
         }
       })
     } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+      // PING
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
@@ -139,9 +173,10 @@ async function reqListCollection (nameDB, idws) {
 }
 
 async function createDatabase (nameDB, idws) {
+  console.log(nameDB)
   const commandCode = new Uint8Array(toBytesCommandCode('00010003'))
   const objParam = {}
-  objParam.database = nameDB
+  objParam.name = nameDB
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
@@ -155,6 +190,7 @@ async function createDatabase (nameDB, idws) {
   message.set(sizeBody, 8 + 4)
   message.set(reqParam, 8 + 4 + 4)
   message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+  console.log(message)
 
   client.write(message)
   await getResponse(idws)
