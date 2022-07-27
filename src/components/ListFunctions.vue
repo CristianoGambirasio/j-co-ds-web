@@ -10,13 +10,18 @@
       <v-card-title>Creating new database</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field label="Name" id="nameDB" type="text"></v-text-field>
+          <v-text-field
+          label="Name"
+          v-model="nameDB"
+          required
+          type="text"
+          ></v-text-field>
         </v-form>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="createDatabase('nameDB')">
+        <v-btn color="primary" text @click="createDatabase(nameDB)">
           Create
         </v-btn>
         <v-btn color="primary" text @click="dialog = false">
@@ -34,6 +39,7 @@ import * as tool from '../functions/tools'
 export default {
   data () {
     return {
+      nameDB: '',
       id: Math.floor(Math.random() * 10),
       connection: null,
       listDatabases: [],
@@ -70,7 +76,11 @@ export default {
         // Create Database
         if (tool.arrayEquals(command, [0, 1, 0, 3])) {
           const db = JSON.parse(text)
-          this.listDatabases.push(db)
+          const databaseJSON = {}
+          databaseJSON.name = db
+          databaseJSON.type = 'database'
+          databaseJSON.children = []
+          this.listDatabases.push(databaseJSON)
         }
       }
     },
@@ -79,8 +89,9 @@ export default {
       this.connection.send('LIST_DATABASE')
       this.handleResponse()
     },
-    createDatabase (item) {
-      this.connection.send('CREATE_DATABASE###' + item)
+
+    createDatabase (nameDB) {
+      this.connection.send('CREATE_DATABASE###' + nameDB)
       this.handleResponse()
     }
   }
