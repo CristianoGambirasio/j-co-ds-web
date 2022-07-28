@@ -40,8 +40,18 @@ wss.on('connection', function (ws) {
       } else if (command == 'CREATE_DYNAMIC_COLLECTION') {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
+        const urlList = message.split('###')[3]
+        createDynamicCollection(dbName, collName, urlList, idws)
+      } else if (command == 'CREATE_VIRTUAL_COLLECTION') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        const urlList = message.split('###')[3]
+        createVirtualCollection(dbName, collName, urlList, idws)
+      } else if (command == 'ADD_URL') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
         const urlName = message.split('###')[3]
-        createDynamicCollection(dbName, collName, urlName, idws)
+        addUrl(dbName, collName, urlName, idws)
       } else if (command == 'PING') {
         ping(idws)
       }
@@ -86,13 +96,27 @@ async function getResponse (idws) {
         }
       })
     } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 23])) == 0) {
-    console.log('CREATE_DYNAMIC_COLLECTION')
-    wss.clients.forEach((client) => {
-      if (client.protocol == idws) {
-        client.send(bytes)
-      }
-    })
-  } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+      console.log('CREATE_DYNAMIC_COLLECTION')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 13])) == 0) {
+      console.log('CREATE_VIRTUAL_COLLECTION')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 1])) == 0) {
+      console.log('ADD_URL')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
@@ -206,12 +230,62 @@ async function createCollection(nameDB, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function createDynamicCollection(nameDB, nameColl, nameUrl, idws) {
+async function createDynamicCollection(nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020023'))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
-  objParam.url = nameUrl
+  objParam.url = []
+  objParam.url = listUrl.split(",")
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function createVirtualCollection(nameDB, nameColl, listUrl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00020013'))
+  const objParam = {}
+  objParam.database = nameDB
+  objParam.name = nameColl
+  objParam.url = []
+  objParam.url = listUrl.split(",")
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function addUrl(nameDB, nameColl, nameUrl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00030001'))
+  const objParam = {}
+  objParam.database = nameDB
+  objParam.name = nameColl
+  objParam.url.push(nameUrl)
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
