@@ -285,7 +285,7 @@ async function addUrl(nameDB, nameColl, nameUrl, idws) {
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
-  objParam.url.push(nameUrl)
+  objParam.url = nameUrl
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
@@ -324,7 +324,7 @@ async function ping (idws) {
   await getResponse(idws)
 }
 
-// Util function
+// Util functions
 const toBytesInt32 = (num) => { // Converte un int in ArrayBuffer(4)
   const arr = new ArrayBuffer(4)
   const view = new DataView(arr)
