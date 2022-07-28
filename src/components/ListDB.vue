@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 7vh;">
+    <v-row style="height: 5vh;">
       <v-col cols="8">
         <h2 style="color: #7FCD91; font-size: 1.2vw;">DATABASE LIST:</h2>
       </v-col>
@@ -38,13 +38,17 @@
       <v-container style="max-height: 70vh; padding: 0px; padding-top: 10px;" class="overflow-y-auto">
         <v-treeview
             dark
+            activatable
             :items="listDatabases"
             :load-children="getListCollection"
             :search='search'
             :filter='filter'
-            open-on-click
             item-key="name"
-          transition
+            open-on-click
+            transition
+            return-object
+            active-class="activeNode"
+            @update:active="showMetadata"
           >
           <template v-slot:prepend="{item,open}">
             <v-icon>
@@ -57,13 +61,16 @@
     </v-row>
     <v-row style="height: 10vh;">
       <v-container id="meta">
-        <v-row style="height: 5vh;">
-          <v-col cols="6" id="meta1" style="padding: 0px;">
-            <v-container v-if="online" style="padding: 7px;" fill-height>
+        <v-row style="height: 50%;" class="ma-0 pa-0">
+            <v-col cols="6" id="meta1" style="padding: 0px;" class="d-flex align-center text-truncate">
+              <h5>{{metaTL}}</h5>
+            </v-col>
+            <v-col cols="6" id="meta2" style="padding: 0px;">
+            <v-container v-if="online" style="padding: 7px;"  fill-height>
               <v-btn
               depressed
               block
-              style="background-color: green; padding: 0px;"
+              style="background-color: green; padding: 0px; height: 100%;"
               >
                 ONLINE
                 <v-icon>
@@ -84,16 +91,19 @@
                 </v-icon>
               </v-btn>
             </v-container>
+            </v-col>
+        </v-row>
+        <v-row v-if="isActive" style="height: 50%;">
+          <v-col cols="6" id="meta3" style="padding: 0px;" class="d-flex align-center text-truncate">
+            <h5>{{metaBL}}</h5>
           </v-col>
-          <v-col cols="6" id="meta2">
+          <v-col cols="6" id="meta4" style="padding: 0px;" class="d-flex align-center text-truncate">
+            <h5>{{metaBR}}</h5>
           </v-col>
         </v-row>
-        <v-row style="height: 5vh;">
-          <v-col id="meta3">
-
-          </v-col>
-          <v-col id="meta4">
-
+        <v-row v-else style="height: 50%;">
+          <v-col cols="6" id="meta3" style="padding: 0px;" class="d-flex align-center">
+            <h4>{{nDB}} DATABASES</h4>
           </v-col>
         </v-row>
       </v-container>
@@ -108,6 +118,10 @@ import * as tool from '../functions/tools'
 export default {
   data () {
     return {
+      metaTL: null,
+      metaBL: null,
+      metaBR: null,
+      active: false,
       online: false,
       searchKeySensitive: true,
       search: null,
@@ -133,6 +147,12 @@ export default {
       return this.searchKeySensitive
         ? (item, search, textKey) => item[textKey].indexOf(search) > -1
         : undefined
+    },
+    isActive () {
+      return this.active
+    },
+    nDB () {
+      return this.listDatabases.length
     }
   },
   mounted () {
@@ -179,6 +199,7 @@ export default {
                 const collectionJSON = {}
                 collectionJSON.name = collection.split(' ')[0]
                 collectionJSON.type = collection.split(' ')[1]
+                collectionJSON.db = database.name
                 database.children.push(collectionJSON)
               })
             }
@@ -191,6 +212,11 @@ export default {
           } else {
             this.online = false
           }
+        }
+        if (tool.arrayEquals(command, [0, 2, 0, 12])) {
+          console.log('recived')
+          const res = JSON.parse(text)
+          finished(res.count)
         }
       }
     },
@@ -205,6 +231,47 @@ export default {
         const finished = resolve
         this.handleResponse(finished)
       })
+    },
+    async getCollectionCount (db, collection) {
+      let countCollection
+      await new Promise(resolve => {
+        this.connection.send('GET_COLLECTION_COUNT###' + db + '###' + collection)
+        const finish = resolve
+        this.handleResponse(finish)
+      }).then((value) => {
+        countCollection = value
+      })
+      return countCollection
+    },
+    async showMetadata (value) {
+      if (value.length === 0) {
+        this.active = false
+      } else {
+        this.active = true
+      }
+      console.log(value)
+      let countCollection
+      if (value.length > 0 && (value[0].type === 'static' || 'virtual' || 'dynamic')) {
+        countCollection = await this.getCollectionCount(value[0].db, value[0].name)
+      }
+
+      if (value.length === 0) {
+        this.metaTL = null
+        this.metaBL = null
+      } else if (value[0].type === 'static') {
+        this.metaTL = 'TYPE: STATIC'
+        this.metaBL = 'NAME: ' + value[0].name
+        this.metaBR = 'Documents: ' + countCollection
+      } else if (value[0].type === 'dynamic') {
+        this.metaTL = 'TYPE: DYNAMIC'
+        this.metaBL = 'NAME: ' + value[0].name
+        this.metaBR = 'Documents: ' + countCollection
+      } else if (value[0].type === 'virtual') {
+        this.metaTL = 'TYPE: VIRTUAL'
+        this.metaBL = 'NAME: ' + value[0].name
+        this.metaBR = 'Documents: ' + countCollection
+        // Gestione database | Stile select
+      }
     },
     ping () {
       let errMessageSent = false
@@ -229,6 +296,15 @@ export default {
 </script>
 
 <style>
+
+.activeNode{
+  background-color: #5B5656;
+}
+
+h5{
+  color: white;
+  padding: 8px;
+}
 #meta{
   padding: 0px;
   background-color: #5B5656

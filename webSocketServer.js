@@ -68,6 +68,10 @@ wss.on('connection', function (ws) {
         createDatabase(dbName, idws)
       } else if (command == 'PING') {
         ping(idws)
+      } else if (command == 'GET_COLLECTION_COUNT') {
+        const db = message.split('###')[1]
+        const collection = message.split('###')[2]
+        getCollectionCount(idws,db,collection)
       }
     } else {
       await pause(100)
@@ -104,6 +108,13 @@ async function getResponse (idws) {
       })
     } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
       // PING
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0){
+      console.log('GET_COLLECTION_COUNT')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
@@ -203,6 +214,30 @@ async function ping (idws) {
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(0))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function getCollectionCount (idws, db, collection) {
+  const commandCode = new Uint8Array(toBytesCommandCode('0002000b'))
+
+  const objParam = {}
+  objParam.database = db
+  objParam.collection = collection
+
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
   const sizeBody = new Uint8Array(toBytesInt32(0))
 
   const message = new Uint8Array(16 + reqParam.length + reqBody.length)
