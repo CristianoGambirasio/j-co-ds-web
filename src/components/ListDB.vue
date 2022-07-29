@@ -274,6 +274,11 @@ export default {
       }
     },
     ping () {
+      /*
+      this.connection.send('PING')
+      setInterval(() => {
+          if (this.connection.readyState === 2 || this.connection.readyState === 3) {
+
       /* let errMessageSent = false
       this.connection.send('PING')
       setInterval(() => {
@@ -289,7 +294,9 @@ export default {
           this.connection.send('PING')
         }
       }
-      , 1000) */
+      , 1000)
+    }
+      , 1000)
     }
   }
 }
