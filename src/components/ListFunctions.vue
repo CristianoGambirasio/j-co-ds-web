@@ -191,6 +191,7 @@ export default {
     this.connection = new WebSocket('ws://' + window.location.hostname + ':3000', this.id)
     this.connection.onopen = () => {
       this.getListDatabase()
+      this.handleResponse()
     }
   },
   methods: {
@@ -201,7 +202,7 @@ export default {
         const command = data.slice(0, 4)
         data = data.slice(12)
         const text = String.fromCharCode(...data)
-        console.log(text)
+        // console.log(text)
         // DB List response
         if (tool.arrayEquals(command, [0, 1, 0, 2])) {
           const db = JSON.parse(text)
