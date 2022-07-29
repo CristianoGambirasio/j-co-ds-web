@@ -1,24 +1,19 @@
-# j-co-ds-w
+# j-co-ds-web
 
-## Project setup
+## Utilizzo della web app
+La web app utilizza un server locale (webSocketServer) come intermediario per la comunicazione tra web app e J-CO-DS Server.
+Sarà quindi necessario mandare in esecuzione webSocketServer.js e compilare il progetto Vue oltre all'avvio di J-CO-DS Server
+
+- Avviare J-CO-DS Server
+
+- Avviare webSocketServer
 ```
-npm install
+node webSocketServer.js
 ```
 
-### Compiles and hot-reloads for development
+- Compilare e caricare il progetto vue
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Una volta che la web app è stata compilata, partirà sulla porta 8080 di localhost
