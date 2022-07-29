@@ -1,10 +1,10 @@
 const net = require('net')
 const WebSocket = require('ws')
-let wss = new WebSocket.Server({ port: 3000 })// creation of a WebSocket Server for the communication with the WebAppnp
+const wss = new WebSocket.Server({ port: 3000 })// creation of a WebSocket Server for the communication with the WebAppnp
 const encoder = new TextEncoder()
 
 let isServerOn = false
-let client = net.connect(17017,'localhost', () => {
+let client = net.connect(17017, 'localhost', () => {
   isServerOn = true
 })
 let isOccupied = false
@@ -13,17 +13,17 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 client.on('error', onError)
 
-function onError() {
+function onError () {
   isServerOn = false
   console.log('No connection with the server')
   setTimeout(() => {
     console.log('Trying reconnecting...')
-    client = new net.connect(17017,'localhost',() => {
+    client = new net.connect(17017, 'localhost', () => {
       console.log('Riconnesso al server')
-      isServerOn=true
+      isServerOn = true
     })
     client.on('error', onError)
-  }, 10000);
+  }, 10000)
 }
 
 // Connection with J-CO-DS-Server
@@ -32,15 +32,15 @@ function onError() {
 wss.on('connection', function (ws) {
   console.log('Web-App connessa con ID: ' + ws.protocol + '\n')
 
-  if(!isServerOn){
-    wss.clients.forEach((client)=>{
+  if (!isServerOn) {
+    wss.clients.forEach((client) => {
       client.close()
     })
   }
 
   client.on('error', error => {
     const err = new Uint8Array([0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1])
-    wss.clients.forEach((client)=>{
+    wss.clients.forEach((client) => {
       client.send(err)
       client.close()
     })
@@ -90,7 +90,7 @@ wss.on('connection', function (ws) {
       } else if (command == 'GET_COLLECTION_COUNT') {
         const db = message.split('###')[1]
         const collection = message.split('###')[2]
-        getCollectionCount(idws,db,collection)
+        getCollectionCount(idws, db, collection)
       }
     } else {
       await pause(100)
@@ -160,7 +160,7 @@ async function getResponse (idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0){
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
       console.log('GET_COLLECTION_COUNT')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
@@ -254,7 +254,7 @@ async function createDatabase (nameDB, idws) {
   await getResponse(idws)
 }
 
-async function createCollection(nameDB, nameColl, idws) {
+async function createCollection (nameDB, nameColl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020003'))
   const objParam = {}
   objParam.database = nameDB
@@ -277,13 +277,13 @@ async function createCollection(nameDB, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function createDynamicCollection(nameDB, nameColl, listUrl, idws) {
+async function createDynamicCollection (nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020023'))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
   objParam.url = []
-  objParam.url = listUrl.split(",")
+  objParam.url = listUrl.split(',')
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
@@ -302,13 +302,13 @@ async function createDynamicCollection(nameDB, nameColl, listUrl, idws) {
   await getResponse(idws)
 }
 
-async function createVirtualCollection(nameDB, nameColl, listUrl, idws) {
+async function createVirtualCollection (nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020013'))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
   objParam.url = []
-  objParam.url = listUrl.split(",")
+  objParam.url = listUrl.split(',')
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
@@ -327,7 +327,7 @@ async function createVirtualCollection(nameDB, nameColl, listUrl, idws) {
   await getResponse(idws)
 }
 
-async function addUrl(nameDB, nameColl, nameUrl, idws) {
+async function addUrl (nameDB, nameColl, nameUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00030001'))
   const objParam = {}
   objParam.database = nameDB
