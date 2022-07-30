@@ -26,6 +26,16 @@ function onError () {
   }, 10000)
 }
 
+/*
+client.on('connect', function(){
+  client.write(Buffer.from([0, 0, 0, 0, 0, 2, 0, 7, 0, 0, 0, 74, 0, 0, 0, 0, 123, 34, 100, 97, 116, 97, 98, 97, 115, 101, 34, 58, 34, 71, 101, 111, 74, 115, 111, 110, 83, 97, 109, 112, 108, 101, 115, 34, 44, 34, 111, 102, 102, 115, 101, 116, 34, 58, 48, 44, 34, 108, 105, 109, 105, 116, 34, 58, 45, 49, 44, 34, 99, 111, 108, 108, 101, 99, 116, 105, 111, 110, 34, 58, 34, 103, 97, 116, 104, 101, 114, 49, 34, 125]))
+})
+
+client.on('data', function(data){
+  console.log(new Uint8Array(data).toString())
+})
+*/
+
 // Connection with J-CO-DS-Server
 
 // WebApp Connection handling
@@ -83,14 +93,14 @@ wss.on('connection', function (ws) {
       } else if (command == 'ADD_URL') {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
-        const urlName = message.split('###')[3]
-        addUrl(dbName, collName, urlName, idws)
-      } else if (command == 'PING') {
-        ping(idws)
+        const urlList = message.split('###')[3]
+        addUrl(dbName, collName, urlList, idws)
       } else if (command == 'GET_COLLECTION_COUNT') {
         const db = message.split('###')[1]
         const collection = message.split('###')[2]
         getCollectionCount(idws, db, collection)
+      } else if (command == 'PING') {
+        ping(idws)
       }
     } else {
       await pause(100)
@@ -112,7 +122,7 @@ async function getResponse (idws) {
         }
       })
     } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
-      console.log('LIST_COLLECTION')
+      console.log('LIST_COLLECTION: ')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
@@ -153,8 +163,8 @@ async function getResponse (idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
-      // PING
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 7])) == 0) {
+      console.log('GET_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
@@ -162,6 +172,13 @@ async function getResponse (idws) {
       })
     } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
       console.log('GET_COLLECTION_COUNT')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+      // PING
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
@@ -327,37 +344,18 @@ async function createVirtualCollection (nameDB, nameColl, listUrl, idws) {
   await getResponse(idws)
 }
 
-async function addUrl (nameDB, nameColl, nameUrl, idws) {
+async function addUrl (nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00030001'))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
-  objParam.url = nameUrl
+  objParam.url = []
+  objParam.url = listUrl.split(',')
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
-  const sizeBody = new Uint8Array(toBytesInt32(0))
-
-  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
-  message.set(commandCode)
-  message.set(sizeParam, 8)
-  message.set(sizeBody, 8 + 4)
-  message.set(reqParam, 8 + 4 + 4)
-  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
-
-  client.write(message)
-  await getResponse(idws)
-}
-
-async function ping (idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00000001'))
-
-  const reqParam = new Uint8Array(0)
-  const reqBody = new Uint8Array(0)
-
-  const sizeParam = new Uint8Array(toBytesInt32(0))
   const sizeBody = new Uint8Array(toBytesInt32(0))
 
   const message = new Uint8Array(16 + reqParam.length + reqBody.length)
@@ -382,6 +380,26 @@ async function getCollectionCount (idws, db, collection) {
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function ping (idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00000001'))
+
+  const reqParam = new Uint8Array(0)
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(0))
   const sizeBody = new Uint8Array(toBytesInt32(0))
 
   const message = new Uint8Array(16 + reqParam.length + reqBody.length)

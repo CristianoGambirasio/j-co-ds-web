@@ -29,6 +29,8 @@
 }
 .upRight {
   background-color: #F5EAEA;
+  padding-top: 5px;
+  border: 2px solid black;
 }
 
 #bottomLeft {
@@ -37,6 +39,7 @@
 }
 .bottomRight {
   background-color: #F5EAEA;
+  border-top: 2px solid black;
 }
 
 </style>

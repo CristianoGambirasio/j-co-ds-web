@@ -17,10 +17,10 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="createDatabase(nameDB); dialog = false">
+          <v-btn text @click="createDatabase(nameDB); dialog = false">
             Create
           </v-btn>
-          <v-btn color="primary" text @click="dialog = false">
+          <v-btn text @click="dialog = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -148,16 +148,48 @@
           <v-form>
             <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
             <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
-            <v-text-field label="New url name" v-model="nameUrl" required type="text"></v-text-field>
+            <v-text-field label="Url list" v-model="listUrl" required type="text"></v-text-field>
           </v-form>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="addUrl(nameDB, nameColl, nameUrl); dialog4 = false">
+          <v-btn color="primary" text @click="addUrl(nameDB, nameColl, listUrl); dialog4 = false">
             Create
           </v-btn>
           <v-btn color="primary" text @click="dialog4 = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    &nbsp;&nbsp;
+
+    <v-dialog v-model="dialog5" width="600">
+      <template v-slot:activator="{ on }">
+        <v-btn v-on="on">
+          <v-icon left>mdi-plus</v-icon>
+          Export Collection
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>Exporting collection</v-card-title>
+        <v-card-text>
+          <v-form>
+            <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
+            <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
+            <v-text-field label="Offset" hint="Default is 0" v-model="offset" required type="text"></v-text-field>
+            <v-text-field label="Limit" hint="Default is -1" v-model="limit" required type="text"></v-text-field>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="getCollection(nameDB, offset, limit, nameColl); dialog5 = false">
+            Download
+          </v-btn>
+          <v-btn color="primary" text @click="dialog5 = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -176,7 +208,8 @@ export default {
       nameDB: '',
       nameColl: '',
       listUrl: '',
-      nameUrl: '',
+      limit: '',
+      offset: '',
       id: Math.floor(Math.random() * 10),
       connection: null,
       listDatabases: [],
@@ -184,7 +217,8 @@ export default {
       dialog1: false,
       dialog2: false,
       dialog3: false,
-      dialog4: false
+      dialog4: false,
+      dialog5: false
     }
   },
   mounted () {
@@ -202,8 +236,10 @@ export default {
         const command = data.slice(0, 4)
         data = data.slice(12)
         const text = String.fromCharCode(...data)
-        // console.log(text)
-        // DB List response
+        if (!tool.arrayEquals(command, [0, 0, 0, 2])) {
+          console.log('Command ' + command + ' recived')
+        }
+        // List Databases
         if (tool.arrayEquals(command, [0, 1, 0, 2])) {
           const db = JSON.parse(text)
           db.databases.forEach(database => {
@@ -273,7 +309,7 @@ export default {
               const collectionJSON = {}
               collectionJSON.name = collection.split(' ')[0]
               collectionJSON.type = collection.split(' ')[1]
-              collectionJSON.url = collection.split(' ')[2]
+              collectionJSON.url.push(collection.split(' ')[2])
               database.children.push(collectionJSON)
             }
           })
@@ -306,11 +342,14 @@ export default {
       this.handleResponse()
     },
 
-    addUrl (nameDB, nameColl, nameUrl) {
-      this.connection.send('CREATE_VIRTUAL_COLLECTION###' + nameDB + '###' + nameColl + '###' + nameUrl)
+    addUrl (nameDB, nameColl, listUrl) {
+      this.connection.send('ADD_URL###' + nameDB + '###' + nameColl + '###' + listUrl)
       this.handleResponse()
     }
   }
 }
 
 </script>
+
+<style>
+</style>
