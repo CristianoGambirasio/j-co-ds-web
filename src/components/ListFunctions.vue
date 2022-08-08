@@ -1,9 +1,9 @@
 <template>
-  <v-row>
-    <v-dialog v-model="dialog" width="600">
+  <v-row fixed>
+    <v-dialog v-model="dialogDb" width="600" id="topbar-dialog">
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on">
-          <v-icon left>mdi-plus</v-icon>
+        <v-btn v-on="on" id="topbar-btn">
+          <v-icon>mdi-database-check</v-icon>
           Create Database
         </v-btn>
       </template>
@@ -17,10 +17,10 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="createDatabase(nameDB); dialog = false">
+          <v-btn text @click="createDatabase(nameDB); dialogDb = false">
             Create
           </v-btn>
-          <v-btn text @click="dialog = false">
+          <v-btn text @click="dialogDb = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -29,116 +29,51 @@
 
     &nbsp;&nbsp;
 
-    <v-menu offset-y>
+    <v-dialog v-model="dialogColl" width="700" id="topbar-dialog">
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on">
-          <v-icon left>mdi-plus</v-icon>
+        <v-btn v-on="on" id="topbar-btn">
+          <v-icon>mdi-note-check</v-icon>
           Create Collection
         </v-btn>
       </template>
-      <v-list>
-        <v-list-item>
-          <v-dialog v-model="dialog1" width="600">
-            <template v-slot:activator="{ on }">
-              <v-btn v-on="on">
-                <v-icon left>mdi-plus</v-icon>
-                Standard
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>Creating new collection</v-card-title>
-              <v-card-text>
-                <v-form>
-                  <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
-                  <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
-                </v-form>
-              </v-card-text>
+      <v-card>
+        <v-card-title>Creating new collection</v-card-title>
+        <v-card-text>
+          <v-form>
+            <v-select label="Type" v-model="type" :items="items"></v-select>
+            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
+            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl" required
+              type="text">
+            </v-text-field>
+          </v-form>
+        </v-card-text>
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="createCollection(nameDB, nameColl); dialog1 = false">
-                  Create
-                </v-btn>
-                <v-btn color="primary" text @click="dialog = false">
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-list-item>
-
-        <v-list-item>
-          <v-dialog v-model="dialog2" width="600">
-            <template v-slot:activator="{ on }">
-              <v-btn v-on="on">
-                <v-icon left>mdi-plus</v-icon>
-                Dynamic
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>Creating new dynamic collection</v-card-title>
-              <v-card-text>
-                <v-form>
-                  <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
-                  <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
-                  <v-text-field label="Urls list" v-model="listUrl" required type="text"></v-text-field>
-                </v-form>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" text
-                  @click="createDynamicCollection(nameDB, nameColl, listUrl); dialog2 = false">
-                  Create
-                </v-btn>
-                <v-btn color="primary" text @click="dialog2 = false">
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-list-item>
-
-        <v-list-item>
-          <v-dialog v-model="dialog3" width="600">
-            <template v-slot:activator="{ on }">
-              <v-btn v-on="on">
-                <v-icon left>mdi-plus</v-icon>
-                Virtual
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>Creating new virtual collection</v-card-title>
-              <v-card-text>
-                <v-form>
-                  <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
-                  <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
-                  <v-text-field label="Urls list" v-model="listUrl" required type="text"></v-text-field>
-                </v-form>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" text
-                  @click="createVirtualCollection(nameDB, nameColl, listUrl); dialog3 = false">
-                  Create
-                </v-btn>
-                <v-btn color="primary" text @click="dialog3 = false">
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn v-if="type === 'Standard'" text @click="createCollection(nameDB, nameColl); dialogColl = false">
+            Create
+          </v-btn>
+          <v-btn v-else-if="type === 'Dynamic'" text
+            @click="createDynamicCollection(nameDB, nameColl, listUrl); dialogColl = false">
+            Create
+          </v-btn>
+          <v-btn v-else text @click="createVirtualCollection(nameDB, nameColl, listUrl); dialogColl = false">
+            Create
+          </v-btn>
+          <v-btn text @click="dialogColl = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     &nbsp;&nbsp;
 
-    <v-dialog v-model="dialog4" width="600">
+    <v-dialog v-model="dialogUrl" width="600" id="topbar-dialog">
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on">
-          <v-icon left>mdi-plus</v-icon>
+        <v-btn v-on="on" id="topbar-btn">
+          <v-icon>mdi-file-link</v-icon>
           Add Url
         </v-btn>
       </template>
@@ -146,18 +81,18 @@
         <v-card-title>Adding Url</v-card-title>
         <v-card-text>
           <v-form>
-            <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
-            <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
-            <v-text-field label="Url list" v-model="listUrl" required type="text"></v-text-field>
+            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
+            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+            <v-text-field label="Url" v-model="listUrl" required type="text"></v-text-field>
           </v-form>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="addUrl(nameDB, nameColl, listUrl); dialog4 = false">
-            Create
+          <v-btn color="primary" text @click="addUrl(nameDB, nameColl, listUrl); dialogUrl = false">
+            Add
           </v-btn>
-          <v-btn color="primary" text @click="dialog4 = false">
+          <v-btn color="primary" text @click="dialogUrl = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -166,30 +101,35 @@
 
     &nbsp;&nbsp;
 
-    <v-dialog v-model="dialog5" width="600">
+    <v-dialog v-model="dialogExp" width="600" id="topbar-dialog">
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on">
-          <v-icon left>mdi-plus</v-icon>
+        <v-btn v-on="on" id="topbar-btn">
+          <v-icon>mdi-database-export</v-icon>
           Export Collection
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>Exporting collection</v-card-title>
+        <v-card-title>
+          Exporting collection
+          <v-btn absolute right depressed plain light @click=" dialogExp=false" style="color: red">
+            <v-icon absolute right>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
         <v-card-text>
           <v-form>
-            <v-text-field label="Database name" v-model="nameDB" required type="text"></v-text-field>
-            <v-text-field label="Collection name" v-model="nameColl" required type="text"></v-text-field>
-            <v-text-field label="Offset" hint="Default is 0" v-model="offset" required type="text"></v-text-field>
-            <v-text-field label="Limit" hint="Default is -1" v-model="limit" required type="text"></v-text-field>
+            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
+            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required type="text">
+            </v-text-field>
           </v-form>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="getCollection(nameDB, offset, limit, nameColl); dialog5 = false">
+          <v-btn color="primary" text @click="exportCollection(nameDB, nameColl, nameFile); dialogExp = false">
             Download
           </v-btn>
-          <v-btn color="primary" text @click="dialog5 = false">
+          <v-btn color="primary" text @click="dialogExp = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -207,25 +147,19 @@ export default {
     return {
       nameDB: '',
       nameColl: '',
+      nameFile: '',
       listUrl: '',
-      limit: '',
-      offset: '',
+      limit: '-1',
+      offset: '0',
+      type: '',
       id: Math.floor(Math.random() * 10),
       connection: null,
       listDatabases: [],
-      dialog: false,
-      dialog1: false,
-      dialog2: false,
-      dialog3: false,
-      dialog4: false,
-      dialog5: false
-    }
-  },
-  mounted () {
-    this.connection = new WebSocket('ws://' + window.location.hostname + ':3000', this.id)
-    this.connection.onopen = () => {
-      this.getListDatabase()
-      this.handleResponse()
+      dialogDb: false,
+      dialogColl: false,
+      dialogUrl: false,
+      dialogExp: false,
+      items: ['Standard', 'Dynamic', 'Virtual']
     }
   },
   methods: {
@@ -345,11 +279,38 @@ export default {
     addUrl (nameDB, nameColl, listUrl) {
       this.connection.send('ADD_URL###' + nameDB + '###' + nameColl + '###' + listUrl)
       this.handleResponse()
+    },
+
+    getCollection (nameDb, nameColl, limit, offset) {
+      this.connection.send('GET_COLLECTION###' + nameDb + '###' + nameColl + '###' + limit + '###' + offset)
+      this.handleResponse()
+    },
+
+    exportCollection (nameDb, nameColl, nameFile) {
+      const coll = this.getCollection(nameDb, nameColl, this.limit, this.offset)
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coll))
+      const downloadAnchorNode = document.createElement('a')
+      downloadAnchorNode.setAttribute('href', dataStr)
+      downloadAnchorNode.setAttribute('download', nameFile + '.json')
+      document.body.appendChild(downloadAnchorNode) // required for firefox
+      downloadAnchorNode.click()
+      downloadAnchorNode.remove()
     }
   }
 }
 
 </script>
 
-<style>
+<style scoped>
+
+.v-btn__content {
+  display: flex;
+  flex-direction: column;
+}
+
+#topbar-btn {
+  background-color: lightgreen;
+  height: 75px;
+  width: fit-content;
+}
 </style>

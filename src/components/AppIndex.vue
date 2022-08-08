@@ -1,10 +1,15 @@
 <template>
   <v-sheet id="body">
-      <v-row style="height: 8vh;">
-        <v-col cols="2" class="upLeft">
-          <h1 style="color: #4D4646; font-size: 2vw;">J-CO-DS WEB</h1>
+      <v-row style="height: 15vh;">
+        <v-col cols="2" id="upLeft">
+          <h1
+          style="color: #4D4646;
+          font-size: 2vw;
+          text-align: center;"
+          >
+          J-CO-DS WEB</h1>
         </v-col>
-        <v-col class="upRight">
+        <v-col id="upRight">
           <ListFunctions/>
         </v-col>
       </v-row>
@@ -12,7 +17,7 @@
         <v-col cols="2" id="bottomLeft">
           <ListDB/>
         </v-col>
-        <v-col class="bottomRight">
+        <v-col id="bottomRight">
           Workspace
         </v-col>
       </v-row>
@@ -24,22 +29,21 @@
   --primary-color: green;
   --on-primary-color: black;
 }
-.upLeft {
+#upLeft {
   background-color: #7FCD91;
+  padding-top: 25px;
 }
-.upRight {
+#upRight {
   background-color: #F5EAEA;
   padding-top: 5px;
-  border: 2px solid black;
 }
-
 #bottomLeft {
   padding: 0px;
   background-color: lightgray;
 }
-.bottomRight {
+#bottomRight {
   background-color: #F5EAEA;
-  border-top: 2px solid black;
+  border-top: solid orange 3px;
 }
 
 </style>
