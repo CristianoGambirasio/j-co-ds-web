@@ -121,7 +121,7 @@ wss.on('connection', function (ws) {
 })
 
 // Communication with JCODS Server functions
-async function reqListDatabase(idws) {
+async function reqListDatabase (idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00010001'))
   // Params:
   const objParam = {}
@@ -150,10 +150,10 @@ async function reqListDatabase(idws) {
   message.set(reqBody, 8 + 4 + 4 + reqParam.length)// Con offset 16 (header) + la lunghezza dei parametri si scrive il body (se c'è)
 
   client.write(message) // send to j-co-ds server the message
-  await getResponse(idws) // 
+  await getResponse(idws) //
 }
 
-async function reqListCollection(nameDB, idws) {
+async function reqListCollection (nameDB, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020001'))
   const objParam = {}
   objParam.database = nameDB
@@ -175,7 +175,7 @@ async function reqListCollection(nameDB, idws) {
   await getResponse(idws)
 }
 
-async function createDatabase(nameDB, idws) {
+async function createDatabase (nameDB, idws) {
   console.log(nameDB)
   const commandCode = new Uint8Array(toBytesCommandCode('00010003'))
   const objParam = {}
@@ -199,7 +199,7 @@ async function createDatabase(nameDB, idws) {
   await getResponse(idws)
 }
 
-async function createCollection(nameDB, nameColl, idws) {
+async function createCollection (nameDB, nameColl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020003'))
   const objParam = {}
   objParam.database = nameDB
@@ -222,7 +222,7 @@ async function createCollection(nameDB, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function createDynamicCollection(nameDB, nameColl, listUrl, idws) {
+async function createDynamicCollection (nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020023'))
   const objParam = {}
   objParam.database = nameDB
@@ -247,7 +247,7 @@ async function createDynamicCollection(nameDB, nameColl, listUrl, idws) {
   await getResponse(idws)
 }
 
-async function createVirtualCollection(nameDB, nameColl, listUrl, idws) {
+async function createVirtualCollection (nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020013'))
   const objParam = {}
   objParam.database = nameDB
@@ -272,7 +272,7 @@ async function createVirtualCollection(nameDB, nameColl, listUrl, idws) {
   await getResponse(idws)
 }
 
-async function addUrl(nameDB, nameColl, listUrl, idws) {
+async function addUrl (nameDB, nameColl, listUrl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00030001'))
   const objParam = {}
   objParam.database = nameDB
@@ -297,7 +297,7 @@ async function addUrl(nameDB, nameColl, listUrl, idws) {
   await getResponse(idws)
 }
 
-async function getCollectionCount(idws, db, collection) {
+async function getCollectionCount (idws, db, collection) {
   const commandCode = new Uint8Array(toBytesCommandCode('0002000b'))
 
   const objParam = {}
@@ -321,7 +321,7 @@ async function getCollectionCount(idws, db, collection) {
   await getResponse(idws)
 }
 
-async function getCollection(nameDb, nameColl, lim, offs, idws) {
+async function getCollection (nameDb, nameColl, lim, offs, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020007'))
   const objParam = {}
   objParam.database = nameDb
@@ -346,7 +346,7 @@ async function getCollection(nameDb, nameColl, lim, offs, idws) {
   await getResponse(idws)
 }
 
-async function deleteDatabase(nameDb, idws) {
+async function deleteDatabase (nameDb, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00010005'))
   const objParam = {}
   objParam.name = nameDb
@@ -368,7 +368,7 @@ async function deleteDatabase(nameDb, idws) {
   await getResponse(idws)
 }
 
-async function ping(idws) {
+async function ping (idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00000001'))
 
   const reqParam = new Uint8Array(0)

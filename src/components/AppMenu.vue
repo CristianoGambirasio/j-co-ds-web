@@ -1,234 +1,5 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 6vh;">
-      <v-col cols="9">
-        <h2 style="color: #7FCD91; font-size: 1vw;">DATABASE LIST:</h2>
-      </v-col>
-    </v-row>
-    <v-row style="height: 12vh;">
-      <v-text-field style="padding: 5px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
-        hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
-      <v-btn height="25px" rounded depressed color=#5B5656 dark @click="getListDatabase()">
-        <v-icon>
-          mdi-refresh
-        </v-icon>
-      </v-btn>
-      <v-dialog v-model="dialogDb" width="600">
-        <template v-slot:activator="{ on }">
-          <v-btn v-on="on" height="25px" rounded depressed color=#5B5656 dark>
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>Creating new database</v-card-title>
-          <v-card-text>
-            <v-form>
-              <v-text-field label="Name" v-model="nameDB" required type="text"></v-text-field>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="createDatabase(nameDB); dialogDb = false">
-              Create
-            </v-btn>
-            <v-btn text @click="dialogDb = false">
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="dialogDelDb" width="600">
-        <template v-slot:activator="{ on }">
-          <v-btn v-on="on" height="25px" rounded depressed color=#5B5656 dark>
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>Deleting database</v-card-title>
-          <v-card-text>
-            <v-form>
-              <v-text-field label="Name" v-model="nameDB" required type="text"></v-text-field>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="deleteDatabase(nameDB); dialogDelDb = false">
-              Delete
-            </v-btn>
-            <v-btn text @click="dialogDelDb = false">
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-row>
-
-    <v-row style="height: 71vh;">
-      <v-col style="padding: 0px">
-        <v-container style="max-height: 70vh; padding: 0px; padding-top: 10px">
-          <v-treeview dark activatable :items="listDatabases" :load-children="getListCollection" :search='search'
-            :filter='filter' item-key="name" open-on-click transition return-object active-class="activeNode"
-            @update:active="showMetadata">
-            <template v-slot:prepend="{item,open}">
-              <v-icon>
-                {{open ? iconOpen[item.type] : icon[item.type]}}
-              </v-icon>
-            </template>
-            <template v-slot:append>
-              <v-menu bottom left :offset-x="offset">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn dark icon v-bind="attrs" v-on="on">
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                </template>
-
-                <v-list>
-                  <v-list-item v-for="(item, i) in listFunctions" :key="i">
-                    <v-dialog v-if="i === 0" v-model="dialogDelDb" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>mdi-close</v-icon>
-                          Delete Database
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Deleting Database</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text @click="deleteDatabase(nameDB); dialogDelDb = false">
-                            Delete
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogDelDb = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-dialog v-if="i === 1" v-model="dialogColl" width="700">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>mdi-note-check</v-icon>
-                          Create Collection
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Creating new collection</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-select label="Type" v-model="type" :items="items"></v-select>
-                            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl"
-                              required type="text">
-                            </v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn v-if="type === 'Standard'" text
-                            @click="createCollection(nameDB, nameColl); dialogColl = false">
-                            Create
-                          </v-btn>
-                          <v-btn v-else-if="type === 'Dynamic'" text
-                            @click="createDynamicCollection(nameDB, nameColl, listUrl); dialogColl = false">
-                            Create
-                          </v-btn>
-                          <v-btn v-else text
-                            @click="createVirtualCollection(nameDB, nameColl, listUrl); dialogColl = false">
-                            Create
-                          </v-btn>
-                          <v-btn text @click="dialogColl = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-dialog v-if="i === 2" v-model="dialogUrl" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>mdi-file-link</v-icon>
-                          Add Url
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Adding Url</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                            <v-text-field label="Url" v-model="listUrl" required type="text"></v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text @click="addUrl(nameDB, nameColl, listUrl); dialogUrl = false">
-                            Add
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogUrl = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-dialog v-if="i === 3" v-model="dialogExp" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>mdi-database-export</v-icon>
-                          Export Collection
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>
-                          Exporting collection
-                          <v-btn absolute right depressed plain light @click=" dialogExp=false" style="color: red">
-                            <v-icon absolute right>mdi-close</v-icon>
-                          </v-btn>
-                        </v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model="nameDB" required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
-                              type="text">
-                            </v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="exportCollection(nameDB, nameColl, nameFile); dialogExp = false">
-                            Download
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogExp = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </template>
-          </v-treeview>
-        </v-container>
-      </v-col>
-    </v-row>
-
     <v-row style="height: 10vh;">
       <v-container id="meta">
         <v-row style="height: 50%;" class="ma-0 pa-0">
@@ -263,11 +34,253 @@
           </v-col>
         </v-row>
         <v-row v-else style="height: 50%;">
-          <v-col cols="6" id="meta3" style="padding: 0px;" class="d-flex align-center">
+          <v-col cols="7" id="meta3" style="padding: 0px;" class="d-flex align-center">
             <h4>{{nDB}} DATABASES</h4>
           </v-col>
         </v-row>
       </v-container>
+    </v-row>
+    <v-row style="height: 7vh; padding-top: 4%;">
+      <v-col cols="9">
+        <h2 class="ml-n2" style="color: #7FCD91; font-size: 1.2vw;">DATABASE LIST:</h2>
+      </v-col>
+    </v-row>
+    <v-row style="height: 12vh;">
+      <v-text-field style="padding: 5px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
+        hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
+          <v-btn class="ml-1" height="25px" rounded depressed color=#5B5656 dark @click="getListDatabase()">
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+      <v-dialog v-model="dialogDb" width="600">
+        <template v-slot:activator="{ on }">
+          <v-btn class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>Creating new database</v-card-title>
+          <v-card-text>
+            <v-form>
+              <v-text-field label="Name" v-model="nameDB" required type="text"></v-text-field>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="createDatabase(nameDB); getListDatabase(); dialogDb = false">
+              Create
+            </v-btn>
+            <v-btn text @click="dialogDb = false">
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDelDb" width="600">
+        <template v-slot:activator="{ on }">
+          <v-btn class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>Deleting database</v-card-title>
+          <v-card-text>
+            <v-form>
+              <v-text-field label="Name" v-model="nameDB" required type="text"></v-text-field>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="deleteDatabase(nameDB); getListDatabase(); dialogDelDb = false">
+              Delete
+            </v-btn>
+            <v-btn text @click="dialogDelDb = false">
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+
+    <v-row style="height: 71vh;">
+      <v-col style="padding: 0px">
+        <v-container style="max-height: 70vh; padding: 0px; padding-top: 10px">
+          <v-treeview dark activatable hoverable :items="listDatabases" :load-children="getListCollection"
+            :search='search' :filter='filter' item-key="name" open-on-click transition return-object
+            active-class="activeNode" @update:active="showMetadata">
+            <template v-slot:prepend="{item,open}">
+              <v-icon>
+                {{open ? iconOpen[item.type] : icon[item.type]}}
+              </v-icon>
+            </template>
+            <template v-slot:append="{item}">
+              <v-menu bottom :offset-x="true">
+                <template v-slot:activator="{ on }">
+                  <v-hover v-slot="{ hover }">
+                    <v-btn dark icon v-on="on">
+                      <v-icon v-if="hover">mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </v-hover>
+                </template>
+
+                <v-list>
+                  <v-list-item>
+                    <v-dialog v-if="item.type === 'database'" v-model="dialogDelDb0" width="250">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>mdi-close</v-icon>
+                          Delete Database
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Are you sure?</v-card-title>
+                        <v-card-actions>
+                          <v-dialog v-model="dialogDelDb1" width="400">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on">Yes</v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Really?!</v-card-title>
+                              <v-card-actions>
+                                <v-btn @click="deleteDatabase(item.name); dialogDelDb0 = false; dialogDelDb1 = false">
+                                  Delete database
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="dialogDelDb0 = false; dialogDelDb1 = false">
+                                  Cancel
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-spacer></v-spacer>
+                          <v-btn v-on="on" @click="dialogDelDb0 = false">
+                            No
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-list-item>
+
+                  <v-list-item>
+                    <v-dialog v-if="item.type === 'database'" v-model="dialogColl" width="700">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>mdi-note-check</v-icon>
+                          Create Collection
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Creating new collection</v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label='Database' v-model=item.name disabled></v-text-field>
+                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+                            <v-select label="Type" v-model="type" :items="items"></v-select>
+                            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl"
+                              required type="text">
+                            </v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn v-if="type === 'Standard'" text
+                            @click="createCollection(item.name, nameColl); getListDatabase(); dialogColl = false">
+                            Create
+                          </v-btn>
+                          <v-btn v-else-if="type === 'Dynamic'" text
+                            @click="createDynamicCollection(item.name, nameColl, listUrl); getListDatabase(); dialogColl = false">
+                            Create
+                          </v-btn>
+                          <v-btn v-else text
+                            @click="createVirtualCollection(nameDB, nameColl, listUrl); getListDatabase(); dialogColl = false">
+                            Create
+                          </v-btn>
+                          <v-btn text @click="dialogColl = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-list-item>
+
+                  <v-list-item>
+                    <v-dialog v-if="item.type === 'dynamic' || item.type === 'virtual'" v-model="dialogUrl" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>mdi-file-link</v-icon>
+                          Add Url
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Adding Url</v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label="Database" v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+                            <v-text-field label="Url" v-model="listUrl" required type="text"></v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" text
+                            @click="addUrl(nameDB, nameColl, listUrl); getListDatabase(); dialogUrl = false">
+                            Add
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogUrl = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-dialog v-model="dialogExp" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>mdi-database-export</v-icon>
+                          Export Collection
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          Exporting collection
+                          <v-btn absolute right depressed plain light @click=" dialogExp=false" style="color: red">
+                            <v-icon absolute right>mdi-close</v-icon>
+                          </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label="Database" v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model="nameColl" disabled type="text"></v-text-field>
+                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
+                              type="text">
+                            </v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" text
+                            @click="exportCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogExp = false">
+                            Download
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogExp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </template>
+          </v-treeview>
+        </v-container>
+      </v-col>
     </v-row>
   </v-sheet>
 </template>
@@ -281,6 +294,9 @@ export default {
     return {
       dialogDb: false,
       dialogDelDb: false,
+      dialogDelDb0: false,
+      dialogDelDb1: false,
+      dialogDelDb2: false,
       dialogColl: false,
       dialogUrl: false,
       dialogExp: false,
@@ -307,10 +323,10 @@ export default {
         virtual: 'mdi-folder-search-outline'
       },
       listFunctions: [
-        { id: 'DDB', text: 'Delete Database', nameDb: '' },
-        { id: 'CCL', text: 'Create Collection', nameColl: '', nameUrl: '' },
-        { id: 'AURL', text: 'Add Url', nameUrl: '' },
-        { id: 'ECL', text: 'Export Collection', nameFile: '' }
+        { text: 'Delete Database', nameDb: '' },
+        { text: 'Create Collection', nameColl: '', nameUrl: '' },
+        { text: 'Add Url', nameUrl: '' },
+        { text: 'Export Collection', nameFile: '' }
       ]
     }
   },
