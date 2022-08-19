@@ -52,10 +52,11 @@
 
     <v-row style="height: 4vh">
       <template>
-        <v-btn fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark @click="getListDatabase()">
+        <v-btn v-if="flag === false" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
+          @click="getListDatabase()">
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
-        <v-dialog v-model="dialogDb" width="600">
+        <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
           <template v-slot:activator="{ on }">
             <v-btn fab small class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
               <v-icon>mdi-plus</v-icon>
@@ -81,7 +82,7 @@
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="dialogDelDb" width="600">
+        <v-dialog v-if="flag === false" v-model="dialogDelDb" width="600">
           <template v-slot:activator="{ on }">
             <v-btn fab small class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
               <v-icon>mdi-close</v-icon>
@@ -106,14 +107,15 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-btn fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark>
+        <v-btn fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark @click="flag = !flag">
           <v-icon>mdi-checkbox-multiple-marked</v-icon>
         </v-btn>
       </template>
     </v-row>
     <v-row style="height: 71vh">
       <v-col style="padding: 0px">
-        <v-container style="max-height: 70vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
+        <v-container v-if="flag === false" style="max-height: 70vh; padding: 0px; padding-top: 3px"
+          class="overflow-y-auto">
           <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="name" open-on-click transition return-object
             active-class="activeNode" @update:active="showMetadata">
@@ -208,6 +210,42 @@
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
+
+                    <!--TO DO----------------------------->
+                    <v-dialog v-if="i === 2" v-model="dialogImp" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          Importing collection
+                          <v-btn absolute right depressed plain light @click=" dialogImp=false" style="color: red">
+                            <v-icon absolute right>mdi-close</v-icon>
+                          </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label="Database" v-model="nameDb" required type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" text
+                            @click="importCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogImp = false">
+                            Upload
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogImp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                    <!---------------------------->
                   </v-list-item>
                 </v-list>
 
@@ -286,43 +324,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <!--TO DO----------------------------->
-                    <v-dialog v-if="i === 2" v-model="dialogImp" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>{{ item.icon }}</v-icon>
-                          {{ item.text }}
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>
-                          Importing collection
-                          <v-btn absolute right depressed plain light @click=" dialogImp=false" style="color: red">
-                            <v-icon absolute right>mdi-close</v-icon>
-                          </v-btn>
-                        </v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model="nameDb" required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="importCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogImp = false">
-                            Upload
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogImp = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                    <!---------------------------->
-
-                    <v-dialog v-if="i === 3" v-model="dialogUrl" width="600">
+                    <v-dialog v-if="i === 2" v-model="dialogUrl" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ item.icon }}</v-icon>
@@ -357,6 +359,26 @@
             </template>
           </c-treeview>
         </v-container>
+        <v-container v-else style="max-height: 70vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
+          <c-treeview dark dense selectable activatable :items="listDatabases" :load-children="getListCollection"
+            :search='search' :filter='filter' item-key="name" open-on-click transition return-object
+            active-class="activeNode">
+          </c-treeview>
+          <v-row>
+            <v-col cols="5">
+              <v-btn small style="background-color: white">
+                <v-icon>mdi-arrow-u-left-top</v-icon>
+                Cancel
+              </v-btn>
+            </v-col>
+            <v-col cols="2" class="ml-4">
+              <v-btn small style="background-color: red">
+                <v-icon>mdi-close</v-icon>
+                Delete
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-col>
     </v-row>
   </v-sheet>
@@ -390,6 +412,7 @@ export default {
       metaBR: null,
       active: false,
       online: false,
+      flag: false,
       type: '',
       nameDb: '',
       nameColl: '',
@@ -422,6 +445,10 @@ export default {
         {
           text: 'Create collection',
           icon: 'mdi-note-check'
+        },
+        {
+          text: 'Import collection',
+          icon: 'mdi-arrow-down-circle'
         }
       ],
       itemsCollection: [
@@ -432,10 +459,6 @@ export default {
         {
           text: 'Export Collection',
           icon: 'mdi-database-export'
-        },
-        {
-          text: 'Import collection',
-          icon: 'mdi-arrow-down-circle'
         },
         {
           text: 'Add url',
