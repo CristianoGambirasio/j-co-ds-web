@@ -110,6 +110,20 @@ wss.on('connection', function (ws) {
       } else if (command == 'DELETE_DATABASE') {
         const dbName = message.split('###')[1]
         deleteDatabase(dbName, idws)
+      } else if (command == 'DELETE_COLLECTION') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        deleteCollection(dbName, collName, idws)
+      } else if (command == 'SAVE_COLLECTION') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        saveCollection(dbName, collName, idws)
+      } else if (command == 'SET_FREQUENCY') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        const index = message.split('###')[3]
+        const freq = message.split('###')[4]
+        setFrequency(dbName, collName, index, freq, idws)
       } else if (command == 'PING') {
         ping(idws)
       }
@@ -368,6 +382,77 @@ async function deleteDatabase (nameDb, idws) {
   await getResponse(idws)
 }
 
+async function deleteCollection (nameDb, nameColl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00020005'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.name = nameColl
+
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function saveCollection (nameDb, nameColl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.collection = nameColl
+
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function setFrequency(nameDb, nameColl, indx, freq, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00040001'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.name = nameColl
+  objParam.index = indx
+  objParam.frequency = freq
+
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
 async function ping (idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00000001'))
 
@@ -459,6 +544,27 @@ async function getResponse (idws) {
       })
     } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 5])) == 0) {
       console.log('DELETE_DATABASE')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
+      console.log('DELETE_COLLECTION')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 9])) == 0) {
+      console.log('SAVE_COLLECTION')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 1])) == 0) {
+      console.log('SET_FREQUENCY')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)

@@ -8,7 +8,7 @@
           J-CO-DS WEB</h1>
       </v-col>
       <v-col id="rightSide" style="height:700px">
-        Workspace
+        <AppWorkspace />
       </v-col>
     </v-row>
     <v-row no-gutter style="height: 92vh;">
@@ -40,10 +40,12 @@
 
 <script>
 import AppMenu from './AppMenu.vue'
+import AppWorkspace from './AppWorkspace.vue'
 
 export default {
   components: {
-    AppMenu
+    AppMenu,
+    AppWorkspace
   }
 }
 </script>

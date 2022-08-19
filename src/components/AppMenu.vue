@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 10vh;">
+    <v-row style="height: 15vh;">
       <v-container id="meta">
         <v-row style="height: 50%;" class="ma-0 pa-0">
           <v-col cols="6" id="meta1" style="padding: 0px;" class="d-flex align-center text-truncate">
@@ -33,8 +33,8 @@
             <h5>{{metaBR}}</h5>
           </v-col>
         </v-row>
-        <v-row v-else style="height: 50%;">
-          <v-col cols="7" id="meta3" style="padding: 0px;" class="d-flex align-center">
+        <v-row v-else style="height: 60%">
+          <v-col cols="6" id="meta3" style="padding: 0px" class="d-flex align-center">
             <h4>{{nDB}} DATABASES</h4>
           </v-col>
         </v-row>
@@ -45,93 +45,98 @@
         <h2 class="ml-n2" style="color: #7FCD91; font-size: 1.2vw;">DATABASE LIST:</h2>
       </v-col>
     </v-row>
-    <v-row style="height: 12vh;">
+    <v-row style="height: 10vh;">
       <v-text-field style="padding: 5px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
         hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
-          <v-btn class="ml-1" height="25px" rounded depressed color=#5B5656 dark @click="getListDatabase()">
-            <v-icon>mdi-refresh</v-icon>
-          </v-btn>
-      <v-dialog v-model="dialogDb" width="600">
-        <template v-slot:activator="{ on }">
-          <v-btn class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>Creating new database</v-card-title>
-          <v-card-text>
-            <v-form>
-              <v-text-field label="Name" v-model="nameDB" required type="text"></v-text-field>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="createDatabase(nameDB); getListDatabase(); dialogDb = false">
-              Create
-            </v-btn>
-            <v-btn text @click="dialogDb = false">
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="dialogDelDb" width="600">
-        <template v-slot:activator="{ on }">
-          <v-btn class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>Deleting database</v-card-title>
-          <v-card-text>
-            <v-form>
-              <v-text-field label="Name" v-model="nameDB" required type="text"></v-text-field>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="deleteDatabase(nameDB); getListDatabase(); dialogDelDb = false">
-              Delete
-            </v-btn>
-            <v-btn text @click="dialogDelDb = false">
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </v-row>
 
-    <v-row style="height: 71vh;">
+    <v-row style="height: 4vh">
+      <template>
+        <v-btn fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark @click="getListDatabase()">
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+        <v-dialog v-model="dialogDb" width="600">
+          <template v-slot:activator="{ on }">
+            <v-btn fab small class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>Creating new database</v-card-title>
+            <v-card-text>
+              <v-form>
+                <v-text-field label="Name" v-model="nameDb" required type="text"></v-text-field>
+              </v-form>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="createDatabase(nameDb); getListDatabase(); dialogDb = false">
+                Create
+              </v-btn>
+              <v-btn text @click="dialogDb = false">
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="dialogDelDb" width="600">
+          <template v-slot:activator="{ on }">
+            <v-btn fab small class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>Deleting database</v-card-title>
+            <v-card-text>
+              <v-form>
+                <v-text-field label="Name" v-model="nameDb" required type="text"></v-text-field>
+              </v-form>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="deleteDatabase(nameDB); getListDatabase(); dialogDelDb = false">
+                Delete
+              </v-btn>
+              <v-btn text @click="dialogDelDb = false">
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-btn fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark>
+          <v-icon>mdi-checkbox-multiple-marked</v-icon>
+        </v-btn>
+      </template>
+    </v-row>
+    <v-row style="height: 71vh">
       <v-col style="padding: 0px">
-        <v-container style="max-height: 70vh; padding: 0px; padding-top: 10px">
-          <v-treeview dark activatable hoverable :items="listDatabases" :load-children="getListCollection"
+        <v-container style="max-height: 70vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
+          <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="name" open-on-click transition return-object
             active-class="activeNode" @update:active="showMetadata">
-            <template v-slot:prepend="{item,open}">
+            <template v-slot:prepend="{item, open}">
               <v-icon>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
               </v-icon>
             </template>
-            <template v-slot:append="{item}">
+            <template v-slot:append="{item, hover}">
               <v-menu bottom :offset-x="true">
                 <template v-slot:activator="{ on }">
-                  <v-hover v-slot="{ hover }">
-                    <v-btn dark icon v-on="on">
-                      <v-icon v-if="hover">mdi-dots-vertical</v-icon>
-                    </v-btn>
-                  </v-hover>
+                  <v-btn dark icon v-on="on">
+                    <v-icon v-if="hover">mdi-dots-vertical</v-icon>
+                  </v-btn>
                 </template>
 
-                <v-list>
-                  <v-list-item>
-                    <v-dialog v-if="item.type === 'database'" v-model="dialogDelDb0" width="250">
+                <v-list v-if="item.type === 'database'">
+                  <v-list-item v-for="(item, i) in itemsDatabase" :key="i">
+                    <v-dialog v-if="i === 0" v-model="dialogDelDb0" width="250">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>mdi-close</v-icon>
-                          Delete Database
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
                         </v-btn>
                       </template>
                       <v-card>
@@ -144,7 +149,8 @@
                             <v-card>
                               <v-card-title>Really?!</v-card-title>
                               <v-card-actions>
-                                <v-btn @click="deleteDatabase(item.name); dialogDelDb0 = false; dialogDelDb1 = false">
+                                <v-btn
+                                  @click="deleteDatabase(item.name); getListDatabase(); dialogDelDb0 = false; dialogDelDb1 = false">
                                   Delete database
                                 </v-btn>
                                 <v-spacer></v-spacer>
@@ -161,23 +167,21 @@
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
-                  </v-list-item>
 
-                  <v-list-item>
-                    <v-dialog v-if="item.type === 'database'" v-model="dialogColl" width="700">
+                    <v-dialog v-if="i === 1" v-model="dialogColl" width="700">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>mdi-note-check</v-icon>
-                          Create Collection
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
                         </v-btn>
                       </template>
                       <v-card>
                         <v-card-title>Creating new collection</v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label='Database' v-model=item.name disabled></v-text-field>
+                            <v-text-field label='Database' v-model="nameDb" type="text"></v-text-field>
                             <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                            <v-select label="Type" v-model="type" :items="items"></v-select>
+                            <v-select label="Type" v-model="type" :items="collTypes"></v-select>
                             <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl"
                               required type="text">
                             </v-text-field>
@@ -186,16 +190,16 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn v-if="type === 'Standard'" text
-                            @click="createCollection(item.name, nameColl); getListDatabase(); dialogColl = false">
+                          <v-btn v-if="type === 'Static'" text
+                            @click="createCollection(nameDb, nameColl); getListDatabase(); dialogColl = false">
                             Create
                           </v-btn>
                           <v-btn v-else-if="type === 'Dynamic'" text
-                            @click="createDynamicCollection(item.name, nameColl, listUrl); getListDatabase(); dialogColl = false">
+                            @click="createDynamicCollection(nameDb, nameColl, listUrl); getListDatabase(); dialogColl = false">
                             Create
                           </v-btn>
                           <v-btn v-else text
-                            @click="createVirtualCollection(nameDB, nameColl, listUrl); getListDatabase(); dialogColl = false">
+                            @click="createVirtualCollection(nameDb, nameColl, listUrl); getListDatabase(); dialogColl = false">
                             Create
                           </v-btn>
                           <v-btn text @click="dialogColl = false">
@@ -205,13 +209,124 @@
                       </v-card>
                     </v-dialog>
                   </v-list-item>
+                </v-list>
 
-                  <v-list-item>
-                    <v-dialog v-if="item.type === 'dynamic' || item.type === 'virtual'" v-model="dialogUrl" width="600">
+                <v-list v-if="item.type === 'static' || item.type === 'dynamic' || item.type === 'virtual'">
+                  <v-list-item v-for="(item, i) in itemsCollection" :key="i">
+                    <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>mdi-file-link</v-icon>
-                          Add Url
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Are you sure?</v-card-title>
+                        <v-card-actions>
+                          <v-dialog v-model="dialogDelColl1" width="400">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on">Yes</v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Really?!</v-card-title>
+                              <v-card-actions>
+                                <v-btn
+                                  @click="deleteCollection(item.parent.name, item.name); getListDatabase(); dialogDelColl0 = false; dialogDelColl1 = false">
+                                  Delete collection
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="dialogDelColl0 = false; dialogDelColl1 = false">
+                                  Cancel
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-spacer></v-spacer>
+                          <v-btn v-on="on" @click="dialogDelColl0 = false">
+                            No
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          Exporting collection
+                          <v-btn absolute right depressed plain light @click=" dialogExp=false" style="color: red">
+                            <v-icon absolute right>mdi-close</v-icon>
+                          </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label="Database" v-model="nameDb" required type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
+                              type="text">
+                            </v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" text
+                            @click="exportCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogExp = false">
+                            Download
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogExp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <!--TO DO----------------------------->
+                    <v-dialog v-if="i === 2" v-model="dialogImp" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          Importing collection
+                          <v-btn absolute right depressed plain light @click=" dialogImp=false" style="color: red">
+                            <v-icon absolute right>mdi-close</v-icon>
+                          </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label="Database" v-model="nameDb" required type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" text
+                            @click="importCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogImp = false">
+                            Upload
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogImp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                    <!---------------------------->
+
+                    <v-dialog v-if="i === 3" v-model="dialogUrl" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ item.icon }}</v-icon>
+                          {{ item.text }}
                         </v-btn>
                       </template>
                       <v-card>
@@ -237,48 +352,10 @@
                       </v-card>
                     </v-dialog>
                   </v-list-item>
-                  <v-list-item>
-                    <v-dialog v-model="dialogExp" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>mdi-database-export</v-icon>
-                          Export Collection
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>
-                          Exporting collection
-                          <v-btn absolute right depressed plain light @click=" dialogExp=false" style="color: red">
-                            <v-icon absolute right>mdi-close</v-icon>
-                          </v-btn>
-                        </v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model=item.name disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" disabled type="text"></v-text-field>
-                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
-                              type="text">
-                            </v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="exportCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogExp = false">
-                            Download
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogExp = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                  </v-list-item>
                 </v-list>
               </v-menu>
             </template>
-          </v-treeview>
+          </c-treeview>
         </v-container>
       </v-col>
     </v-row>
@@ -286,10 +363,14 @@
 </template>
 
 <script>
-
 import * as tool from '../functions/tools'
+import CTreeview from '@/functions/CTreeview.js'
+// import AppWorkspace from './AppWorkspace.vue'
 
 export default {
+  components: {
+    CTreeview
+  },
   data () {
     return {
       dialogDb: false,
@@ -300,11 +381,22 @@ export default {
       dialogColl: false,
       dialogUrl: false,
       dialogExp: false,
+      dialogImp: false,
+      dialogDelColl0: false,
+      dialogDelColl1: false,
+      append: false,
       metaTL: null,
       metaBL: null,
       metaBR: null,
       active: false,
       online: false,
+      type: '',
+      nameDb: '',
+      nameColl: '',
+      nameUrl: '',
+      nameFile: '',
+      index: null,
+      frequency: '',
       searchKeySensitive: true,
       search: null,
       id: Math.floor(Math.random() * 10),
@@ -322,12 +414,41 @@ export default {
         dynamic: 'mdi-folder-sync-outline',
         virtual: 'mdi-folder-search-outline'
       },
-      listFunctions: [
-        { text: 'Delete Database', nameDb: '' },
-        { text: 'Create Collection', nameColl: '', nameUrl: '' },
-        { text: 'Add Url', nameUrl: '' },
-        { text: 'Export Collection', nameFile: '' }
-      ]
+      itemsDatabase: [
+        {
+          text: 'Delete database',
+          icon: 'mdi-close'
+        },
+        {
+          text: 'Create collection',
+          icon: 'mdi-note-check'
+        }
+      ],
+      itemsCollection: [
+        {
+          text: 'Delete collection',
+          icon: 'mdi-close'
+        },
+        {
+          text: 'Export Collection',
+          icon: 'mdi-database-export'
+        },
+        {
+          text: 'Import collection',
+          icon: 'mdi-arrow-down-circle'
+        },
+        {
+          text: 'Add url',
+          icon: 'mdi-file-link'
+        }
+      ],
+      itemsUrl: [
+        {
+          text: '',
+          icon: ''
+        }
+      ],
+      collTypes: ['Static', 'Dynamic', 'Virtual']
     }
   },
   computed: {
@@ -481,6 +602,26 @@ export default {
             }
           })
         }
+        // Delete Collection
+        if (tool.arrayEquals(command, [0, 2, 0, 5])) {
+          const colls = JSON.parse(text)
+          this.listDatabases.forEach(database => {
+            if (database.name === colls.database) {
+              const collection = colls.replace('\n', '') // la risposta del server contiene degli \n che vengono rimossi
+              const collectionJSON = {}
+              collectionJSON.name = collection.split(' ')[0]
+              database.children.pull(collectionJSON)
+            }
+          })
+        }
+        /* Save Collection
+        if (tool.arrayEquals(command, [0, 2, 0, 9])) {
+        }
+        */
+        /* Set Frequency
+        if (tool.arrayEquals(command, [0, 4, 0, 1])) {
+        }
+        */
         if (tool.arrayEquals(command, [0, 0, 0, 2])) {
           if (text === '') {
             this.online = true
@@ -547,28 +688,28 @@ export default {
         // Gestione database | Stile select
       }
     },
-    createDatabase (nameDB) {
-      this.connection.send('CREATE_DATABASE###' + nameDB)
+    createDatabase (nameDb) {
+      this.connection.send('CREATE_DATABASE###' + nameDb)
       this.handleResponse()
     },
 
-    createCollection (nameDB, nameColl) {
-      this.connection.send('CREATE_COLLECTION###' + nameDB + '###' + nameColl)
+    createCollection (nameDb, nameColl) {
+      this.connection.send('CREATE_COLLECTION###' + nameDb + '###' + nameColl)
       this.handleResponse()
     },
 
-    createDynamicCollection (nameDB, nameColl, listUrl) {
-      this.connection.send('CREATE_DYNAMIC_COLLECTION###' + nameDB + '###' + nameColl + '###' + listUrl)
+    createDynamicCollection (nameDb, nameColl, listUrl) {
+      this.connection.send('CREATE_DYNAMIC_COLLECTION###' + nameDb + '###' + nameColl + '###' + listUrl)
       this.handleResponse()
     },
 
-    createVirtualCollection (nameDB, nameColl, listUrl) {
-      this.connection.send('CREATE_VIRTUAL_COLLECTION###' + nameDB + '###' + nameColl + '###' + listUrl)
+    createVirtualCollection (nameDb, nameColl, listUrl) {
+      this.connection.send('CREATE_VIRTUAL_COLLECTION###' + nameDb + '###' + nameColl + '###' + listUrl)
       this.handleResponse()
     },
 
-    addUrl (nameDB, nameColl, listUrl) {
-      this.connection.send('ADD_URL###' + nameDB + '###' + nameColl + '###' + listUrl)
+    addUrl (nameDb, nameColl, listUrl) {
+      this.connection.send('ADD_URL###' + nameDb + '###' + nameColl + '###' + listUrl)
       this.handleResponse()
     },
 
@@ -577,9 +718,14 @@ export default {
       return this.handleResponse()
     },
 
+    saveCollection (nameDb, nameColl) {
+      this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + this.append)
+      this.handleResponse()
+    },
+
     exportCollection (nameDb, nameColl, nameFile) {
       const coll = this.getCollection(nameDb, nameColl, this.limit, this.offset)
-      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coll))
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coll[2].documents))
       const downloadAnchorNode = document.createElement('a')
       downloadAnchorNode.setAttribute('href', dataStr)
       downloadAnchorNode.setAttribute('download', nameFile + '.json')
@@ -588,8 +734,21 @@ export default {
       downloadAnchorNode.remove()
     },
 
+    importCollection (nameDb, nameColl, nameFile) {
+    },
+
+    setFrequency (nameDb, nameColl, index, frequency) {
+      this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
+      this.handleResponse()
+    },
+
     deleteDatabase (nameDb) {
       this.connection.send('DELETE_DATABASE###' + nameDb)
+      this.handleResponse()
+    },
+
+    deleteCollection (nameDb, nameColl) {
+      this.connection.send('DELETE_COLLECTION###' + nameDb + '###' + nameColl)
       this.handleResponse()
     },
     ping () {
@@ -614,7 +773,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 /*
 * {
@@ -630,6 +789,7 @@ h5{
   color: white;
   padding: 8px;
 }
+
 #meta{
   padding: 0px;
   background-color: #5B5656
