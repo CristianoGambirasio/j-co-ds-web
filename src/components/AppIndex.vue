@@ -1,19 +1,19 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 12vh;">
-      <v-col cols="2" id="upLeft">
-        <h1 style="color: #4D4646;
+    <v-row style="height: 100vh">
+      <v-col cols="2" id="left" style="padding: 0;">
+        <v-row id="title" style="height: 10vh;">
+          <h1 style="color: #4D4646;
           font-size: 2vw;
           text-align: center;">
           J-CO-DS WEB</h1>
+        </v-row>
+        <v-row id="appMenu" style="height: 90vh;">
+          <AppMenu />
+        </v-row>
       </v-col>
-      <v-col id="rightSide" style="height:700px">
+      <v-col id="workspace" style="padding: 0;">
         <AppWorkspace />
-      </v-col>
-    </v-row>
-    <v-row no-gutter style="height: 92vh;">
-      <v-col cols="2" id="bottomLeft">
-        <AppMenu />
       </v-col>
     </v-row>
   </v-sheet>
@@ -25,15 +25,15 @@
   --primary-color: green;
   --on-primary-color: black;
 }
-#upLeft {
+#title {
   background-color: #7FCD91;
   padding-top: 25px;
 }
-#bottomLeft {
+#appMenu {
   padding: 0px;
-  background-color: lightgray;
+  background-color: #4D4646;
 }
-#rightSide {
+#workspace {
   background-color: #F5EAEA;
 }
 </style>

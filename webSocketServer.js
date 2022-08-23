@@ -428,7 +428,7 @@ async function saveCollection (nameDb, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function setFrequency(nameDb, nameColl, indx, freq, idws) {
+async function setFrequency (nameDb, nameColl, indx, freq, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00040001'))
   const objParam = {}
   objParam.database = nameDb
@@ -528,7 +528,7 @@ async function getResponse (idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 7])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 8])) == 0) {
       console.log('GET_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {

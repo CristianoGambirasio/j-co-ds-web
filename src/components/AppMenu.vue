@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 15vh;">
+    <v-row style="height: 8vh;">
       <v-container id="meta">
         <v-row style="height: 50%;" class="ma-0 pa-0">
           <v-col cols="6" id="meta1" style="padding: 0px;" class="d-flex align-center text-truncate">
@@ -33,7 +33,7 @@
             <h5>{{metaBR}}</h5>
           </v-col>
         </v-row>
-        <v-row v-else style="height: 60%">
+        <v-row v-else style="height: 50%">
           <v-col cols="6" id="meta3" style="padding: 0px" class="d-flex align-center">
             <h4>{{nDB}} DATABASES</h4>
           </v-col>
@@ -112,13 +112,13 @@
         </v-btn>
       </template>
     </v-row>
-    <v-row style="height: 71vh">
+    <v-row style="height: 61vh">
       <v-col style="padding: 0px">
-        <v-container v-if="flag === false" style="max-height: 70vh; padding: 0px; padding-top: 3px"
+        <v-container v-if="flag === false" style="max-height: 61vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
           <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="name" open-on-click transition return-object
-            active-class="activeNode" @update:active="showMetadata">
+            active-class="activeNode" @update:active="handleActive">
             <template v-slot:prepend="{item, open}">
               <v-icon>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
@@ -359,7 +359,7 @@
             </template>
           </c-treeview>
         </v-container>
-        <v-container v-else style="max-height: 70vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
+        <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
           <c-treeview dark dense selectable activatable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="name" open-on-click transition return-object
             active-class="activeNode">
@@ -395,6 +395,7 @@ export default {
   },
   data () {
     return {
+      activeItem: null,
       dialogDb: false,
       dialogDelDb: false,
       dialogDelDb0: false,
@@ -425,6 +426,8 @@ export default {
       id: Math.floor(Math.random() * 10),
       connection: null,
       listDatabases: [],
+      listUrl: [],
+      on: null,
       icon: {
         database: 'mdi-database',
         static: 'mdi-folder',
@@ -603,16 +606,11 @@ export default {
           })
         }
         // Get Collection
-        if (tool.arrayEquals(command, [0, 2, 0, 7])) {
-          const colls = JSON.parse(text)
-          this.listDatabases.forEach(database => {
-            if (database.name === colls.database) {
-              const collection = colls.replace('\n', '')
-              const collectionJSON = {}
-              collectionJSON.name = collection.split(' ')[0]
-              collectionJSON.type = collection.split(' ')[1]
-            }
-          })
+        if (tool.arrayEquals(command, [0, 2, 0, 8])) {
+          console.log(text)
+          const res = JSON.parse(text)
+          console.log(res)
+          finished(res)
         }
         // Delete Database
         if (tool.arrayEquals(command, [0, 1, 0, 5])) {
@@ -652,9 +650,10 @@ export default {
             this.online = false
           }
         }
+        // Get collection count
         if (tool.arrayEquals(command, [0, 2, 0, 12])) {
-          console.log('recived')
           const res = JSON.parse(text)
+          console.log(res)
           finished(res.count)
         }
       }
@@ -681,13 +680,17 @@ export default {
       })
       return countCollection
     },
+    handleActive (value) {
+      this.activeItem = value
+      // this.showMetadata(value)
+      this.buildWorkspace(value)
+    },
     async showMetadata (value) {
       if (value.length === 0) {
         this.active = false
       } else {
         this.active = true
       }
-      console.log(value)
       let countCollection
       if (value.length > 0 && (value[0].type === 'static' || 'virtual' || 'dynamic')) {
         countCollection = await this.getCollectionCount(value[0].db, value[0].name)
@@ -710,6 +713,9 @@ export default {
         this.metaBR = 'Documents: ' + countCollection
         // Gestione database | Stile select
       }
+    },
+    buildWorkspace (value) {
+      // const doc = this.getCollection(value[0].db, value[0].name, 5, 0)
     },
     createDatabase (nameDb) {
       this.connection.send('CREATE_DATABASE###' + nameDb)
@@ -736,9 +742,16 @@ export default {
       this.handleResponse()
     },
 
-    getCollection (nameDb, nameColl, limit, offset) {
-      this.connection.send('GET_COLLECTION###' + nameDb + '###' + nameColl + '###' + limit + '###' + offset)
-      return this.handleResponse()
+    async getCollection (nameDb, nameColl, limit, offset) {
+      let documents
+      await new Promise(resolve => {
+        this.connection.send('GET_COLLECTION###' + nameDb + '###' + nameColl + '###' + limit + '###' + offset)
+        const finish = resolve
+        this.handleResponse(finish)
+      }).then((value) => {
+        documents = value
+      })
+      return documents
     },
 
     saveCollection (nameDb, nameColl) {
@@ -775,7 +788,7 @@ export default {
       this.handleResponse()
     },
     ping () {
-      /* let errMessageSent = false
+      let errMessageSent = false
       this.connection.send('PING')
       setInterval(() => {
         if (this.connection === null || this.connection.readyState === 2 || this.connection.readyState === 3) {
@@ -790,7 +803,7 @@ export default {
           this.connection.send('PING')
         }
       }
-      , 1000) */
+      , 1000)
     }
   }
 }
@@ -820,6 +833,7 @@ h5{
 
 #body{
   background-color: #4D4646;
+  width: 15vw;
 }
 
 .v-treeview-node__root{
