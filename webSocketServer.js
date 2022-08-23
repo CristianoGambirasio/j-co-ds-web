@@ -428,12 +428,12 @@ async function saveCollection (nameDb, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function setFrequency(nameDb, nameColl, indx, freq, idws) {
+async function setFrequency (nameDb, nameColl, indx, freq, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00040001'))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
-  objParam.index = indx
+  objParam.index = parseInt(indx)
   objParam.frequency = freq
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
