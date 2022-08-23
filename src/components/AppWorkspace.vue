@@ -5,7 +5,6 @@
         <json-viewer :value="doc" theme="json-virwer-theme"></json-viewer>
       </v-container>
     </v-container>
-    <v-btn @click="buildWorkspace">carica</v-btn>
   </v-sheet>
 </template>
 
