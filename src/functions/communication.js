@@ -1,4 +1,5 @@
 import * as tool from './tools'
+// import WS from '../functions/connection.js'
 
 export function getListDatabase () {
   this.listDatabases = []

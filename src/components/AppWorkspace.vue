@@ -1,9 +1,10 @@
 <template>
   <v-sheet id="body">
     <v-container class="overflow-y-auto" style="max-height: 100vh; padding: 0;">
-      <v-container v-for="doc in es5Doc" :key="doc" id="cards" class="overflow-y-auto" style="max-height: 100vh;">
+      <v-container v-for="doc in es5Doc" :key="doc.id" id="cards" class="overflow-y-auto" style="max-height: 100vh;">
         <json-viewer :value="doc" theme="json-virwer-theme"></json-viewer>
       </v-container>
+      <v-btn @click="loadValues">test</v-btn>
     </v-container>
   </v-sheet>
 </template>
@@ -32,16 +33,8 @@ export default {
     buildWorkspace () {
       this.documentsLoaded = this.getCollection(this.dbSelected, this.collSelected, 5, 0)
     },
-    async getCollection (nameDb, nameColl, limit, offset) {
-      let documents
-      await new Promise(resolve => {
-        this.connection.send('GET_COLLECTION###' + nameDb + '###' + nameColl + '###' + limit + '###' + offset)
-        const finish = resolve
-        this.handleResponse(finish)
-      }).then((value) => {
-        documents = value
-      })
-      return documents
+    loadValues () {
+      this.es5Doc = []
     }
 
   }

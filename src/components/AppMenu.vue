@@ -16,7 +16,7 @@
               </v-btn>
             </v-container>
             <v-container v-else style="padding: 7px;" fill-height>
-              <v-btn depressed block style="background-color: red; padding: 0px;" @click="connect()">
+              <v-btn depressed block style="background-color: red; padding: 0px;" @click="reconnect()">
                 OFFLINE
                 <v-icon>
                   mdi-access-point-remove
@@ -655,6 +655,7 @@
 <script>
 import * as com from '../functions/communication'
 import CTreeview from '@/functions/CTreeview.js'
+import { connect, returnWS } from '../functions/connection.js'
 // import AppWorkspace from './AppWorkspace.vue'
 
 export default {
@@ -767,9 +768,28 @@ export default {
     }
   },
   mounted () {
-    this.connect()
+    this.connection = returnWS()
+    this.connection.onopen = () => {
+      console.log('Connecting...')
+      this.ping()
+      this.getListDatabase()
+      this.handleResponse()
+    }
   },
   methods: {
+    reconnect () {
+      connect()
+      this.connection = returnWS()
+      this.connection.onopen = () => {
+        this.connection = returnWS()
+        console.log('Connecting...')
+        this.ping()
+        this.getListDatabase()
+        this.handleResponse()
+      }
+    },
+
+    // Import communication function
     handleResponse: com.handleResponse,
     getListDatabase: com.getListDatabase,
     getListCollection: com.getListCollection,
@@ -788,18 +808,10 @@ export default {
     deleteCollection: com.deleteCollection,
     deleteMoreCollections: com.deleteMoreCollections,
     ping: com.ping,
-    connect () {
-      this.connection = new WebSocket('ws://' + window.location.hostname + ':3000', this.id)
-      this.connection.onopen = () => {
-        console.log('Connecting...')
-        this.ping()
-        this.getListDatabase()
-        this.handleResponse()
-      }
-    },
+
     handleActive (value) {
       this.activeItem = value
-      // this.showMetadata(value)
+      this.showMetadata(value)
       this.buildWorkspace(value)
     },
     async showMetadata (value) {

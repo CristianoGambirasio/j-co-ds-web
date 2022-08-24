@@ -39,6 +39,7 @@
 </style>
 
 <script>
+import { connect } from '../functions/connection.js'
 import AppMenu from './AppMenu.vue'
 import AppWorkspace from './AppWorkspace.vue'
 
@@ -46,6 +47,9 @@ export default {
   components: {
     AppMenu,
     AppWorkspace
+  },
+  mounted () {
+    connect()
   }
 }
 </script>
