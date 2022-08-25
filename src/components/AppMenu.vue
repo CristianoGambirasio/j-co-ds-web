@@ -768,6 +768,7 @@ export default {
     }
   },
   mounted () {
+    connect()
     this.connection = returnWS()
     this.connection.onopen = () => {
       console.log('Connecting...')
@@ -809,9 +810,9 @@ export default {
     deleteMoreCollections: com.deleteMoreCollections,
     ping: com.ping,
 
-    handleActive (value) {
+    async handleActive (value) {
       this.activeItem = value
-      this.showMetadata(value)
+      // this.showMetadata(value)
       this.buildWorkspace(value)
     },
     async showMetadata (value) {
@@ -842,10 +843,15 @@ export default {
         this.metaBL = 'NAME: ' + value[0].name
         this.metaBR = 'Documents: ' + countCollection
         // Gestione database | Stile select
+        // Prova
       }
     },
-    buildWorkspace (value) {
-      // const doc = this.getCollection(value[0].db, value[0].name, 5, 0)
+    async buildWorkspace (value) {
+      if (!value[0]) {
+        this.$root.$refs.Workspace.updateParam(null, null)
+      } else {
+        this.$root.$refs.Workspace.updateParam(value[0].db, value[0].name)
+      }
     }
   }
 }
