@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 18vh;">
+    <v-row style="height: 8vh;">
       <v-container id="meta">
         <v-row style="height: 50%;" class="ma-0 pa-0">
           <v-col cols="6" id="meta1" style="padding: 0px;" class="d-flex align-center text-truncate">
@@ -91,9 +91,9 @@
         </v-btn>
       </template>
     </v-row>
-    <v-row style="height: 51vh">
+    <v-row style="height: 61vh">
       <v-col style="padding: 0px">
-        <v-container v-if="flag === false" style="max-height: 51vh; padding: 0px; padding-top: 3px"
+        <v-container v-if="flag === false" style="max-height: 61vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
           <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="name" open-on-click transition return-object
@@ -577,7 +577,7 @@
             </template>
           </c-treeview>
         </v-container>
-        <v-container v-else style="max-height: 51vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
+        <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
           <v-treeview dark dense selectable activatable v-model="colls" :items="listDatabases"
             :load-children="getListCollection" :search='search' :filter='filter' item-key="name" open-on-click
             transition return-object active-class="activeNode">
@@ -881,7 +881,7 @@ h5{
 
 #body{
   background-color: #4D4646;
-  width: 15vw;
+  width: 100%;
 }
 
 .v-treeview-node__root{

@@ -1,11 +1,19 @@
 <template>
   <v-sheet id="body">
-    <v-container class="overflow-y-auto" style="max-height: 100vh; padding: 0;">
-      <v-container v-for="doc in documentsLoaded" :key="doc.id" id="cards" class="overflow-y-auto" >
+    <v-row style="height: 10vh;">
+      <v-container fluid id="metadata">
+        Prova Metadata
+      </v-container>
+    </v-row>
+    <v-row style="height: 84vh;">
+      <v-container fluid class="overflow-y-auto" style="max-height: 84vh; padding: 0;">
+      <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards" class="overflow-y-auto" >
         <json-viewer :value="doc" boxed theme="json-viewer-theme"></json-viewer>
       </v-container>
     </v-container>
-      <v-container class="text-center" id="footer">
+    </v-row>
+    <v-row style="height: 6vh;">
+      <v-container fluid class="text-center" id="footer">
       <v-pagination
         v-model="page"
         :length="5"
@@ -13,6 +21,7 @@
         @input="buildWorkspace"
     > </v-pagination>
     </v-container>
+    </v-row>
   </v-sheet>
 </template>
 
@@ -47,6 +56,7 @@ export default {
     handleResponse: com.handleResponse,
 
     updateParam (db, coll) {
+      this.page = 1
       if (db !== null && coll !== null) {
         this.dbSelected = db
         this.collSelected = coll
@@ -71,24 +81,33 @@ export default {
 /* * {
   outline: 1px solid lime;
 } */
+#metadata{
+  background-color: #4D4646;
+}
 #footer{
-  position: absolute;
-  align-self: center;
-  bottom: 0;
-  align-items: center;
-  padding: 0;
   background-color: #F5EAEA;
+  padding: 0;
 }
 #body{
   background-color: #F5EAEA;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
 }
 #cards{
-  padding: 5px;
   padding-bottom: 0;
   width: 100%;
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5EAEA
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7FCD91
 }
 </style>
 <style lang="scss">
