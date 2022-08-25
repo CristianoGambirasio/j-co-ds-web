@@ -18,8 +18,8 @@ export async function getCollectionCount (db, collection) {
   let countCollection
   await new Promise(resolve => {
     this.connection.send('GET_COLLECTION_COUNT###' + db + '###' + collection)
-    const finish = resolve
-    this.handleResponse(finish)
+    const finishCount = resolve
+    this.handleResponse(finishCount)
   }).then((value) => {
     countCollection = value
   })
@@ -60,6 +60,7 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
   }).then((value) => {
     documents = value
   })
+  console.log(documents)
   return documents
 };
 
@@ -68,9 +69,11 @@ export function saveCollection (nameDb, nameColl) {
   this.handleResponse()
 };
 
-export function exportCollection (nameDb, nameColl, nameFile) {
-  const coll = this.getCollection(nameDb, nameColl, this.limit, this.offset)
-  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(coll)
+export async function exportCollection (nameDb, nameColl, nameFile) {
+  const coll = await this.getCollection(nameDb, nameColl, this.limit, this.offset)
+  console.log(coll.documents[0])
+  const data = coll.documents
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data))
   const downloadAnchorNode = document.createElement('a')
   downloadAnchorNode.setAttribute('href', dataStr)
   downloadAnchorNode.setAttribute('download', nameFile + '.json')
@@ -227,7 +230,6 @@ export function handleResponse (finished) {
     }
     // Get Collection
     if (tool.arrayEquals(command, [0, 2, 0, 8])) {
-      console.log(text)
       const res = JSON.parse(text)
       console.log(res)
       finished(res)

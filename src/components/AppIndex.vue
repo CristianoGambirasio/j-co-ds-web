@@ -12,7 +12,7 @@
           <AppMenu />
         </v-row>
       </v-col>
-      <v-col id="workspace" style="padding: 0;">
+      <v-col cols="10" id="workspace" style="padding: 0;">
         <AppWorkspace />
       </v-col>
     </v-row>
