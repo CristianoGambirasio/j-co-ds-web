@@ -160,7 +160,7 @@
                         <v-card-title>Creating new collection</v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label='Database' v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label='Database' v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
                             <v-select label="Type" v-model="type" :items="collTypes"></v-select>
                             <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl"
@@ -190,7 +190,6 @@
                       </v-card>
                     </v-dialog>
 
-                    <!--TO DO------------------
                     <v-dialog v-if="i === 2" v-model="dialogImp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
@@ -205,17 +204,11 @@
                             <v-icon absolute right>mdi-close</v-icon>
                           </v-btn>
                         </v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model="nameDb" required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                          </v-form>
-                        </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" text
-                            @click="importCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogImp = false">
+                            @click="importCollection(item.name); getListDatabase(); dialogImp = false">
                             Upload
                           </v-btn>
                           <v-btn color="primary" text @click="dialogImp = false">
@@ -224,7 +217,6 @@
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
-                    -------------------------->
                   </v-list-item>
                 </v-list>
 
@@ -282,8 +274,8 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
                               type="text">
                             </v-text-field>
@@ -359,8 +351,8 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
                               type="text">
                             </v-text-field>
@@ -441,8 +433,8 @@
                         <v-card-title>Set frequency</v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="Frequency" v-model="frequency" required type="text"></v-text-field>
                           </v-form>
                         </v-card-text>
@@ -516,8 +508,8 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
                               type="text">
                             </v-text-field>
@@ -553,8 +545,8 @@
                         <v-card-title>Adding Url</v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="Url" v-model="listUrl" required type="text"></v-text-field>
                           </v-form>
                         </v-card-text>
@@ -680,7 +672,6 @@ export default {
       dialogImp: false,
       dialogDelColl0: false,
       dialogDelColl1: false,
-      append: false,
       metaTL: null,
       metaDL: null, // frquency info
       metaBL: null,
@@ -695,6 +686,7 @@ export default {
       nameFile: '',
       limit: -1,
       offset: 0,
+      append: false,
       index: '',
       frequency: '',
       searchKeySensitive: true,
@@ -768,6 +760,7 @@ export default {
     }
   },
   mounted () {
+    connect()
     this.connection = returnWS()
     this.connection.onopen = () => {
       console.log('Connecting...')
@@ -845,7 +838,7 @@ export default {
       }
     },
     buildWorkspace (value) {
-      // const doc = this.getCollection(value[0].db, value[0].name, 5, 0)
+      this.getCollection(value[0].db, value[0].name, 5, 0)
     }
   }
 }
