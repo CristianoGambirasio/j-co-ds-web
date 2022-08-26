@@ -4,6 +4,7 @@ import * as tool from './tools'
 export function getListDatabase () {
   this.listDatabases = []
   this.connection.send('LIST_DATABASE')
+  this.handleResponse()
 };
 
 export async function getListCollection (item) {
@@ -65,7 +66,6 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
   }).then((value) => {
     documents = value
   })
-  console.log(documents)
   return documents
 };
 
@@ -131,7 +131,7 @@ export function deleteMoreCollections (colls) {
   }
 };
 
-export function ping () { /*
+export function ping () {
   let errMessageSent = false
   this.connection.send('PING')
   setInterval(() => {
@@ -147,7 +147,7 @@ export function ping () { /*
       this.connection.send('PING')
     }
   }
-  , 1000) */
+  , 1000)
 };
 
 export function handleResponse (finished) {
@@ -156,12 +156,17 @@ export function handleResponse (finished) {
     let data = new Uint8Array(dataBuffer)
     const command = data.slice(0, 4)
     data = data.slice(12)
-    const text = String.fromCharCode(...data)
+    let text = ''
+    for (let i = 0; i < data.length; i++) {
+      text += String.fromCharCode(data[i])
+    }
+    // const text = String.fromCharCode(...data)
     if (!tool.arrayEquals(command, [0, 0, 0, 2])) {
       console.log('Command ' + command + ' recived')
     }
     // List Databases
     if (tool.arrayEquals(command, [0, 1, 0, 2])) {
+      this.listDatabases = []
       const db = JSON.parse(text)
       db.databases.forEach(database => {
         const databaseJSON = {}
@@ -259,7 +264,6 @@ export function handleResponse (finished) {
     // Get Collection
     if (tool.arrayEquals(command, [0, 2, 0, 8])) {
       const res = JSON.parse(text)
-      console.log(res)
       finished(res)
     }
     // Save Collection

@@ -28,15 +28,16 @@ function onError () {
   }, 10000)
 }
 
-/*
-client.on('connect', function(){
-  client.write(Buffer.from([0, 0, 0, 0, 0, 2, 0, 9, 0, 0, 0, 52, 0, 0, 1, 87, 123, 34, 100, 97, 116, 97, 98, 97, 115, 101, 34, 58, 34, 112, 114, 111, 118, 97, 34, 44, 34, 99, 111, 108, 108, 101, 99, 116, 105, 111, 110, 34, 58, 34, 103, 34, 44, 34, 97, 112, 112, 101, 110, 100, 34, 58, 102, 97, 108, 115, 101, 125, 123, 34, 100, 111, 99, 117, 109, 101, 110, 116, 115, 34, 58, 91, 123, 34, 116, 121, 112, 101, 34, 58, 49, 44, 34, 117, 114, 108, 34, 58, 34, 97, 112, 105, 46, 103, 101, 111, 110, 97, 109, 101, 115, 46, 111, 114, 103, 47, 102, 105, 110, 100, 78, 101, 97, 114, 98, 121, 80, 108, 97, 99, 101, 78, 97, 109, 101, 74, 83, 79, 78, 63, 102, 111, 114, 109, 97, 116, 116, 101, 100, 61, 116, 114, 117, 101, 38, 108, 97, 116, 61, 52, 53, 46, 52, 38, 108, 110, 103, 61, 57, 46, 53, 38, 117, 115, 101, 114, 110, 97, 109, 101, 61, 112, 97, 111, 108, 111, 102, 111, 115, 99, 105, 38, 115, 116, 121, 108, 101, 61, 102, 117, 108, 108, 34, 125, 44, 123, 34, 116, 121, 112, 101, 34, 58, 50, 44, 34, 117, 114, 108, 34, 58, 34, 104, 116, 116, 112, 58, 47, 47, 97, 112, 105, 46, 103, 101, 111, 110, 97, 109, 101, 115, 46, 111, 114, 103, 47, 101, 97, 114, 116, 104, 113, 117, 97, 107, 101, 115, 74, 83, 79, 78, 63, 102, 111, 114, 109, 97, 116, 116, 101, 100, 61, 116, 114, 117, 101, 38, 110, 111, 114, 116, 104, 61, 52, 52, 46, 49, 38, 115, 111, 117, 116, 104, 61, 45, 57, 46, 57, 38, 101, 97, 115, 116, 61, 45, 50, 50, 46, 52, 38, 119, 101, 115, 116, 61, 53, 53, 46, 50, 38, 117, 115, 101, 114, 110, 97, 109, 101, 61, 112, 97, 111, 108, 111, 102, 111, 115, 99, 105, 38, 115, 116, 121, 108, 101, 61, 102, 117, 108, 108, 34, 125, 44, 123, 34, 114, 101, 115, 34, 58, 34, 47, 110, 102, 55, 56, 45, 110, 106, 54, 98, 46, 106, 115, 111, 110, 63, 34, 44, 34, 116, 121, 112, 101, 34, 58, 51, 44, 34, 112, 97, 114, 97, 109, 115, 34, 58, 34, 36, 108, 105, 109, 105, 116, 61, 49, 48, 34, 125, 93, 125]))
+
+/* client.on('connect', function(){
+  client.write(Buffer.from([0, 0, 0, 0, 0, 2, 0, 9, 0, 0, 0, 58, 0, 0, 3, 99, 123, 34, 100, 97, 116, 97, 98, 97, 115, 101, 34, 58, 34, 103, 101, 111, 83, 97, 109, 112, 108, 101, 115, 34, 44, 34, 99, 111, 108, 108, 101, 99, 116, 105, 111, 110, 34, 58, 34, 116, 103, 34, 44, 34, 97, 112, 112, 101, 110, 100, 34, 58, 102, 97, 108, 115, 101, 125, 123, 34, 100, 111, 99, 117, 109, 101, 110, 116, 115, 34, 58, 91, 123, 34, 115, 116, 114, 111, 110, 103, 34, 58, 34, 77, 105, 108, 97, 110, 111, 32, 118, 46, 82, 111, 115, 101, 108, 108, 105, 110, 105, 34, 44, 34, 98, 111, 111, 108, 34, 58, 116, 114, 117, 101, 44, 34, 126, 102, 117, 122, 122, 121, 115, 101, 116, 115, 34, 58, 123, 34, 112, 108, 117, 116, 111, 34, 58, 48, 46, 51, 50, 54, 44, 34, 112, 105, 112, 112, 111, 34, 58, 48, 46, 57, 52, 49, 125, 44, 34, 97, 114, 114, 97, 121, 34, 58, 91, 49, 44, 50, 44, 123, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 93, 44, 34, 100, 97, 116, 101, 52, 34, 58, 34, 50, 48, 50, 48, 45, 49, 48, 45, 49, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 46, 49, 50, 51, 34, 44, 34, 100, 111, 99, 34, 58, 123, 34, 97, 98, 99, 34, 58, 49, 44, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 44, 34, 100, 97, 116, 101, 51, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 34, 44, 34, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 50, 46, 52, 51, 44, 53, 46, 49, 50, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 44, 34, 100, 97, 116, 101, 50, 34, 58, 34, 50, 48, 50, 49, 45, 48, 53, 45, 49, 54, 84, 49, 50, 58, 51, 50, 34, 44, 34, 100, 97, 116, 101, 49, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 34, 44, 34, 102, 108, 111, 97, 116, 34, 58, 52, 53, 46, 52, 57, 48, 48, 55, 50, 56, 55, 56, 53, 49, 52, 53, 44, 34, 105, 110, 116, 34, 58, 49, 50, 52, 125, 44, 123, 34, 115, 116, 114, 111, 110, 103, 34, 58, 34, 77, 105, 108, 97, 110, 111, 32, 118, 46, 82, 111, 115, 101, 108, 108, 105, 110, 105, 34, 44, 34, 98, 111, 111, 108, 34, 58, 116, 114, 117, 101, 44, 34, 126, 102, 117, 122, 122, 121, 115, 101, 116, 115, 34, 58, 123, 34, 112, 108, 117, 116, 111, 34, 58, 48, 46, 51, 50, 54, 44, 34, 112, 105, 112, 112, 111, 34, 58, 48, 46, 57, 52, 49, 125, 44, 34, 97, 114, 114, 97, 121, 34, 58, 91, 49, 44, 50, 44, 123, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 93, 44, 34, 100, 97, 116, 101, 52, 34, 58, 34, 50, 48, 50, 48, 45, 49, 48, 45, 49, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 46, 49, 50, 51, 34, 44, 34, 100, 111, 99, 34, 58, 123, 34, 97, 98, 99, 34, 58, 49, 44, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 44, 34, 100, 97, 116, 101, 51, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 34, 44, 34, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 50, 46, 52, 51, 44, 53, 46, 49, 50, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 44, 34, 100, 97, 116, 101, 50, 34, 58, 34, 50, 48, 50, 49, 45, 48, 53, 45, 49, 54, 84, 49, 50, 58, 51, 50, 34, 44, 34, 100, 97, 116, 101, 49, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 34, 44, 34, 102, 108, 111, 97, 116, 34, 58, 52, 53, 46, 52, 57, 48, 48, 55, 50, 56, 55, 56, 53, 49, 52, 53, 44, 34, 105, 110, 116, 34, 58, 49, 50, 52, 125, 93, 125]))
 })
 
 client.on('data', function(data){
   console.log(new Uint8Array(data).toString())
-})
-*/
+  client.end()
+}) */
+
 
 // Connection with J-CO-DS-Server
 
@@ -541,127 +542,118 @@ async function ping (idws) {
 
 // JCODS Server Response
 async function getResponse (idws) {
-  client.once('data', function (data) {
-    bytes = data
-    bytes = bytes.subarray(4) // the 4 first byte are equals to 0
-    if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
-      console.log('LIST DATABASE: ')
-      // if there are more clients connected
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
-      console.log('LIST_COLLECTION: ')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
-      console.log('LIST_URL: ')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 4])) == 0) {
-      console.log('CREATE_DATABASE')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 4])) == 0) {
-      console.log('CREATE_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 24])) == 0) {
-      console.log('CREATE_DYNAMIC_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 14])) == 0) {
-      console.log('CREATE_VIRTUAL_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 2])) == 0) {
-      console.log('ADD_URL')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 8])) == 0) {
-      console.log('GET_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
-      console.log('GET_COLLECTION_COUNT')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 6])) == 0) {
-      console.log('DELETE_DATABASE')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 6])) == 0) {
-      console.log('DELETE_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 4])) == 0) {
-      console.log('REMOVE_URL')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 10])) == 0) {
-      console.log('SAVE_COLLECTION')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 2])) == 0) {
-      console.log('SET_FREQUENCY')
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
-      // PING
-      wss.clients.forEach((client) => {
-        if (client.protocol == idws) {
-          client.send(bytes)
-        }
-      })
+  const chunks = []
+  client.on('data', function readResponse (data) {
+    chunks.push(data)
+    if (data.length < 65536) {
+      let bytes = Buffer.concat(chunks)
+      bytes = bytes.subarray(4) // the 4 first byte are equals to 0
+      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
+        console.log('LIST DATABASE: ')
+        // if there are more clients connected
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
+        console.log('LIST_COLLECTION: ')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 3])) == 0) {
+        console.log('CREATE_DATABASE')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 3])) == 0) {
+        console.log('CREATE_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 23])) == 0) {
+        console.log('CREATE_DYNAMIC_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 13])) == 0) {
+        console.log('CREATE_VIRTUAL_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 1])) == 0) {
+        console.log('ADD_URL')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 8])) == 0) {
+        console.log('GET_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
+        console.log('GET_COLLECTION_COUNT')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 5])) == 0) {
+        console.log('DELETE_DATABASE')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
+        console.log('DELETE_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 10])) == 0) {
+        console.log('SAVE_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 1])) == 0) {
+        console.log('SET_FREQUENCY')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+        // PING
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      }
+      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0) {
+        console.log(bytes.subarray(12).toString())
+      }
+      isOccupied = false
+      client.removeListener('data', readResponse) // Stop listening if the last chunk is recived
     }
-    if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0) {
-      console.log(bytes.subarray(12).toString())
-    }
-    isOccupied = false
   })
 }
 

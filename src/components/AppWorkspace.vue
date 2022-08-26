@@ -49,7 +49,6 @@ export default {
   },
   mounted () {
     this.connection = returnWS()
-    console.log(this.connection)
   },
   methods: {
     getCollection: com.getCollection,
@@ -67,10 +66,8 @@ export default {
     },
     async buildWorkspace () {
       if (this.dbSelected !== null && this.collSelected !== null) {
-        console.log('AAA')
         const res = await this.getCollection(this.dbSelected, this.collSelected, this.numDoc, (this.page - 1) * this.numDoc)
         this.documentsLoaded = res.documents
-        console.log('A' + this.documentsLoaded)
       }
     }
   }
