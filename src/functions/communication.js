@@ -70,6 +70,7 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
 };
 
 export function saveCollection (nameDb, nameColl, docs, append) {
+  console.log(docs)
   this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
   this.handleResponse()
 };
@@ -88,22 +89,18 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
 };
 
 export function importCollection (nameDb) {
-  let nameColl
-  let content
-  const fileInput = document.getElementById('file_upload')
-  fileInput.addEventListener('change', () => {
-    const filetoread = document.getElementById('file_upload').files[0]
-    nameColl = filetoread.name.split('.')[0]
-    const fileread = new FileReader()
-    fileread.onload = function (e) {
-      content = e.target.result
-      // console.log(content)
-      const intern = JSON.parse(content)
-      console.log(intern[0].documents)
-    }
-    fileread.readAsText(filetoread)
-  })
-  this.saveCollection(nameDb, nameColl, content, this.append)
+  let intern
+  const fileInput = document.getElementById('file_upload').files[0]
+  const nameColl = fileInput.name.split('.')[0]
+  const fileread = new FileReader()
+  fileread.onload = function (e) {
+    const content = e.target.result
+    console.log(content)
+    intern = JSON.parse(content)
+  }
+  fileread.readAsText(fileInput)
+  console.log(intern)
+  this.saveCollection(nameDb, nameColl, intern, this.append)
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
