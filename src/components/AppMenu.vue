@@ -58,7 +58,7 @@
     <v-row style="height: 4vh">
       <template>
         <v-btn v-if="flag === false" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
-          @click="getListDatabase()">
+          @click="getListDatabase();">
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
         <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
