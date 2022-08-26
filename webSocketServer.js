@@ -30,7 +30,7 @@ function onError () {
 
 /*
 client.on('connect', function(){
-  client.write(Buffer.from([0, 0, 0, 0, 0, 2, 0, 7, 0, 0, 0, 74, 0, 0, 0, 0, 123, 34, 100, 97, 116, 97, 98, 97, 115, 101, 34, 58, 34, 71, 101, 111, 74, 115, 111, 110, 83, 97, 109, 112, 108, 101, 115, 34, 44, 34, 111, 102, 102, 115, 101, 116, 34, 58, 48, 44, 34, 108, 105, 109, 105, 116, 34, 58, 45, 49, 44, 34, 99, 111, 108, 108, 101, 99, 116, 105, 111, 110, 34, 58, 34, 103, 97, 116, 104, 101, 114, 49, 34, 125]))
+  client.write(Buffer.from([0, 0, 0, 0, 0, 2, 0, 9, 0, 0, 0, 52, 0, 0, 1, 87, 123, 34, 100, 97, 116, 97, 98, 97, 115, 101, 34, 58, 34, 112, 114, 111, 118, 97, 34, 44, 34, 99, 111, 108, 108, 101, 99, 116, 105, 111, 110, 34, 58, 34, 103, 34, 44, 34, 97, 112, 112, 101, 110, 100, 34, 58, 102, 97, 108, 115, 101, 125, 123, 34, 100, 111, 99, 117, 109, 101, 110, 116, 115, 34, 58, 91, 123, 34, 116, 121, 112, 101, 34, 58, 49, 44, 34, 117, 114, 108, 34, 58, 34, 97, 112, 105, 46, 103, 101, 111, 110, 97, 109, 101, 115, 46, 111, 114, 103, 47, 102, 105, 110, 100, 78, 101, 97, 114, 98, 121, 80, 108, 97, 99, 101, 78, 97, 109, 101, 74, 83, 79, 78, 63, 102, 111, 114, 109, 97, 116, 116, 101, 100, 61, 116, 114, 117, 101, 38, 108, 97, 116, 61, 52, 53, 46, 52, 38, 108, 110, 103, 61, 57, 46, 53, 38, 117, 115, 101, 114, 110, 97, 109, 101, 61, 112, 97, 111, 108, 111, 102, 111, 115, 99, 105, 38, 115, 116, 121, 108, 101, 61, 102, 117, 108, 108, 34, 125, 44, 123, 34, 116, 121, 112, 101, 34, 58, 50, 44, 34, 117, 114, 108, 34, 58, 34, 104, 116, 116, 112, 58, 47, 47, 97, 112, 105, 46, 103, 101, 111, 110, 97, 109, 101, 115, 46, 111, 114, 103, 47, 101, 97, 114, 116, 104, 113, 117, 97, 107, 101, 115, 74, 83, 79, 78, 63, 102, 111, 114, 109, 97, 116, 116, 101, 100, 61, 116, 114, 117, 101, 38, 110, 111, 114, 116, 104, 61, 52, 52, 46, 49, 38, 115, 111, 117, 116, 104, 61, 45, 57, 46, 57, 38, 101, 97, 115, 116, 61, 45, 50, 50, 46, 52, 38, 119, 101, 115, 116, 61, 53, 53, 46, 50, 38, 117, 115, 101, 114, 110, 97, 109, 101, 61, 112, 97, 111, 108, 111, 102, 111, 115, 99, 105, 38, 115, 116, 121, 108, 101, 61, 102, 117, 108, 108, 34, 125, 44, 123, 34, 114, 101, 115, 34, 58, 34, 47, 110, 102, 55, 56, 45, 110, 106, 54, 98, 46, 106, 115, 111, 110, 63, 34, 44, 34, 116, 121, 112, 101, 34, 58, 51, 44, 34, 112, 97, 114, 97, 109, 115, 34, 58, 34, 36, 108, 105, 109, 105, 116, 61, 49, 48, 34, 125, 93, 125]))
 })
 
 client.on('data', function(data){
@@ -75,6 +75,10 @@ wss.on('connection', function (ws) {
       } else if (command == 'LIST_COLLECTIONS') {
         const dbName = message.split('###')[1]
         reqListCollection(dbName, idws)
+      } else if (command == 'LIST_URL') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        reqListUrl(dbName, collName, idws)
       } else if (command == 'CREATE_DATABASE') {
         const dbName = message.split('###')[1]
         createDatabase(dbName, idws)
@@ -114,10 +118,17 @@ wss.on('connection', function (ws) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         deleteCollection(dbName, collName, idws)
+      } else if (command == 'REMOVE_URL') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        const index = message.split('###')[3]
+        removeUrl(dbName, collName, index, idws)
       } else if (command == 'SAVE_COLLECTION') {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
-        saveCollection(dbName, collName, idws)
+        const docs = message.split('###')[3]
+        const append = message.split('###')[4]
+        saveCollection(dbName, collName, docs, append, idws)
       } else if (command == 'SET_FREQUENCY') {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
@@ -171,6 +182,29 @@ async function reqListCollection (nameDB, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020001'))
   const objParam = {}
   objParam.database = nameDB
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function reqListUrl(nameDb, nameColl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00030005'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.name = nameColl
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
@@ -405,13 +439,41 @@ async function deleteCollection (nameDb, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function saveCollection (nameDb, nameColl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
+async function removeUrl(nameDb, nameColl, index, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00030003'))
   const objParam = {}
   objParam.database = nameDb
-  objParam.collection = nameColl
+  objParam.name = nameColl
+  objParam.index = index
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function saveCollection (nameDb, nameColl, documents, append, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
+  const objParam = {}
+  const objInfoColl = {}
+
+  objParam.database = nameDb
+  objParam.collection = nameColl
+  objParam.append = append
+  objInfoColl.documents = documents
+
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam + objInfoColl)))
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
@@ -493,35 +555,42 @@ async function getResponse (idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 3])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
+      console.log('LIST_URL: ')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 4])) == 0) {
       console.log('CREATE_DATABASE')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 3])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 4])) == 0) {
       console.log('CREATE_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 23])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 24])) == 0) {
       console.log('CREATE_DYNAMIC_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 13])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 14])) == 0) {
       console.log('CREATE_VIRTUAL_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 1])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 2])) == 0) {
       console.log('ADD_URL')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
@@ -542,28 +611,35 @@ async function getResponse (idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 5])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 6])) == 0) {
       console.log('DELETE_DATABASE')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 6])) == 0) {
       console.log('DELETE_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 9])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 4])) == 0) {
+      console.log('REMOVE_URL')
+      wss.clients.forEach((client) => {
+        if (client.protocol == idws) {
+          client.send(bytes)
+        }
+      })
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 10])) == 0) {
       console.log('SAVE_COLLECTION')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {
           client.send(bytes)
         }
       })
-    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 1])) == 0) {
+    } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 2])) == 0) {
       console.log('SET_FREQUENCY')
       wss.clients.forEach((client) => {
         if (client.protocol == idws) {

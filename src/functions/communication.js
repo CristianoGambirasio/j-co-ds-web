@@ -14,6 +14,11 @@ export async function getListCollection (item) {
   })
 };
 
+export function getListUrl (nameDb, nameColl) {
+  this.connection.send('LIST_URL###' + nameDb + '###' + nameColl)
+  this.handleResponse()
+};
+
 export async function getCollectionCount (db, collection) {
   let countCollection
   await new Promise(resolve => {
@@ -64,8 +69,8 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
   return documents
 };
 
-export function saveCollection (nameDb, nameColl) {
-  this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + this.append)
+export function saveCollection (nameDb, nameColl, docs, append) {
+  this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
   this.handleResponse()
 };
 
@@ -82,7 +87,23 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
   downloadAnchorNode.remove()
 };
 
-export function importCollection (nameDb, nameColl, nameFile) {
+export function importCollection (nameDb) {
+  let nameColl
+  let content
+  const fileInput = document.getElementById('file_upload')
+  fileInput.addEventListener('change', () => {
+    const filetoread = document.getElementById('file_upload').files[0]
+    nameColl = filetoread.name.split('.')[0]
+    const fileread = new FileReader()
+    fileread.onload = function (e) {
+      content = e.target.result
+      // console.log(content)
+      const intern = JSON.parse(content)
+      console.log(intern[0].documents)
+    }
+    fileread.readAsText(filetoread)
+  })
+  this.saveCollection(nameDb, nameColl, content, this.append)
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
@@ -97,6 +118,11 @@ export function deleteDatabase (nameDb) {
 
 export function deleteCollection (nameDb, nameColl) {
   this.connection.send('DELETE_COLLECTION###' + nameDb + '###' + nameColl)
+  this.handleResponse()
+};
+
+export function removeUrl (nameDb, nameColl, index) {
+  this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + index)
   this.handleResponse()
 };
 
@@ -164,8 +190,12 @@ export function handleResponse (finished) {
       })
       finished()
     }
+    // List Urls
+    if (tool.arrayEquals(command, [0, 3, 0, 6])) {
+      //
+    }
     // Create Database
-    if (tool.arrayEquals(command, [0, 1, 0, 3])) {
+    if (tool.arrayEquals(command, [0, 1, 0, 4])) {
       const db = JSON.parse(text)
       const databaseJSON = {}
       databaseJSON.name = db
@@ -174,7 +204,7 @@ export function handleResponse (finished) {
       this.listDatabases.push(databaseJSON)
     }
     // Create Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 3])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 4])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -187,7 +217,7 @@ export function handleResponse (finished) {
       })
     }
     // Create Dynamic Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 23])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 24])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -201,7 +231,7 @@ export function handleResponse (finished) {
       })
     }
     // Create Virtual Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 13])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 14])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -215,7 +245,7 @@ export function handleResponse (finished) {
       })
     }
     // Add Url
-    if (tool.arrayEquals(command, [0, 3, 0, 1])) {
+    if (tool.arrayEquals(command, [0, 3, 0, 2])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -234,12 +264,12 @@ export function handleResponse (finished) {
       console.log(res)
       finished(res)
     }
-    /* // Save Collection
-        if (tool.arrayEquals(command, [0, 2, 0, 9])) {
-        }
-        */
+    // Save Collection
+    if (tool.arrayEquals(command, [0, 2, 0, 10])) {
+      finished()
+    }
     // Delete Database
-    if (tool.arrayEquals(command, [0, 1, 0, 5])) {
+    if (tool.arrayEquals(command, [0, 1, 0, 6])) {
       const db = JSON.parse(text)
       const databaseJSON = {}
       databaseJSON.name = db
@@ -250,7 +280,7 @@ export function handleResponse (finished) {
       })
     }
     // Delete Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 5])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 6])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -263,8 +293,12 @@ export function handleResponse (finished) {
         }
       })
     }
+    // Remove Url
+    if (tool.arrayEquals(command, [0, 3, 0, 4])) {
+      //
+    }
     /* Set Frequency
-        if (tool.arrayEquals(command, [0, 4, 0, 1])) {
+        if (tool.arrayEquals(command, [0, 4, 0, 2])) {
           const colls = JSON.parse(text)
           this.listDatabases.forEach(database => {
             if (database.name === colls.database) {

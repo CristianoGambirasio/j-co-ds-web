@@ -190,7 +190,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 2" v-model="dialogImp" width="600">
+                    <v-dialog v-if="i === 2" v-model="dialogImp" width="550">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -198,17 +198,17 @@
                         </v-btn>
                       </template>
                       <v-card>
-                        <v-card-title>
-                          Importing collection
-                          <v-btn absolute right depressed plain light @click=" dialogImp=false" style="color: red">
-                            <v-icon absolute right>mdi-close</v-icon>
-                          </v-btn>
-                        </v-card-title>
+                        <v-card-title>Importing collection</v-card-title>
+                        <v-card-text>
+                          <div class="upload-container">
+                            <input type="file" id="file_upload" multiple />
+                          </div>
+                        </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="importCollection(item.name); getListDatabase(); dialogImp = false">
+                          <v-btn class="upload-btn" color="primary" text
+                            @click="importCollection(item.name); dialogImp = false">
                             Upload
                           </v-btn>
                           <v-btn color="primary" text @click="dialogImp = false">
@@ -375,7 +375,7 @@
 
                   <v-divider></v-divider>
 
-                  <!--da modificare con manage url-->
+                  <!--da modificare con manage url, usando addUrl e removeUrl e listUrl-->
                   <v-list-item v-for="(el, i) in itemsOtherCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogUrl" width="250">
                       <template v-slot:activator="{ on }">
@@ -611,7 +611,7 @@
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-dialog v-model="dialogColls" width="500">
+                    <v-dialog v-model="dialogDelMoreColls" width="500">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">Yes</v-btn>
                       </template>
@@ -648,7 +648,6 @@
 import * as com from '../functions/communication'
 import CTreeview from '@/functions/CTreeview.js'
 import { connect, returnWS } from '../functions/connection.js'
-// import AppWorkspace from './AppWorkspace.vue'
 
 export default {
   components: {
@@ -786,6 +785,7 @@ export default {
     handleResponse: com.handleResponse,
     getListDatabase: com.getListDatabase,
     getListCollection: com.getListCollection,
+    getListUrl: com.getListUrl,
     getCollectionCount: com.getCollectionCount,
     createDatabase: com.createDatabase,
     createCollection: com.createCollection,
@@ -799,6 +799,7 @@ export default {
     setFrequency: com.setFrequency,
     deleteDatabase: com.deleteDatabase,
     deleteCollection: com.deleteCollection,
+    removeUrl: com.removeUrl,
     deleteMoreCollections: com.deleteMoreCollections,
     ping: com.ping,
 
@@ -894,6 +895,38 @@ h5{
 
 ::-webkit-scrollbar-thumb {
   background: #7FCD91
+}
+
+.upload-container {
+  position: relative;
+}
+
+.upload-container input {
+  border: 1px solid #92b0b3;
+  background: #f1f1f1;
+  outline: 2px dashed #92b0b3;
+  outline-offset: -10px;
+  padding: 100px 0px 100px 125px;
+  text-align: center !important;
+  width: 500px;
+}
+
+.upload-container input:hover {
+  background: #ddd;
+}
+
+.upload-container:before {
+  position: absolute;
+  bottom: 50px;
+  left: 150px;
+  content: " (or) Drag and Drop files here. ";
+  color: #3f8188;
+  font-weight: 900;
+}
+
+.upload-btn {
+  margin-left: 300px;
+  padding: 7px 20px;
 }
 
 </style>
