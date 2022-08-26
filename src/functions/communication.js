@@ -70,10 +70,6 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
 };
 
 export function saveCollection (nameDb, nameColl, docs, append) {
-  console.log(nameDb)
-  console.log(nameColl)
-  console.log(docs)
-  console.log(append)
   this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
   this.handleResponse()
 };
@@ -268,7 +264,7 @@ export function handleResponse (finished) {
     }
     // Save Collection
     if (tool.arrayEquals(command, [0, 2, 0, 10])) {
-      finished()
+      console.log('Imported')
     }
     // Delete Database
     if (tool.arrayEquals(command, [0, 1, 0, 6])) {

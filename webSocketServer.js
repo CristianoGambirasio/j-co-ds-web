@@ -128,10 +128,6 @@ wss.on('connection', function (ws) {
         const collName = message.split('###')[2]
         const docs = message.split('###')[3]
         const append = message.split('###')[4]
-        console.log(dbName)
-        console.log(collName)
-        console.log(docs)
-        console.log(append)
         saveCollection(dbName, collName, docs, append, idws)
       } else if (command == 'SET_FREQUENCY') {
         const dbName = message.split('###')[1]
@@ -475,7 +471,11 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
   objParam.database = nameDb
   objParam.collection = nameColl
   objParam.append = false
-  objBody.documents = documents
+  objBody.documents = []
+  textDocuments = documents.split(',')
+  objBody.documents.forEach((document) => {
+    objBody.documents.push(JSON.parse(document))
+  })
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
   const reqBody = new Uint8Array(encoder.encode(JSON.stringify(objBody)))
