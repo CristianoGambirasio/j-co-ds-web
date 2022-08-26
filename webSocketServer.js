@@ -128,6 +128,10 @@ wss.on('connection', function (ws) {
         const collName = message.split('###')[2]
         const docs = message.split('###')[3]
         const append = message.split('###')[4]
+        console.log(dbName)
+        console.log(collName)
+        console.log(docs)
+        console.log(append)
         saveCollection(dbName, collName, docs, append, idws)
       } else if (command == 'SET_FREQUENCY') {
         const dbName = message.split('###')[1]
@@ -466,18 +470,18 @@ async function removeUrl(nameDb, nameColl, index, idws) {
 async function saveCollection (nameDb, nameColl, documents, append, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
   const objParam = {}
-  const objInfoColl = {}
+  const objBody = {}
 
   objParam.database = nameDb
   objParam.collection = nameColl
-  objParam.append = append
-  objInfoColl.documents = documents
+  objParam.append = false
+  objBody.documents = documents
 
-  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam + objInfoColl)))
-  const reqBody = new Uint8Array(0)
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(encoder.encode(JSON.stringify(objBody)))
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
-  const sizeBody = new Uint8Array(toBytesInt32(0))
+  const sizeBody = new Uint8Array(toBytesInt32(reqBody.length))
 
   const message = new Uint8Array(16 + reqParam.length + reqBody.length)
   message.set(commandCode)

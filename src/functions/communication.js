@@ -70,7 +70,10 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
 };
 
 export function saveCollection (nameDb, nameColl, docs, append) {
+  console.log(nameDb)
+  console.log(nameColl)
   console.log(docs)
+  console.log(append)
   this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
   this.handleResponse()
 };
@@ -88,19 +91,21 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
   downloadAnchorNode.remove()
 };
 
-export function importCollection (nameDb) {
-  let intern
+export async function importCollection (nameDb) {
+  // let intern
   const fileInput = document.getElementById('file_upload').files[0]
   const nameColl = fileInput.name.split('.')[0]
   const fileread = new FileReader()
-  fileread.onload = function (e) {
-    const content = e.target.result
-    console.log(content)
-    intern = JSON.parse(content)
-  }
-  fileread.readAsText(fileInput)
-  console.log(intern)
-  this.saveCollection(nameDb, nameColl, intern, this.append)
+  await new Promise(resolve => {
+    fileread.onload = function (e) {
+      const content = e.target.result
+      // intern = JSON.parse(content)
+      resolve(content)
+    }
+    fileread.readAsText(fileInput)
+  }).then((res) => {
+    this.saveCollection(nameDb, nameColl, res, this.append)
+  })
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
@@ -130,7 +135,7 @@ export function deleteMoreCollections (colls) {
   }
 };
 
-export function ping () {
+export function ping () { /*
   let errMessageSent = false
   this.connection.send('PING')
   setInterval(() => {
@@ -146,7 +151,7 @@ export function ping () {
       this.connection.send('PING')
     }
   }
-  , 1000)
+  , 1000) */
 };
 
 export function handleResponse (finished) {
