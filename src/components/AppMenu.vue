@@ -208,7 +208,7 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn class="upload-btn" color="primary" text
-                            @click="importCollection(item.name); dialogImp = false">
+                            @click="dialogImp = false; importCollection(item.name); getListDatabase()">
                             Upload
                           </v-btn>
                           <v-btn color="primary" text @click="dialogImp = false">
