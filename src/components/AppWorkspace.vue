@@ -1,8 +1,21 @@
 <template>
   <v-sheet id="body">
     <v-row style="height: 10vh;">
-      <v-container fluid id="metadata">
-        Prova Metadata
+      <v-container fluid id="metadata" style="padding: 0;">
+        <v-row style="height: 10vh;">
+          <v-col id="meta1" cols="3">
+            <h4>{{meta1}}</h4>
+          </v-col>
+          <v-col id="meta2" cols="3">
+            <h4>{{meta2}}</h4>
+          </v-col>
+          <v-col id="meta3" cols="3">
+            <h4>{{meta3}}</h4>
+          </v-col>
+          <v-col id="meta4" cols="3">
+            <h4>{{meta4}}</h4>
+          </v-col>
+        </v-row>
       </v-container>
     </v-row>
     <v-row style="height: 84vh;">
@@ -16,8 +29,8 @@
       <v-container fluid class="text-center" id="footer">
       <v-pagination
         v-model="page"
-        :length="5"
-        circle
+        :length="nPages"
+        :total-visible="10"
         @input="buildWorkspace"
     > </v-pagination>
     </v-container>
@@ -41,7 +54,12 @@ export default {
       dbSelected: null,
       collSelected: null,
       documentsLoaded: [],
-      numDoc: 5
+      numDoc: 5,
+      nPages: 0,
+      meta1: null,
+      meta2: null,
+      meta3: null,
+      meta4: null
     }
   },
   created () {
@@ -53,21 +71,60 @@ export default {
   methods: {
     getCollection: com.getCollection,
     handleResponse: com.handleResponse,
+    getCollectionCount: com.getCollectionCount,
 
-    updateParam (db, coll) {
+    reconnect () {
+      this.connection = returnWS()
+    },
+
+    updateParam (db, coll, obj) {
       this.page = 1
       if (db !== null && coll !== null) {
         this.dbSelected = db
         this.collSelected = coll
-        this.buildWorkspace()
+        this.buildWorkspace(obj)
       } else {
         this.documentsLoaded = []
       }
     },
-    async buildWorkspace () {
+    async buildWorkspace (obj) {
       if (this.dbSelected !== null && this.collSelected !== null) {
+        console.log(this.dbSelected)
         const res = await this.getCollection(this.dbSelected, this.collSelected, this.numDoc, (this.page - 1) * this.numDoc)
         this.documentsLoaded = res.documents
+        this.nPages = Math.ceil((await this.getCollectionCount(this.dbSelected, this.collSelected)) / this.numDoc)
+        this.showMetadata(obj)
+      }
+    },
+    async showMetadata (value) {
+      if (value.length === 0) {
+        this.active = false
+      } else {
+        this.active = true
+      }
+      let countCollection
+      if (value.length > 0 && (value[0].type === 'static' || 'virtual' || 'dynamic')) {
+        countCollection = await this.getCollectionCount(value[0].db, value[0].name)
+      }
+
+      if (value.length === 0) {
+        this.meta1 = null
+        this.meta2 = null
+      } else if (value[0].type === 'static') {
+        this.meta2 = 'TYPE: STATIC'
+        this.meta1 = 'NAME: ' + value[0].name
+        this.meta3 = 'Documents: ' + countCollection
+      } else if (value[0].type === 'dynamic') {
+        this.meta2 = 'TYPE: DYNAMIC'
+        this.meta1 = 'NAME: ' + value[0].name
+        this.meta3 = 'Documents: ' + countCollection
+        // this.metaDL = 'Frequency: ' + value[0].frequency
+      } else if (value[0].type === 'virtual') {
+        this.meta2 = 'TYPE: VIRTUAL'
+        this.meta1 = 'NAME: ' + value[0].name
+        this.meta3 = 'Documents: ' + countCollection
+        // Gestione database | Stile select
+        // Prova
       }
     }
   }
@@ -78,6 +135,10 @@ export default {
 /* * {
   outline: 1px solid lime;
 } */
+h4{
+  color: white;
+  padding: 8px;
+}
 #metadata{
   background-color: #4D4646;
 }

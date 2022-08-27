@@ -480,8 +480,14 @@ async function getResponse (idws) {
   client.on('data', function readResponse (data) {
     chunks.push(data)
     if (data.length < 65536) {
-      let bytes = Buffer.concat(chunks)
-      console.log('data of size: ' + bytes.length)
+      let res = Buffer.concat(chunks)
+      res = res.subarray(16)
+      let textRes = ''
+      for (let i = 0; i < res.length; i++) {
+        textRes += String.fromCharCode(res[i])
+      }
+      if (isJsonString(textRes) || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 0, 0, 2])) == 0) { // Check if the response is ping or a valid JSON 
+        let bytes = Buffer.concat(chunks)
       bytes = bytes.subarray(4) // the 4 first byte are equals to 0
       if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
         console.log('LIST DATABASE: ')
@@ -589,6 +595,7 @@ async function getResponse (idws) {
       isOccupied = false
       client.removeListener('data', readResponse) // Stop listening if the last chunk is recived
     }
+      }
   })
 }
 
@@ -606,4 +613,13 @@ const toBytesCommandCode = (code) => { // Converte un comando di 8 cifre come st
     byteArray[i + 4] = parseInt(code.substr(i * 2, 2), 16)
   }
   return byteArray
+}
+
+function isJsonString(str) {
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  return true;
 }

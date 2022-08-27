@@ -815,42 +815,11 @@ export default {
       // this.showMetadata(value)
       this.buildWorkspace(value)
     },
-    async showMetadata (value) {
-      if (value.length === 0) {
-        this.active = false
-      } else {
-        this.active = true
-      }
-      let countCollection
-      if (value.length > 0 && (value[0].type === 'static' || 'virtual' || 'dynamic')) {
-        countCollection = await this.getCollectionCount(value[0].db, value[0].name)
-      }
-
-      if (value.length === 0) {
-        this.metaTL = null
-        this.metaBL = null
-      } else if (value[0].type === 'static') {
-        this.metaTL = 'TYPE: STATIC'
-        this.metaBL = 'NAME: ' + value[0].name
-        this.metaBR = 'Documents: ' + countCollection
-      } else if (value[0].type === 'dynamic') {
-        this.metaTL = 'TYPE: DYNAMIC'
-        this.metaBL = 'NAME: ' + value[0].name
-        this.metaBR = 'Documents: ' + countCollection
-        this.metaDL = 'Frequency: ' + value[0].frequency
-      } else if (value[0].type === 'virtual') {
-        this.metaTL = 'TYPE: VIRTUAL'
-        this.metaBL = 'NAME: ' + value[0].name
-        this.metaBR = 'Documents: ' + countCollection
-        // Gestione database | Stile select
-        // Prova
-      }
-    },
     async buildWorkspace (value) {
       if (!value[0]) {
         this.$root.$refs.Workspace.updateParam(null, null)
       } else {
-        this.$root.$refs.Workspace.updateParam(value[0].db, value[0].name)
+        this.$root.$refs.Workspace.updateParam(value[0].db, value[0].name, value)
       }
     }
   }

@@ -292,7 +292,6 @@ export function handleResponse (finished) {
     // Get collection count
     if (tool.arrayEquals(command, [0, 2, 0, 12])) {
       const res = JSON.parse(text)
-      console.log(res)
       finished(res.count)
     }
   }
