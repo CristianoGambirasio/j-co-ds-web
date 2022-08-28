@@ -15,10 +15,16 @@ export async function getListCollection (item) {
   })
 };
 
-export function getListUrl (nameDb, nameColl) {
+export async function getListUrl (nameDb, nameColl) {
   this.listUrls = []
-  this.connection.send('LIST_URL###' + nameDb + '###' + nameColl)
-  this.handleResponse()
+  let list
+  await new Promise(resolve => {
+    this.connection.send('LIST_URL###' + nameDb + '###' + nameColl)
+    this.handleResponse(resolve)
+  }).then((value) => {
+    list = value
+  })
+  return list
 };
 
 export async function getCollectionCount (db, collection) {
@@ -202,6 +208,7 @@ export function handleResponse (finished) {
         url = url.replace('\n', '')
         this.listUrls.push(url)
       })
+      finished(this.listUrls)
     }
     // Create Database
     if (tool.arrayEquals(command, [0, 1, 0, 4])) {
@@ -345,7 +352,6 @@ export function handleResponse (finished) {
     // Get collection count
     if (tool.arrayEquals(command, [0, 2, 0, 12])) {
       const res = JSON.parse(text)
-      console.log(res)
       finished(res.count)
     }
   }

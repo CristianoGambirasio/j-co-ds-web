@@ -58,7 +58,7 @@
     <v-row style="height: 4vh">
       <template>
         <v-btn v-if="flag === false" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
-          @click="getListDatabase();">
+          @click="getListDatabase(); emptyWorkspace()">
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
         <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
@@ -97,7 +97,7 @@
           class="overflow-y-auto">
           <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="name" open-on-click transition return-object
-            active-class="activeNode" @update:active="handleActive">
+            active-class="activeNode" @update:active="buildWorkspace">
             <template v-slot:prepend="{item, open}">
               <v-icon>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
@@ -864,48 +864,11 @@ export default {
     removeUrl: com.removeUrl,
     deleteMoreCollections: com.deleteMoreCollections,
     ping: com.ping,
-
-    async handleActive (value) {
-      this.activeItem = value
-      // this.showMetadata(value)
-      this.buildWorkspace(value)
-    },
-    async showMetadata (value) {
-      if (value.length === 0) {
-        this.active = false
-      } else {
-        this.active = true
-      }
-      let countCollection
-      if (value.length > 0 && (value[0].type === 'static' || 'virtual' || 'dynamic')) {
-        countCollection = await this.getCollectionCount(value[0].db, value[0].name)
-      }
-
-      if (value.length === 0) {
-        this.metaTL = null
-        this.metaBL = null
-      } else if (value[0].type === 'static') {
-        this.metaTL = 'TYPE: STATIC'
-        this.metaBL = 'NAME: ' + value[0].name
-        this.metaBR = 'Documents: ' + countCollection
-      } else if (value[0].type === 'dynamic') {
-        this.metaTL = 'TYPE: DYNAMIC'
-        this.metaBL = 'NAME: ' + value[0].name
-        this.metaBR = 'Documents: ' + countCollection
-        this.metaDL = 'Frequency: ' + value[0].frequency
-      } else if (value[0].type === 'virtual') {
-        this.metaTL = 'TYPE: VIRTUAL'
-        this.metaBL = 'NAME: ' + value[0].name
-        this.metaBR = 'Documents: ' + countCollection
-        // Gestione database | Stile select
-        // Prova
-      }
-    },
     async buildWorkspace (value) {
       if (!value[0]) {
-        this.$root.$refs.Workspace.updateParam(null, null)
+        this.emptyWorkspace()
       } else {
-        this.$root.$refs.Workspace.updateParam(value[0].db, value[0].name)
+        this.$root.$refs.Workspace.updateParam(value[0].db, value[0].name, value)
       }
     },
     getIndex (arr) {
@@ -921,6 +884,9 @@ export default {
         }
       }
       */
+    },
+    emptyWorkspace () {
+      this.$root.$refs.Workspace.updateParam(null, null)
     }
   }
 }
