@@ -471,7 +471,7 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
 
   objParam.database = nameDb
   objParam.collection = nameColl
-  objParam.append = false
+  objParam.append = append
   objBody.documents = []
   textDocuments = documents.split(',')
   objBody.documents.forEach((document) => {
@@ -558,6 +558,13 @@ async function getResponse (idws) {
         })
       } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
         console.log('LIST_COLLECTION: ')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
+        console.log('LIST_URL: ')
         wss.clients.forEach((client) => {
           if (client.protocol == idws) {
             client.send(bytes)

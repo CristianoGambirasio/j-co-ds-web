@@ -16,6 +16,7 @@ export async function getListCollection (item) {
 };
 
 export function getListUrl (nameDb, nameColl) {
+  this.listUrls = []
   this.connection.send('LIST_URL###' + nameDb + '###' + nameColl)
   this.handleResponse()
 };
@@ -195,7 +196,12 @@ export function handleResponse (finished) {
     }
     // List Urls
     if (tool.arrayEquals(command, [0, 3, 0, 6])) {
-      //
+      this.listUrls = []
+      const urls = JSON.parse(text)
+      urls.list.forEach(url => {
+        url = url.replace('\n', '')
+        this.listUrls.push(url)
+      })
     }
     // Create Database
     if (tool.arrayEquals(command, [0, 1, 0, 4])) {
@@ -242,7 +248,7 @@ export function handleResponse (finished) {
           const collectionJSON = {}
           collectionJSON.name = collection.split(' ')[0]
           collectionJSON.type = collection.split(' ')[1]
-          collectionJSON.url = collection.split(' ')[2]
+          collectionJSON.urls = collection.split(' ')[2]
           database.children.push(collectionJSON)
         }
       })
