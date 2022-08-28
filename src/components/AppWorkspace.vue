@@ -3,7 +3,7 @@
     <v-row style="height: 10vh;">
       <v-container fluid id="metadata" style="padding: 0;">
         <v-row style="height: 10vh;">
-          <v-col id="meta1" cols="3">
+          <v-col id="meta1" cols="3" style="align-items: center;">
             <h4>{{meta1}}</h4>
           </v-col>
           <v-col id="meta2" cols="3">
@@ -53,13 +53,15 @@ export default {
       page: 1,
       dbSelected: null,
       collSelected: null,
-      documentsLoaded: [],
-      numDoc: 5,
+      documentsLoaded: [], // numDoc documents loadaded of the selected page
+      listUrls: [], // List of urls of the selected collection
+      numDoc: 5, // Number of doc showed in each page
       nPages: 0,
       meta1: null,
       meta2: null,
       meta3: null,
-      meta4: null
+      meta4: null,
+      countCollection: 0
     }
   },
   created () {
@@ -72,6 +74,7 @@ export default {
     getCollection: com.getCollection,
     handleResponse: com.handleResponse,
     getCollectionCount: com.getCollectionCount,
+    getListUrl: com.getListUrl,
 
     reconnect () {
       this.connection = returnWS()
@@ -85,44 +88,44 @@ export default {
         this.buildWorkspace(obj)
       } else {
         this.documentsLoaded = []
+        this.nPages = 0
+        this.meta1 = null
+        this.meta2 = null
+        this.meta3 = null
+        this.meta4 = null
       }
     },
     async buildWorkspace (obj) {
       if (this.dbSelected !== null && this.collSelected !== null) {
-        console.log(this.dbSelected)
         const res = await this.getCollection(this.dbSelected, this.collSelected, this.numDoc, (this.page - 1) * this.numDoc)
         this.documentsLoaded = res.documents
-        this.nPages = Math.ceil((await this.getCollectionCount(this.dbSelected, this.collSelected)) / this.numDoc)
-        this.showMetadata(obj)
+        if (!obj[0]) {
+          console.log('Changed page')
+        } else if (obj[0].type === 'static') {
+          this.countCollection = await this.getCollectionCount(this.dbSelected, this.collSelected)
+          this.nPages = Math.ceil(this.countCollection / this.numDoc)
+          this.showMetadata(obj)
+        } else if (obj[0].type === 'virtual' || obj[0].type === 'dynamic') {
+          this.countCollection = (await this.getListUrl(this.dbSelected, this.collSelected)).length
+          console.log(await this.getListUrl(this.dbSelected, this.collSelected))
+          this.nPages = Math.ceil(this.countCollection / this.numDoc)
+          this.showMetadata(obj)
+        }
       }
     },
     async showMetadata (value) {
-      if (value.length === 0) {
-        this.active = false
-      } else {
-        this.active = true
-      }
-      let countCollection
-      if (value.length > 0 && (value[0].type === 'static' || 'virtual' || 'dynamic')) {
-        countCollection = await this.getCollectionCount(value[0].db, value[0].name)
-      }
-
-      if (value.length === 0) {
-        this.meta1 = null
-        this.meta2 = null
-      } else if (value[0].type === 'static') {
+      if (value[0].type === 'static') {
         this.meta2 = 'TYPE: STATIC'
         this.meta1 = 'NAME: ' + value[0].name
-        this.meta3 = 'Documents: ' + countCollection
+        this.meta3 = 'Documents: ' + this.countCollection
       } else if (value[0].type === 'dynamic') {
         this.meta2 = 'TYPE: DYNAMIC'
         this.meta1 = 'NAME: ' + value[0].name
-        this.meta3 = 'Documents: ' + countCollection
-        // this.metaDL = 'Frequency: ' + value[0].frequency
+        this.meta3 = 'Documents: ' + this.countCollection
       } else if (value[0].type === 'virtual') {
         this.meta2 = 'TYPE: VIRTUAL'
         this.meta1 = 'NAME: ' + value[0].name
-        this.meta3 = 'Documents: ' + countCollection
+        this.meta3 = 'Documents: ' + this.countCollection
         // Gestione database | Stile select
         // Prova
       }
