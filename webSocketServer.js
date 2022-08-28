@@ -76,6 +76,10 @@ wss.on('connection', function (ws) {
       } else if (command == 'LIST_COLLECTIONS') {
         const dbName = message.split('###')[1]
         reqListCollection(dbName, idws)
+      } else if (command == 'LIST_URL') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        reqListUrl(dbName, collName, idws)
       } else if (command == 'CREATE_DATABASE') {
         const dbName = message.split('###')[1]
         createDatabase(dbName, idws)
@@ -115,10 +119,17 @@ wss.on('connection', function (ws) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         deleteCollection(dbName, collName, idws)
+      } else if (command == 'REMOVE_URL') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        const index = message.split('###')[3]
+        removeUrl(dbName, collName, index, idws)
       } else if (command == 'SAVE_COLLECTION') {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
-        saveCollection(dbName, collName, idws)
+        const docs = message.split('###')[3]
+        const append = message.split('###')[4]
+        saveCollection(dbName, collName, docs, append, idws)
       } else if (command == 'SET_FREQUENCY') {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
@@ -172,6 +183,29 @@ async function reqListCollection (nameDB, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00020001'))
   const objParam = {}
   objParam.database = nameDB
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function reqListUrl(nameDb, nameColl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00030005'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.name = nameColl
 
   const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
@@ -406,17 +440,49 @@ async function deleteCollection (nameDb, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function saveCollection (nameDb, nameColl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
+async function removeUrl(nameDb, nameColl, index, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00030003'))
   const objParam = {}
   objParam.database = nameDb
-  objParam.collection = nameColl
+  objParam.name = nameColl
+  objParam.index = index
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
   const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function saveCollection (nameDb, nameColl, documents, append, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
+  const objParam = {}
+  const objBody = {}
+
+  objParam.database = nameDb
+  objParam.collection = nameColl
+  objParam.append = append
+  objBody.documents = []
+  textDocuments = documents.split(',')
+  objBody.documents.forEach((document) => {
+    objBody.documents.push(JSON.parse(document))
+  })
+
+  const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(encoder.encode(JSON.stringify(objBody)))
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(reqBody.length))
 
   const message = new Uint8Array(16 + reqParam.length + reqBody.length)
   message.set(commandCode)
@@ -499,6 +565,13 @@ async function getResponse (idws) {
         })
       } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
         console.log('LIST_COLLECTION: ')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
+        console.log('LIST_URL: ')
         wss.clients.forEach((client) => {
           if (client.protocol == idws) {
             client.send(bytes)

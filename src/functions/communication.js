@@ -15,6 +15,12 @@ export async function getListCollection (item) {
   })
 };
 
+export function getListUrl (nameDb, nameColl) {
+  this.listUrls = []
+  this.connection.send('LIST_URL###' + nameDb + '###' + nameColl)
+  this.handleResponse()
+};
+
 export async function getCollectionCount (db, collection) {
   let countCollection
   await new Promise(resolve => {
@@ -64,8 +70,8 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
   return documents
 };
 
-export function saveCollection (nameDb, nameColl) {
-  this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + this.append)
+export function saveCollection (nameDb, nameColl, docs, append) {
+  this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
   this.handleResponse()
 };
 
@@ -82,7 +88,21 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
   downloadAnchorNode.remove()
 };
 
-export function importCollection (nameDb, nameColl, nameFile) {
+export async function importCollection (nameDb) {
+  // let intern
+  const fileInput = document.getElementById('file_upload').files[0]
+  const nameColl = fileInput.name.split('.')[0]
+  const fileread = new FileReader()
+  await new Promise(resolve => {
+    fileread.onload = function (e) {
+      const content = e.target.result
+      // intern = JSON.parse(content)
+      resolve(content)
+    }
+    fileread.readAsText(fileInput)
+  }).then((res) => {
+    this.saveCollection(nameDb, nameColl, res, this.append)
+  })
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
@@ -100,6 +120,11 @@ export function deleteCollection (nameDb, nameColl) {
   this.handleResponse()
 };
 
+export function removeUrl (nameDb, nameColl, index) {
+  this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + index)
+  this.handleResponse()
+};
+
 export function deleteMoreCollections (colls) {
   for (let i = 0; i < colls.length; i++) {
     this.connection.send('DELETE_COLLECTION###' + colls[i].db + '###' + colls[i].name)
@@ -108,7 +133,7 @@ export function deleteMoreCollections (colls) {
 };
 
 export function ping () {
-  /* let errMessageSent = false
+  let errMessageSent = false
   this.connection.send('PING')
   setInterval(() => {
     if (this.connection === null || this.connection.readyState === 2 || this.connection.readyState === 3) {
@@ -123,7 +148,7 @@ export function ping () {
       this.connection.send('PING')
     }
   }
-  , 1000) */
+  , 1000)
 };
 
 export function handleResponse (finished) {
@@ -169,8 +194,17 @@ export function handleResponse (finished) {
       })
       finished()
     }
+    // List Urls
+    if (tool.arrayEquals(command, [0, 3, 0, 6])) {
+      this.listUrls = []
+      const urls = JSON.parse(text)
+      urls.list.forEach(url => {
+        url = url.replace('\n', '')
+        this.listUrls.push(url)
+      })
+    }
     // Create Database
-    if (tool.arrayEquals(command, [0, 1, 0, 3])) {
+    if (tool.arrayEquals(command, [0, 1, 0, 4])) {
       const db = JSON.parse(text)
       const databaseJSON = {}
       databaseJSON.name = db
@@ -179,7 +213,7 @@ export function handleResponse (finished) {
       this.listDatabases.push(databaseJSON)
     }
     // Create Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 3])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 4])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -192,7 +226,7 @@ export function handleResponse (finished) {
       })
     }
     // Create Dynamic Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 23])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 24])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -206,7 +240,7 @@ export function handleResponse (finished) {
       })
     }
     // Create Virtual Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 13])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 14])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -214,13 +248,13 @@ export function handleResponse (finished) {
           const collectionJSON = {}
           collectionJSON.name = collection.split(' ')[0]
           collectionJSON.type = collection.split(' ')[1]
-          collectionJSON.url = collection.split(' ')[2]
+          collectionJSON.urls = collection.split(' ')[2]
           database.children.push(collectionJSON)
         }
       })
     }
     // Add Url
-    if (tool.arrayEquals(command, [0, 3, 0, 1])) {
+    if (tool.arrayEquals(command, [0, 3, 0, 2])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -238,12 +272,12 @@ export function handleResponse (finished) {
       const res = JSON.parse(text)
       finished(res)
     }
-    /* // Save Collection
-        if (tool.arrayEquals(command, [0, 2, 0, 9])) {
-        }
-        */
+    // Save Collection
+    if (tool.arrayEquals(command, [0, 2, 0, 10])) {
+      console.log('Imported')
+    }
     // Delete Database
-    if (tool.arrayEquals(command, [0, 1, 0, 5])) {
+    if (tool.arrayEquals(command, [0, 1, 0, 6])) {
       const db = JSON.parse(text)
       const databaseJSON = {}
       databaseJSON.name = db
@@ -254,7 +288,7 @@ export function handleResponse (finished) {
       })
     }
     // Delete Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 5])) {
+    if (tool.arrayEquals(command, [0, 2, 0, 6])) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -267,8 +301,12 @@ export function handleResponse (finished) {
         }
       })
     }
+    // Remove Url
+    if (tool.arrayEquals(command, [0, 3, 0, 4])) {
+      //
+    }
     /* Set Frequency
-        if (tool.arrayEquals(command, [0, 4, 0, 1])) {
+        if (tool.arrayEquals(command, [0, 4, 0, 2])) {
           const colls = JSON.parse(text)
           this.listDatabases.forEach(database => {
             if (database.name === colls.database) {

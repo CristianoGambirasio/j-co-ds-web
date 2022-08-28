@@ -160,7 +160,7 @@
                         <v-card-title>Creating new collection</v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label='Database' v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label='Database' v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
                             <v-select label="Type" v-model="type" :items="collTypes"></v-select>
                             <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl"
@@ -190,8 +190,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <!--TO DO------------------
-                    <v-dialog v-if="i === 2" v-model="dialogImp" width="600">
+                    <v-dialog v-if="i === 2" v-model="dialogImp" width="550">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -199,23 +198,17 @@
                         </v-btn>
                       </template>
                       <v-card>
-                        <v-card-title>
-                          Importing collection
-                          <v-btn absolute right depressed plain light @click=" dialogImp=false" style="color: red">
-                            <v-icon absolute right>mdi-close</v-icon>
-                          </v-btn>
-                        </v-card-title>
+                        <v-card-title>Importing collection</v-card-title>
                         <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model="nameDb" required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                          </v-form>
+                          <div class="upload-container">
+                            <input type="file" id="file_upload" multiple />
+                          </div>
                         </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="importCollection(nameDB, nameColl, nameFile); getListDatabase(); dialogImp = false">
+                          <v-btn class="upload-btn" color="primary" text
+                            @click="dialogImp = false; importCollection(item.name); getListDatabase()">
                             Upload
                           </v-btn>
                           <v-btn color="primary" text @click="dialogImp = false">
@@ -224,7 +217,6 @@
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
-                    -------------------------->
                   </v-list-item>
                 </v-list>
 
@@ -266,7 +258,53 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ el.icon }}</v-icon>
+                          {{ el.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Importing collection</v-card-title>
+                        <v-card-text>
+                          <div class="upload-container">
+                            <input type="file" id="file_upload" multiple />
+                          </div>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-dialog v-model="dialogImp1" width="400">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on" class="upload-btn" color="primary" text>
+                                Upload
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Do you want to append this collection to the existing {{ item.name }}
+                                collection?</v-card-title>
+                              <v-card-actions>
+                                <v-btn
+                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item.name); getListDatabase()">
+                                  Yes
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item.name); getListDatabase()">
+                                  No
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-btn color="primary" text @click="dialogImp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -282,8 +320,8 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
                               type="text">
                             </v-text-field>
@@ -343,7 +381,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -359,8 +397,8 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
                               type="text">
                             </v-text-field>
@@ -383,11 +421,11 @@
 
                   <v-divider></v-divider>
 
-                  <!--da modificare con manage url-->
+                  <!--da modificare con manage url, usando addUrl e removeUrl e listUrl-->
                   <v-list-item v-for="(el, i) in itemsOtherCollection" :key="i">
-                    <v-dialog v-if="i === 0" v-model="dialogUrl" width="250">
+                    <v-dialog v-if="i === 0" v-model="dialogUrl" width="500">
                       <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
+                        <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
                           <v-icon>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
@@ -395,38 +433,19 @@
                       <v-card>
                         <v-card-title>Managing urls</v-card-title>
                         <v-card-text>
+                          <v-list>
+                            <v-list-item v-for="(url, i) in listUrls" :key="i">
+                              {{ url }}
+                            </v-list-item>
+                          </v-list>
                         </v-card-text>
-                        <!-----------------------
-                        <v-dialog v-model="dialogAddUrl">
-                          <template v-slot:activator="{ on }">
-                            <v-btn v-on="on">
-                              <v-icon> mdi-plus </v-icon>
-                              Add url
-                            </v-btn>
-                          </template>
-                          <v-card>
-                            <v-card-title>Add url</v-card-title>
-                            <v-card-text>
-                              <v-form>
-                                <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                                <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
-                                <v-text-field label="Url" v-model="listUrl" required type="text"></v-text-field>
-                              </v-form>
-                            </v-card-text>
 
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <v-btn color="primary" text
-                                @click="dialogAddUrl = false; addUrl(item.db, item.name, listUrl); getListDatabase()">
-                                Add
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                              <v-btn>
+                                Add url
                               </v-btn>
-                              <v-btn color="primary" text @click="dialogAddUrl = false">
-                                Close
-                              </v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-dialog>
-                        ----------------------->
+                        </v-card-actions>
                       </v-card>
                     </v-dialog>
 
@@ -441,8 +460,8 @@
                         <v-card-title>Set frequency</v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="Frequency" v-model="frequency" required type="text"></v-text-field>
                           </v-form>
                         </v-card-text>
@@ -516,8 +535,8 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
                               type="text">
                             </v-text-field>
@@ -542,34 +561,7 @@
 
                   <!-- manage url da aggiungere-->
                   <v-list-item v-for="(el, i) in itemsOtherCollection" :key="i">
-                    <v-dialog v-if="i === 0" v-model="dialogUrl" width="250">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
-                          {{ el.text }}
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Adding Url</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model=item.db required type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name required type="text"></v-text-field>
-                            <v-text-field label="Url" v-model="listUrl" required type="text"></v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="dialogUrl = false; addUrl(item.db, item.name, listUrl); getListDatabase()">
-                            Add
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogUrl = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
+                    <v-dialog v-if="i === 0" width="250">
                     </v-dialog>
                   </v-list-item>
                 </v-list>
@@ -619,7 +611,7 @@
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-dialog v-model="dialogColls" width="500">
+                    <v-dialog v-model="dialogDelMoreColls" width="500">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">Yes</v-btn>
                       </template>
@@ -656,7 +648,6 @@
 import * as com from '../functions/communication'
 import CTreeview from '@/functions/CTreeview.js'
 import { connect, returnWS } from '../functions/connection.js'
-// import AppWorkspace from './AppWorkspace.vue'
 
 export default {
   components: {
@@ -678,9 +669,9 @@ export default {
       dialogFreq: false,
       dialogExp: false,
       dialogImp: false,
+      dialogImp1: false,
       dialogDelColl0: false,
       dialogDelColl1: false,
-      append: false,
       metaTL: null,
       metaDL: null, // frquency info
       metaBL: null,
@@ -695,6 +686,7 @@ export default {
       nameFile: '',
       limit: -1,
       offset: 0,
+      append: false,
       index: '',
       frequency: '',
       searchKeySensitive: true,
@@ -702,7 +694,7 @@ export default {
       id: Math.floor(Math.random() * 10),
       connection: null,
       listDatabases: [],
-      listUrl: [],
+      listUrls: [],
       on: null,
       colls: [],
       icon: {
@@ -735,6 +727,10 @@ export default {
         {
           text: 'Delete collection',
           icon: 'mdi-close'
+        },
+        {
+          text: 'Import collection',
+          icon: 'mdi-arrow-down-circle'
         },
         {
           text: 'Export Collection',
@@ -794,6 +790,7 @@ export default {
     handleResponse: com.handleResponse,
     getListDatabase: com.getListDatabase,
     getListCollection: com.getListCollection,
+    getListUrl: com.getListUrl,
     getCollectionCount: com.getCollectionCount,
     createDatabase: com.createDatabase,
     createCollection: com.createCollection,
@@ -807,6 +804,7 @@ export default {
     setFrequency: com.setFrequency,
     deleteDatabase: com.deleteDatabase,
     deleteCollection: com.deleteCollection,
+    removeUrl: com.removeUrl,
     deleteMoreCollections: com.deleteMoreCollections,
     ping: com.ping,
 
@@ -871,6 +869,38 @@ h5{
 
 ::-webkit-scrollbar-thumb {
   background: #7FCD91
+}
+
+.upload-container {
+  position: relative;
+}
+
+.upload-container input {
+  border: 1px solid #92b0b3;
+  background: #f1f1f1;
+  outline: 2px dashed #92b0b3;
+  outline-offset: -10px;
+  padding: 100px 0px 100px 125px;
+  text-align: center !important;
+  width: 500px;
+}
+
+.upload-container input:hover {
+  background: #ddd;
+}
+
+.upload-container:before {
+  position: absolute;
+  bottom: 50px;
+  left: 150px;
+  content: " (or) Drag and Drop files here. ";
+  color: #3f8188;
+  font-weight: 900;
+}
+
+.upload-btn {
+  margin-left: 300px;
+  padding: 7px 20px;
 }
 
 </style>
