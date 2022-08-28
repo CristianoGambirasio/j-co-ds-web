@@ -445,7 +445,7 @@ async function removeUrl(nameDb, nameColl, index, idws) {
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
-  objParam.index = index
+  objParam.index = parseInt(index)
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
   const reqBody = new Uint8Array(0)
@@ -628,6 +628,13 @@ async function getResponse (idws) {
         })
       } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
         console.log('DELETE_COLLECTION')
+        wss.clients.forEach((client) => {
+          if (client.protocol == idws) {
+            client.send(bytes)
+          }
+        })
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 4])) == 0) {
+        console.log('REMOVE_URL')
         wss.clients.forEach((client) => {
           if (client.protocol == idws) {
             client.send(bytes)

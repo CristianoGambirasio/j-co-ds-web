@@ -303,7 +303,22 @@ export function handleResponse (finished) {
     }
     // Remove Url
     if (tool.arrayEquals(command, [0, 3, 0, 4])) {
-      //
+      const coll = JSON.parse(text)
+      this.listDatabases.forEach(database => {
+        if (database.name === coll.database) {
+          const collection = coll.replace('\n', '')
+          const collectionJSON = {}
+          collectionJSON.name = collection.split(' ')[0]
+          collectionJSON.type = collection.split(' ')[1]
+          collectionJSON.urls = collection.split(' ')[2]
+          for (let i = 0; i < collectionJSON.urls.length; i++) {
+            if (i === coll.index) {
+              collectionJSON.urls.pull(i)
+              console.log('Removed')
+            }
+          }
+        }
+      })
     }
     /* Set Frequency
         if (tool.arrayEquals(command, [0, 4, 0, 2])) {

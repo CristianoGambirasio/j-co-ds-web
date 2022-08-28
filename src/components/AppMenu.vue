@@ -260,7 +260,7 @@
 
                     <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
                       <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
+                        <v-btn v-on="on" @click="dialogImp = true">
                           <v-icon>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
@@ -434,17 +434,71 @@
                         <v-card-title>Managing urls</v-card-title>
                         <v-card-text>
                           <v-list>
-                            <v-list-item v-for="(url, i) in listUrls" :key="i">
-                              {{ url }}
-                            </v-list-item>
+                            <v-list-item-group v-model="urls" multiple>
+                              <v-list-item v-for="(url, i) in listUrls" :key="i">
+                                <v-list-item-content>{{ url }}</v-list-item-content>
+                              </v-list-item>
+                            </v-list-item-group>
                           </v-list>
                         </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                              <v-btn>
+                          <v-dialog v-model="dialogAddUrl" width="550">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on">
                                 Add url
                               </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Adding urls</v-card-title>
+                              <v-card-text>
+                                <v-form>
+                                  <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                                  <v-text-field label="Collection" v-model=item.name disabled type="text">
+                                  </v-text-field>
+                                  <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
+                                    v-model="nameUrl" required type="text">
+                                  </v-text-field>
+                                </v-form>
+                              </v-card-text>
+
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text
+                                  @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name)">
+                                  Add urls
+                                </v-btn>
+                                <v-btn color="primary" text @cilck="dialogAddUrl = false">
+                                  Cancel
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-btn v-if="!urls.length" disabled>
+                            Remove
+                          </v-btn>
+                          <v-dialog v-else v-model="dialogRemoveUrl" width="550">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on">
+                                Remove
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Removing urls</v-card-title>
+
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text @click="dialogRemoveUrl = false; getIndex(urls)">
+                                  <!--removeUrl(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)-->
+                                  Remove urls
+                                </v-btn>
+                                <v-btn color="primary" text @cilck="dialogRemoveUrl = false">
+                                  Cancel
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
@@ -666,6 +720,7 @@ export default {
       dialogColl: false,
       dialogUrl: false,
       dialogAddUrl: false,
+      dialogRemoveUrl: false,
       dialogFreq: false,
       dialogExp: false,
       dialogImp: false,
@@ -688,6 +743,7 @@ export default {
       offset: 0,
       append: false,
       index: '',
+      indexUrl: '',
       frequency: '',
       searchKeySensitive: true,
       search: null,
@@ -697,6 +753,7 @@ export default {
       listUrls: [],
       on: null,
       colls: [],
+      urls: [],
       icon: {
         database: 'mdi-database',
         static: 'mdi-folder',
@@ -850,6 +907,20 @@ export default {
       } else {
         this.$root.$refs.Workspace.updateParam(value[0].db, value[0].name)
       }
+    },
+    getIndex (arr) {
+      console.log(arr)
+      /*
+      for (let i = 0; i < arr.length; i++) {
+        const el1 = arr[i]
+        for (let j = 0; j < this.listUrls.length; j++) {
+          const el2 = this.listUrls[j]
+          if (el1 === el2) {
+            this.indexUrl = j
+          }
+        }
+      }
+      */
     }
   }
 }
