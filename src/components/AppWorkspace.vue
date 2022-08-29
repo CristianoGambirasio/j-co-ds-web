@@ -77,6 +77,7 @@ export default {
     getListUrl: com.getListUrl,
 
     reconnect () {
+      console.log('AAA')
       this.connection = returnWS()
     },
 
