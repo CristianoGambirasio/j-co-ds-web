@@ -471,7 +471,11 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
 
   objParam.database = nameDb
   objParam.collection = nameColl
-  objParam.append = append
+  if ( append === "false") {
+    objParam.append = false
+  } else {
+    objParam.append = true
+  }
   objBody.documents = []
   textDocuments = documents.split(',')
   objBody.documents.forEach((document) => {
@@ -495,12 +499,12 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
   await getResponse(idws)
 }
 
-async function setFrequency (nameDb, nameColl, indx, freq, idws) {
+async function setFrequency (nameDb, nameColl, index, freq, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00040001'))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
-  objParam.index = parseInt(indx)
+  objParam.index = parseInt(index)
   objParam.frequency = freq
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
@@ -654,7 +658,7 @@ async function getResponse (idws) {
             client.send(bytes)
           }
         })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 1])) == 0) {
+      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 2])) == 0) {
         console.log('SET_FREQUENCY')
         wss.clients.forEach((client) => {
           if (client.protocol == idws) {

@@ -94,10 +94,11 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
   downloadAnchorNode.remove()
 };
 
-export async function importCollection (nameDb) {
+export async function importCollection (nameDb, append) {
   // let intern
   const fileInput = document.getElementById('file_upload').files[0]
-  const nameColl = fileInput.name.split('.')[0]
+  const nameC = fileInput.name.split('.')
+  const nameColl = nameC[0]
   const fileread = new FileReader()
   await new Promise(resolve => {
     fileread.onload = function (e) {
@@ -107,13 +108,8 @@ export async function importCollection (nameDb) {
     }
     fileread.readAsText(fileInput)
   }).then((res) => {
-    this.saveCollection(nameDb, nameColl, res, this.append)
+    this.saveCollection(nameDb, nameColl, res, append)
   })
-};
-
-export function setFrequency (nameDb, nameColl, index, frequency) {
-  this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
-  this.handleResponse()
 };
 
 export function deleteDatabase (nameDb) {
@@ -126,16 +122,33 @@ export function deleteCollection (nameDb, nameColl) {
   this.handleResponse()
 };
 
-export function removeUrl (nameDb, nameColl, index) {
-  this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + index)
-  this.handleResponse()
-};
-
 export function deleteMoreCollections (colls) {
   for (let i = 0; i < colls.length; i++) {
     this.connection.send('DELETE_COLLECTION###' + colls[i].db + '###' + colls[i].name)
     this.handleResponse()
   }
+};
+
+export function removeUrl (nameDb, nameColl, index) {
+  this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + index)
+  this.handleResponse()
+};
+
+export function removeMoreUrls (nameDb, nameColl, indexes) {
+  console.log(nameDb)
+  console.log(nameColl)
+  console.log(indexes)
+  for (let i = 0; i < indexes.length; i++) {
+    console.log(indexes[i])
+    this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + indexes[i])
+    this.handleResponse()
+  }
+};
+
+export function setFrequency (nameDb, nameColl, index, frequency) {
+  console.log(index)
+  this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
+  this.handleResponse()
 };
 
 export function ping () {
@@ -321,27 +334,25 @@ export function handleResponse (finished) {
           for (let i = 0; i < collectionJSON.urls.length; i++) {
             if (i === coll.index) {
               collectionJSON.urls.pull(i)
-              console.log('Removed')
             }
           }
         }
       })
     }
-    /* Set Frequency
-        if (tool.arrayEquals(command, [0, 4, 0, 2])) {
-          const colls = JSON.parse(text)
-          this.listDatabases.forEach(database => {
-            if (database.name === colls.database) {
-              const collection = colls.replace('\n', '') // la risposta del server contiene degli \n che vengono rimossi
-              const collectionJSON = {}
-              collectionJSON.name = collection.split(' ')[0]
-              collectionJSON.type = collection.split(' ')[1]
-              collectionJSON.urls = collection.split(' ')[2]
-              collectionJSON[this.index].frequency = collection.split[3]
-            }
-          })
+    // Set Frequency
+    if (tool.arrayEquals(command, [0, 4, 0, 2])) {
+      const colls = JSON.parse(text)
+      this.listDatabases.forEach(database => {
+        if (database.name === colls.database) {
+          const collection = colls.replace('\n', '') // la risposta del server contiene degli \n che vengono rimossi
+          const collectionJSON = {}
+          collectionJSON.name = collection.split(' ')[0]
+          if (collectionJSON.name === colls.name) {
+            collectionJSON.urls[colls.index].frequency = colls.frequency
+          }
         }
-        */
+      })
+    }
     if (tool.arrayEquals(command, [0, 0, 0, 2])) {
       if (text === '') {
         this.online = true

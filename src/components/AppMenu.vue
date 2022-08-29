@@ -381,6 +381,52 @@
                       </v-card>
                     </v-dialog>
 
+                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ el.icon }}</v-icon>
+                          {{ el.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Importing collection</v-card-title>
+                        <v-card-text>
+                          <div class="upload-container">
+                            <input type="file" id="file_upload" multiple />
+                          </div>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-dialog v-model="dialogImp1" width="400">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on" class="upload-btn" color="primary" text>
+                                Upload
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Do you want to append this collection to the existing: {{ item.name }}
+                                collection?</v-card-title>
+                              <v-card-actions>
+                                <v-btn
+                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
+                                  Yes
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
+                                  No
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-btn color="primary" text @click="dialogImp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
                     <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
@@ -433,11 +479,24 @@
                       <v-card>
                         <v-card-title>Managing urls</v-card-title>
                         <v-card-text>
-                          <v-list>
+                          <v-list shaped>
                             <v-list-item-group v-model="urls" multiple>
-                              <v-list-item v-for="(url, i) in listUrls" :key="i">
-                                <v-list-item-content>{{ url }}</v-list-item-content>
-                              </v-list-item>
+                              <template v-for="(url, i) in listUrls">
+                                <v-divider v-if="!url" :key="`divider-${i}`"></v-divider>
+
+                                <v-list-item v-else :key="`url-${i}`" :value="url"
+                                  active-class="deep-blue--text text--accent-4">
+                                  <template v-slot:default="{ active }">
+                                    <v-list-item-content>
+                                      <v-list-item-title v-text="url"></v-list-item-title>
+                                    </v-list-item-content>
+
+                                    <v-list-item-action>
+                                      <v-checkbox :input-value="active" color="deep-purple accent-4"></v-checkbox>
+                                    </v-list-item-action>
+                                  </template>
+                                </v-list-item>
+                              </template>
                             </v-list-item-group>
                           </v-list>
                         </v-card-text>
@@ -489,8 +548,9 @@
 
                               <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" text @click="dialogRemoveUrl = false; getIndex(urls)">
-                                  <!--removeUrl(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)-->
+                                <v-btn color="primary" text
+                                  @click="dialogRemoveUrl = false; removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)">
+                                  <!-- removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)-->
                                   Remove urls
                                 </v-btn>
                                 <v-btn color="primary" text @cilck="dialogRemoveUrl = false">
@@ -505,7 +565,7 @@
 
                     <v-dialog v-if="i === 1" v-model="dialogFreq" width="600">
                       <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
+                        <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
                           <v-icon>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
@@ -516,6 +576,8 @@
                           <v-form>
                             <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                            <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
+                              hint="Select an url to modify his frequency-update" persistent-hint></v-select>
                             <v-text-field label="Frequency" v-model="frequency" required type="text"></v-text-field>
                           </v-form>
                         </v-card-text>
@@ -523,7 +585,7 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" text
-                            @click="dialogFreq = false; setFrequency(item.db, item.name, index, frequency); getListDatabase()">
+                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), frequency); getListDatabase()">
                             Set
                           </v-btn>
                           <v-btn color="primary" text @click="dialogFreq = false">
@@ -744,6 +806,8 @@ export default {
       append: false,
       index: '',
       indexUrl: '',
+      indexes: [],
+      freqUpdate: [],
       frequency: '',
       searchKeySensitive: true,
       search: null,
@@ -863,6 +927,7 @@ export default {
     deleteCollection: com.deleteCollection,
     removeUrl: com.removeUrl,
     deleteMoreCollections: com.deleteMoreCollections,
+    removeMoreUrls: com.removeMoreUrls,
     ping: com.ping,
     async buildWorkspace (value) {
       if (!value[0]) {
@@ -872,18 +937,18 @@ export default {
       }
     },
     getIndex (arr) {
-      console.log(arr)
-      /*
-      for (let i = 0; i < arr.length; i++) {
-        const el1 = arr[i]
-        for (let j = 0; j < this.listUrls.length; j++) {
-          const el2 = this.listUrls[j]
-          if (el1 === el2) {
-            this.indexUrl = j
+      for (let i = 0; i < this.listUrls.length; i++) {
+        const el1 = this.listUrls[i]
+        for (let j = 0; j < arr.length; j++) {
+          const el2 = arr[j]
+          if (el2 === el1) {
+            this.indexes.push(i.toString())
+          } else {
+            continue
           }
         }
       }
-      */
+      return this.indexes
     },
     emptyWorkspace () {
       this.$root.$refs.Workspace.updateParam(null, null)
