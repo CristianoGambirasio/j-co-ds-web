@@ -3,9 +3,6 @@
     <v-row style="height: 8vh;">
       <v-container id="meta">
         <v-row style="height: 50%;" class="ma-0 pa-0">
-          <v-col cols="6" id="meta1" style="padding: 0px;" class="d-flex align-center text-truncate">
-            <h5>{{metaTL}}</h5>
-          </v-col>
           <v-col cols="6" id="meta2" style="padding: 0px;">
             <v-container v-if="online" style="padding: 7px;" fill-height>
               <v-btn depressed block style="background-color: green; padding: 0px; height: 100%;">
@@ -24,23 +21,13 @@
               </v-btn>
             </v-container>
           </v-col>
-        </v-row>
-        <v-row v-if="isActive" style="height: 30%;">
-          <v-col cols="6" id="meta3" style="padding: 0px;" class="d-flex align-center text-truncate">
-            <h5>{{metaBL}}</h5>
+          <v-col cols="6">
+            <v-btn @click="updateDynamicCollection()">SetFreqProva</v-btn>
           </v-col>
-          <v-col cols="6" id="meta4" style="padding: 0px;" class="d-flex align-center text-truncate">
-            <h5>{{metaBR}}</h5>
-          </v-col>
-          <v-row style="height: 50%;">
-            <v-col cols="6" id="meta3" style="padding: 0px;" class="d-flex align-center text-truncate">
-              <h5>{{metaDL}}</h5>
-            </v-col>
-          </v-row>
         </v-row>
-        <v-row v-else style="height: 50%">
-          <v-col cols="6" id="meta3" style="padding: 0px" class="d-flex align-center">
-            <h4>{{nDB}} DATABASES</h4>
+        <v-row style="height: 50%">
+          <v-col cols="12" id="meta3" style="justify-content: center; padding: 0px" class="d-flex align-center">
+            <h4 style="color: white;">{{nDB}} DATABASES</h4>
           </v-col>
         </v-row>
       </v-container>
@@ -777,6 +764,7 @@ export default {
     reconnect () {
       connect()
       this.connection = returnWS()
+      this.$root.$refs.Workspace.reconnect()
       this.connection.onopen = () => {
         this.connection = returnWS()
         console.log('Connecting...')
@@ -802,6 +790,8 @@ export default {
     exportCollection: com.exportCollection,
     importCollection: com.importCollection,
     setFrequency: com.setFrequency,
+    setUpdateType: com.setUpdateType,
+    stopUpdate: com.stopUpdate,
     deleteDatabase: com.deleteDatabase,
     deleteCollection: com.deleteCollection,
     removeUrl: com.removeUrl,
@@ -816,6 +806,11 @@ export default {
     },
     emptyWorkspace () {
       this.$root.$refs.Workspace.updateParam(null, null)
+    },
+    updateDynamicCollection () {
+      this.setFrequency('test', 'd1', 0, 3600000)
+      this.setUpdateType('test', 'd1', 0, 0)
+      this.stopUpdate('test', 'd2')
     }
   }
 }

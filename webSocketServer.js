@@ -27,17 +27,16 @@ function onError () {
     client.on('error', onError)
   }, 10000)
 }
-
-
-/* client.on('connect', function(){
-  client.write(Buffer.from([0, 0, 0, 0, 0, 2, 0, 9, 0, 0, 0, 58, 0, 0, 3, 99, 123, 34, 100, 97, 116, 97, 98, 97, 115, 101, 34, 58, 34, 103, 101, 111, 83, 97, 109, 112, 108, 101, 115, 34, 44, 34, 99, 111, 108, 108, 101, 99, 116, 105, 111, 110, 34, 58, 34, 116, 103, 34, 44, 34, 97, 112, 112, 101, 110, 100, 34, 58, 102, 97, 108, 115, 101, 125, 123, 34, 100, 111, 99, 117, 109, 101, 110, 116, 115, 34, 58, 91, 123, 34, 115, 116, 114, 111, 110, 103, 34, 58, 34, 77, 105, 108, 97, 110, 111, 32, 118, 46, 82, 111, 115, 101, 108, 108, 105, 110, 105, 34, 44, 34, 98, 111, 111, 108, 34, 58, 116, 114, 117, 101, 44, 34, 126, 102, 117, 122, 122, 121, 115, 101, 116, 115, 34, 58, 123, 34, 112, 108, 117, 116, 111, 34, 58, 48, 46, 51, 50, 54, 44, 34, 112, 105, 112, 112, 111, 34, 58, 48, 46, 57, 52, 49, 125, 44, 34, 97, 114, 114, 97, 121, 34, 58, 91, 49, 44, 50, 44, 123, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 93, 44, 34, 100, 97, 116, 101, 52, 34, 58, 34, 50, 48, 50, 48, 45, 49, 48, 45, 49, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 46, 49, 50, 51, 34, 44, 34, 100, 111, 99, 34, 58, 123, 34, 97, 98, 99, 34, 58, 49, 44, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 44, 34, 100, 97, 116, 101, 51, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 34, 44, 34, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 50, 46, 52, 51, 44, 53, 46, 49, 50, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 44, 34, 100, 97, 116, 101, 50, 34, 58, 34, 50, 48, 50, 49, 45, 48, 53, 45, 49, 54, 84, 49, 50, 58, 51, 50, 34, 44, 34, 100, 97, 116, 101, 49, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 34, 44, 34, 102, 108, 111, 97, 116, 34, 58, 52, 53, 46, 52, 57, 48, 48, 55, 50, 56, 55, 56, 53, 49, 52, 53, 44, 34, 105, 110, 116, 34, 58, 49, 50, 52, 125, 44, 123, 34, 115, 116, 114, 111, 110, 103, 34, 58, 34, 77, 105, 108, 97, 110, 111, 32, 118, 46, 82, 111, 115, 101, 108, 108, 105, 110, 105, 34, 44, 34, 98, 111, 111, 108, 34, 58, 116, 114, 117, 101, 44, 34, 126, 102, 117, 122, 122, 121, 115, 101, 116, 115, 34, 58, 123, 34, 112, 108, 117, 116, 111, 34, 58, 48, 46, 51, 50, 54, 44, 34, 112, 105, 112, 112, 111, 34, 58, 48, 46, 57, 52, 49, 125, 44, 34, 97, 114, 114, 97, 121, 34, 58, 91, 49, 44, 50, 44, 123, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 93, 44, 34, 100, 97, 116, 101, 52, 34, 58, 34, 50, 48, 50, 48, 45, 49, 48, 45, 49, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 46, 49, 50, 51, 34, 44, 34, 100, 111, 99, 34, 58, 123, 34, 97, 98, 99, 34, 58, 49, 44, 34, 126, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 49, 46, 48, 44, 50, 46, 48, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 125, 44, 34, 100, 97, 116, 101, 51, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 84, 49, 50, 58, 51, 50, 58, 50, 49, 34, 44, 34, 103, 101, 111, 109, 101, 116, 114, 121, 34, 58, 123, 34, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 115, 34, 58, 91, 50, 46, 52, 51, 44, 53, 46, 49, 50, 93, 44, 34, 116, 121, 112, 101, 34, 58, 34, 80, 111, 105, 110, 116, 34, 125, 44, 34, 100, 97, 116, 101, 50, 34, 58, 34, 50, 48, 50, 49, 45, 48, 53, 45, 49, 54, 84, 49, 50, 58, 51, 50, 34, 44, 34, 100, 97, 116, 101, 49, 34, 58, 34, 50, 48, 50, 50, 45, 48, 52, 45, 50, 51, 34, 44, 34, 102, 108, 111, 97, 116, 34, 58, 52, 53, 46, 52, 57, 48, 48, 55, 50, 56, 55, 56, 53, 49, 52, 53, 44, 34, 105, 110, 116, 34, 58, 49, 50, 52, 125, 93, 125]))
-})
+/*
+client.on('connect', function(){
+  // client.write(Buffer.from([]))
+  stopUpdate('test', 'd2')
+}) 
 
 client.on('data', function(data){
   console.log(new Uint8Array(data).toString())
   client.end()
 }) */
-
 
 // Connection with J-CO-DS-Server
 
@@ -136,6 +135,16 @@ wss.on('connection', function (ws) {
         const index = message.split('###')[3]
         const freq = message.split('###')[4]
         setFrequency(dbName, collName, index, freq, idws)
+      } else if (command == 'SET_UPDATE_TYPE') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        const index = message.split('###')[3]
+        const type = message.split('###')[4]
+        setUpdateType(dbName, collName, index, type, idws)
+      } else if (command == 'STOP_UPDATE') {
+        const dbName = message.split('###')[1]
+        const collName = message.split('###')[2]
+        stopUpdate(dbName, collName, idws)
       } else if (command == 'PING') {
         ping(idws)
       }
@@ -201,7 +210,7 @@ async function reqListCollection (nameDB, idws) {
   await getResponse(idws)
 }
 
-async function reqListUrl(nameDb, nameColl, idws) {
+async function reqListUrl (nameDb, nameColl, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00030005'))
   const objParam = {}
   objParam.database = nameDb
@@ -440,7 +449,7 @@ async function deleteCollection (nameDb, nameColl, idws) {
   await getResponse(idws)
 }
 
-async function removeUrl(nameDb, nameColl, index, idws) {
+async function removeUrl (nameDb, nameColl, index, idws) {
   const commandCode = new Uint8Array(toBytesCommandCode('00030003'))
   const objParam = {}
   objParam.database = nameDb
@@ -501,9 +510,57 @@ async function setFrequency (nameDb, nameColl, indx, freq, idws) {
   objParam.database = nameDb
   objParam.name = nameColl
   objParam.index = parseInt(indx)
-  objParam.frequency = freq
+  objParam.frequency = parseInt(freq)
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function setUpdateType (nameDb, nameColl, indx, type, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00040003'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.name = nameColl
+  objParam.index = parseInt(indx)
+  objParam.type = parseInt(type)
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
+  const reqBody = new Uint8Array(0)
+
+  const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
+  const sizeBody = new Uint8Array(toBytesInt32(0))
+
+  const message = new Uint8Array(16 + reqParam.length + reqBody.length)
+  message.set(commandCode)
+  message.set(sizeParam, 8)
+  message.set(sizeBody, 8 + 4)
+  message.set(reqParam, 8 + 4 + 4)
+  message.set(reqBody, 8 + 4 + 4 + reqParam.length)
+
+  client.write(message)
+  await getResponse(idws)
+}
+
+async function stopUpdate (nameDb, nameColl, idws) {
+  const commandCode = new Uint8Array(toBytesCommandCode('00040005'))
+  const objParam = {}
+  objParam.database = nameDb
+  objParam.name = nameColl
+
+  const reqParam = encoder.encode(JSON.stringify(objParam))
   const reqBody = new Uint8Array(0)
 
   const sizeParam = new Uint8Array(toBytesInt32(reqParam.length))
@@ -552,126 +609,146 @@ async function getResponse (idws) {
       for (let i = 0; i < res.length; i++) {
         textRes += String.fromCharCode(res[i])
       }
-      if (isJsonString(textRes) || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 0, 0, 2])) == 0) { // Check if the response is ping or a valid JSON 
+      if (isJsonString(textRes) || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 0, 0, 2])) == 0) { // Check if the response is ping or a valid JSON
         let bytes = Buffer.concat(chunks)
-      bytes = bytes.subarray(4) // the 4 first byte are equals to 0
-      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
-        console.log('LIST DATABASE: ')
-        // if there are more clients connected
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
-        console.log('LIST_COLLECTION: ')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
-        console.log('LIST_URL: ')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 3])) == 0) {
-        console.log('CREATE_DATABASE')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 3])) == 0) {
-        console.log('CREATE_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 23])) == 0) {
-        console.log('CREATE_DYNAMIC_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 13])) == 0) {
-        console.log('CREATE_VIRTUAL_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 1])) == 0) {
-        console.log('ADD_URL')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 8])) == 0) {
-        console.log('GET_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
-        console.log('GET_COLLECTION_COUNT')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 5])) == 0) {
-        console.log('DELETE_DATABASE')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
-        console.log('DELETE_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 10])) == 0) {
-        console.log('SAVE_COLLECTION')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 1])) == 0) {
-        console.log('SET_FREQUENCY')
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
-      } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+        bytes = bytes.subarray(4) // the 4 first byte are equals to 0
+        if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
+          console.log('LIST DATABASE: ')
+          // if there are more clients connected
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
+          console.log('LIST_COLLECTION: ')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
+          console.log('LIST_URL: ')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 3])) == 0) {
+          console.log('CREATE_DATABASE')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 3])) == 0) {
+          console.log('CREATE_COLLECTION')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 23])) == 0) {
+          console.log('CREATE_DYNAMIC_COLLECTION')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 13])) == 0) {
+          console.log('CREATE_VIRTUAL_COLLECTION')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 1])) == 0) {
+          console.log('ADD_URL')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 8])) == 0) {
+          console.log('GET_COLLECTION')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
+          console.log('GET_COLLECTION_COUNT')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 5])) == 0) {
+          console.log('DELETE_DATABASE')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
+          console.log('DELETE_COLLECTION')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 4])) == 0) {
+          console.log('REMOVE_URL')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 10])) == 0) {
+          console.log('SAVE_COLLECTION')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 2])) == 0) {
+          console.log('SET_FREQUENCY')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 4])) == 0) {
+          console.log('SET_UPDATE_TYPE')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 6])) == 0) {
+          console.log('STOP_UPDATE')
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
         // PING
-        wss.clients.forEach((client) => {
-          if (client.protocol == idws) {
-            client.send(bytes)
-          }
-        })
+          wss.clients.forEach((client) => {
+            if (client.protocol == idws) {
+              client.send(bytes)
+            }
+          })
+        }
+        if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0) {
+          console.log(bytes.subarray(12).toString())
+        }
+        isOccupied = false
+        client.removeListener('data', readResponse) // Stop listening if the last chunk is recived
       }
-      if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0) {
-        console.log(bytes.subarray(12).toString())
-      }
-      isOccupied = false
-      client.removeListener('data', readResponse) // Stop listening if the last chunk is recived
     }
-      }
   })
 }
-
 // Util function
 const toBytesInt32 = (num) => { // Converte un int in ArrayBuffer(4)
   const arr = new ArrayBuffer(4)
@@ -688,11 +765,11 @@ const toBytesCommandCode = (code) => { // Converte un comando di 8 cifre come st
   return byteArray
 }
 
-function isJsonString(str) {
+function isJsonString (str) {
   try {
-      JSON.parse(str);
+    JSON.parse(str)
   } catch (e) {
-      return false;
+    return false
   }
-  return true;
+  return true
 }

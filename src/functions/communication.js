@@ -116,6 +116,16 @@ export function setFrequency (nameDb, nameColl, index, frequency) {
   this.handleResponse()
 };
 
+export function setUpdateType (nameDb, nameColl, index, type) {
+  this.connection.send('SET_UPDATE_TYPE###' + nameDb + '###' + nameColl + '###' + index + '###' + type)
+  this.handleResponse()
+};
+
+export function stopUpdate (nameDb, nameColl) {
+  this.connection.send('STOP_UPDATE###' + nameDb + '###' + nameColl)
+  this.handleResponse()
+};
+
 export function deleteDatabase (nameDb) {
   this.connection.send('DELETE_DATABASE###' + nameDb)
   this.handleResponse()
@@ -139,7 +149,7 @@ export function deleteMoreCollections (colls) {
 };
 
 export function ping () {
-  let errMessageSent = false
+  /* let errMessageSent = false
   this.connection.send('PING')
   setInterval(() => {
     if (this.connection === null || this.connection.readyState === 2 || this.connection.readyState === 3) {
@@ -154,7 +164,7 @@ export function ping () {
       this.connection.send('PING')
     }
   }
-  , 1000)
+  , 1000) */
 };
 
 export function handleResponse (finished) {
@@ -312,21 +322,18 @@ export function handleResponse (finished) {
     if (tool.arrayEquals(command, [0, 3, 0, 4])) {
       //
     }
-    /* Set Frequency
-        if (tool.arrayEquals(command, [0, 4, 0, 2])) {
-          const colls = JSON.parse(text)
-          this.listDatabases.forEach(database => {
-            if (database.name === colls.database) {
-              const collection = colls.replace('\n', '') // la risposta del server contiene degli \n che vengono rimossi
-              const collectionJSON = {}
-              collectionJSON.name = collection.split(' ')[0]
-              collectionJSON.type = collection.split(' ')[1]
-              collectionJSON.urls = collection.split(' ')[2]
-              collectionJSON[this.index].frequency = collection.split[3]
-            }
-          })
-        }
-        */
+    // Set Frequency
+    if (tool.arrayEquals(command, [0, 4, 0, 2])) {
+      console.log('Frequency updated')
+    }
+    // Set Update Type
+    if (tool.arrayEquals(command, [0, 4, 0, 4])) {
+      console.log('Updated dynamic update type')
+    }
+    if (tool.arrayEquals(command, [0, 4, 0, 6])) {
+      console.log('Stopped update')
+    }
+    // Ping
     if (tool.arrayEquals(command, [0, 0, 0, 2])) {
       if (text === '') {
         this.online = true
