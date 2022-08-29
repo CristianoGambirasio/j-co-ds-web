@@ -195,7 +195,7 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn class="upload-btn" color="primary" text
-                            @click="dialogImp = false; importCollection(item.name); getListDatabase()">
+                            @click="dialogImp = false; importCollection(item); getListDatabase()">
                             Upload
                           </v-btn>
                           <v-btn color="primary" text @click="dialogImp = false">
@@ -273,12 +273,12 @@
                                 collection?</v-card-title>
                               <v-card-actions>
                                 <v-btn
-                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item.name); getListDatabase()">
+                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item); getListDatabase()">
                                   Yes
                                 </v-btn>
                                 <v-spacer></v-spacer>
                                 <v-btn
-                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item.name); getListDatabase()">
+                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item); getListDatabase()">
                                   No
                                 </v-btn>
                               </v-card-actions>
@@ -565,7 +565,7 @@
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
                               hint="Select an url to modify his frequency-update" persistent-hint></v-select>
-                            <v-text-field label="Frequency" v-model="frequency" required type="text"></v-text-field>
+                            <v-text-field label="Frequency" v-model="frequency" required ></v-text-field>
                           </v-form>
                         </v-card-text>
 
@@ -794,7 +794,7 @@ export default {
       index: '',
       indexUrl: '',
       indexes: [],
-      freqUpdate: [],
+      indexFreqUpdate: '',
       frequency: '',
       searchKeySensitive: true,
       search: null,
@@ -927,14 +927,19 @@ export default {
       }
     },
     getIndex (arr) {
+      console.log(this.listUrls)
       for (let i = 0; i < this.listUrls.length; i++) {
         const el1 = this.listUrls[i]
-        for (let j = 0; j < arr.length; j++) {
-          const el2 = arr[j]
-          if (el2 === el1) {
-            this.indexes.push(i.toString())
-          } else {
-            continue
+        if (!Array.isArray(arr)) {
+          if (el1 === arr) {
+            return i
+          }
+        } else {
+          for (let j = 0; j < arr.length; j++) {
+            const el2 = arr[j]
+            if (el2 === el1) {
+              this.indexes.push(i.toString())
+            }
           }
         }
       }

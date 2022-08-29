@@ -31,11 +31,10 @@ function onError () {
 client.on('connect', function(){
   // client.write(Buffer.from([]))
   stopUpdate('test', 'd2')
-})
+}) 
 
 client.on('data', function(data){
   console.log(new Uint8Array(data).toString())
-  client.end()
 }) */
 
 // Connection with J-CO-DS-Server
@@ -485,11 +484,7 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
   } else {
     objParam.append = true
   }
-  objBody.documents = []
-  textDocuments = documents.split(',')
-  objBody.documents.forEach((document) => {
-    objBody.documents.push(JSON.parse(document))
-  })
+  objBody.documents = JSON.parse(documents)
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
   const reqBody = new Uint8Array(encoder.encode(JSON.stringify(objBody)))
@@ -505,6 +500,7 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
   message.set(reqBody, 8 + 4 + 4 + reqParam.length)
 
   client.write(message)
+  console.log(message)
   await getResponse(idws)
 }
 
@@ -513,7 +509,7 @@ async function setFrequency (nameDb, nameColl, index, freq, idws) {
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
-  objParam.index = parseInt(indx)
+  objParam.index = parseInt(index)
   objParam.frequency = parseInt(freq)
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
@@ -613,7 +609,7 @@ async function getResponse (idws) {
       for (let i = 0; i < res.length; i++) {
         textRes += String.fromCharCode(res[i])
       }
-      if (isJsonString(textRes) || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 0, 0, 2])) == 0) { // Check if the response is ping or a valid JSON
+      if (isJsonString(textRes) || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 0, 0, 2])) == 0 || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 2, 0, 10])) == 0) { // Check if the response is ping or a valid JSON
         let bytes = Buffer.concat(chunks)
         bytes = bytes.subarray(4) // the 4 first byte are equals to 0
         if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {

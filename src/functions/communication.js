@@ -94,25 +94,48 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
   downloadAnchorNode.remove()
 };
 
-export async function importCollection (nameDb, append) {
-  // let intern
-  const fileInput = document.getElementById('file_upload').files[0]
-  const nameC = fileInput.name.split('.')
-  const nameColl = nameC[0]
-  const fileread = new FileReader()
-  await new Promise(resolve => {
-    fileread.onload = function (e) {
-      const content = e.target.result
-      // intern = JSON.parse(content)
-      resolve(content)
-    }
-    fileread.readAsText(fileInput)
-  }).then((res) => {
-    this.saveCollection(nameDb, nameColl, res, append)
-  })
+export async function importCollection (item) {
+  if (!item.db) {
+    const fileInput = document.getElementById('file_upload').files[0]
+    const nameC = fileInput.name.split('.')
+    const nameColl = nameC[0]
+    const fileread = new FileReader()
+    await new Promise(resolve => {
+      fileread.onload = function (e) {
+        const content = e.target.result
+        resolve(content)
+      }
+      fileread.readAsText(fileInput)
+    }).then((res) => {
+      this.saveCollection(item.name, nameColl, res, this.append)
+    })
+    this.handleResponse()
+  } else {
+    const fileInput = document.getElementById('file_upload').files[0]
+    const nameC = fileInput.name.split('.')
+    const nameColl = nameC[0]
+    const fileread = new FileReader()
+    await new Promise(resolve => {
+      fileread.onload = function (e) {
+        const content = e.target.result
+        resolve(content)
+      }
+      fileread.readAsText(fileInput)
+    }).then((res) => {
+      console.log(this.append)
+      if (!this.append) {
+        this.saveCollection(item.db, nameColl, res, this.append)
+      } else {
+        this.saveCollection(item.db, item.name, res, this.append)
+      }
+    })
+    this.handleResponse()
+  }
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
+  console.log(index)
+  console.log(frequency)
   this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
   this.handleResponse()
 };
