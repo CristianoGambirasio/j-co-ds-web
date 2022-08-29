@@ -160,12 +160,6 @@ export function removeMoreUrls (nameDb, nameColl, indexes) {
   }
 };
 
-export function setFrequency (nameDb, nameColl, index, frequency) {
-  console.log(index)
-  this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
-  this.handleResponse()
-};
-
 export function ping () {
   /* let errMessageSent = false
   this.connection.send('PING')
@@ -353,7 +347,6 @@ export function handleResponse (finished) {
           }
         }
       })
-    }
     }
     // Set Frequency
     if (tool.arrayEquals(command, [0, 4, 0, 2])) {

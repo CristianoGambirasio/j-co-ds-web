@@ -31,7 +31,7 @@ function onError () {
 client.on('connect', function(){
   // client.write(Buffer.from([]))
   stopUpdate('test', 'd2')
-}) 
+})
 
 client.on('data', function(data){
   console.log(new Uint8Array(data).toString())
@@ -480,7 +480,7 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
 
   objParam.database = nameDb
   objParam.collection = nameColl
-  if ( append === "false") {
+  if (append === 'false') {
     objParam.append = false
   } else {
     objParam.append = true
