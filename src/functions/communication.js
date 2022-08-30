@@ -379,6 +379,7 @@ export function handleResponse (finished) {
     if (tool.arrayEquals(command, [0, 4, 0, 4])) {
       console.log('Updated dynamic update type')
     }
+    // Stop update
     if (tool.arrayEquals(command, [0, 4, 0, 6])) {
       console.log('Stopped update')
     }

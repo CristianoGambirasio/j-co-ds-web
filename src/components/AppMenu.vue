@@ -452,10 +452,7 @@
                     </v-dialog>
                   </v-list-item>
 
-                  <v-divider></v-divider>
-
-                  <!--da modificare con manage url, usando addUrl e removeUrl e listUrl-->
-                  <v-list-item v-for="(el, i) in itemsOtherCollection" :key="i">
+                  <v-list-item v-for="(el, i) in itemsDynamicCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogUrl" width="500">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
@@ -521,6 +518,7 @@
                               </v-card-actions>
                             </v-card>
                           </v-dialog>
+                          &nbsp;&nbsp;
                           <v-btn v-if="!urls.length" disabled>
                             Remove
                           </v-btn>
@@ -537,7 +535,6 @@
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary" text
                                   @click="dialogRemoveUrl = false; removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)">
-                                  <!-- removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)-->
                                   Remove urls
                                 </v-btn>
                                 <v-btn color="primary" text @cilck="dialogRemoveUrl = false">
@@ -546,6 +543,11 @@
                               </v-card-actions>
                             </v-card>
                           </v-dialog>
+
+                          &nbsp;&nbsp;
+                          <v-btn @click="dialogUrl = false">
+                            Cancel
+                          </v-btn>
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
@@ -565,7 +567,7 @@
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
                               hint="Select an url to modify his frequency-update" persistent-hint></v-select>
-                            <v-text-field label="Frequency" v-model="frequency" required ></v-text-field>
+                            <v-text-field label="Frequency" v-model="frequency" required></v-text-field>
                           </v-form>
                         </v-card-text>
 
@@ -577,6 +579,31 @@
                           </v-btn>
                           <v-btn color="primary" text @click="dialogFreq = false">
                             Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <v-dialog v-if="i === 2" v-model="dialogStop" width="400">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-if="!stop" v-on="on" style="color: green">
+                          <v-icon>{{ el.icon }}</v-icon>
+                          {{ el.text }}
+                        </v-btn>
+                        <v-btn v-if="stop" v-on="on" style="color: red">
+                          <v-icon>mdi-pause-octagon</v-icon>
+                          In pause
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Do you want to stop updating this collection automatically?</v-card-title>
+
+                        <v-card-actions>
+                          <v-btn color="primary" text @click="dialogStop = false; stopUpdate(item.db, item.name); stop = true">
+                            yes
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogStop = false; stop = false">
+                            No
                           </v-btn>
                         </v-card-actions>
                       </v-card>
@@ -622,7 +649,53 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on">
+                          <v-icon>{{ el.icon }}</v-icon>
+                          {{ el.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Importing collection</v-card-title>
+                        <v-card-text>
+                          <div class="upload-container">
+                            <input type="file" id="file_upload" multiple />
+                          </div>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-dialog v-model="dialogImp1" width="400">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on" class="upload-btn" color="primary" text>
+                                Upload
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Do you want to append this collection to the existing: {{ item.name }}
+                                collection?</v-card-title>
+                              <v-card-actions>
+                                <v-btn
+                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
+                                  Yes
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
+                                  No
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-btn color="primary" text @click="dialogImp = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -660,11 +733,136 @@
                     </v-dialog>
                   </v-list-item>
 
-                  <v-divider></v-divider>
+                  <v-list-item v-for="(el, i) in itemsVirtualCollection" :key="i">
+                    <v-dialog v-if="i === 0" v-model="dialogUrl" width="500">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
+                          <v-icon>{{ el.icon }}</v-icon>
+                          {{ el.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Managing urls</v-card-title>
+                        <v-card-text>
+                          <v-list shaped>
+                            <v-list-item-group v-model="urls" multiple>
+                              <template v-for="(url, i) in listUrls">
+                                <v-divider v-if="!url" :key="`divider-${i}`"></v-divider>
 
-                  <!-- manage url da aggiungere-->
-                  <v-list-item v-for="(el, i) in itemsOtherCollection" :key="i">
-                    <v-dialog v-if="i === 0" width="250">
+                                <v-list-item v-else :key="`url-${i}`" :value="url"
+                                  active-class="deep-blue--text text--accent-4">
+                                  <template v-slot:default="{ active }">
+                                    <v-list-item-content>
+                                      <v-list-item-title v-text="url"></v-list-item-title>
+                                    </v-list-item-content>
+
+                                    <v-list-item-action>
+                                      <v-checkbox :input-value="active" color="deep-purple accent-4"></v-checkbox>
+                                    </v-list-item-action>
+                                  </template>
+                                </v-list-item>
+                              </template>
+                            </v-list-item-group>
+                          </v-list>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-dialog v-model="dialogAddUrl" width="550">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on">
+                                Add url
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Adding urls</v-card-title>
+                              <v-card-text>
+                                <v-form>
+                                  <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                                  <v-text-field label="Collection" v-model=item.name disabled type="text">
+                                  </v-text-field>
+                                  <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
+                                    v-model="nameUrl" required type="text">
+                                  </v-text-field>
+                                </v-form>
+                              </v-card-text>
+
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text
+                                  @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name)">
+                                  Add urls
+                                </v-btn>
+                                <v-btn color="primary" text @cilck="dialogAddUrl = false">
+                                  Cancel
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          &nbsp;&nbsp;
+                          <v-btn v-if="!urls.length" disabled>
+                            Remove
+                          </v-btn>
+                          <v-dialog v-else v-model="dialogRemoveUrl" width="550">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on">
+                                Remove
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Removing urls</v-card-title>
+
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text
+                                  @click="dialogRemoveUrl = false; removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)">
+                                  Remove urls
+                                </v-btn>
+                                <v-btn color="primary" text @cilck="dialogRemoveUrl = false">
+                                  Cancel
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+
+                          &nbsp;&nbsp;
+                          <v-btn @click="dialogUrl = false">
+                            Cancel
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <v-dialog v-if="i === 1" v-model="dialogFreq" width="600">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
+                          <v-icon>{{ el.icon }}</v-icon>
+                          {{ el.text }}
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>Set frequency</v-card-title>
+                        <v-card-text>
+                          <v-form>
+                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                            <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
+                              hint="Select an url to modify his frequency-update" persistent-hint></v-select>
+                            <v-text-field label="Frequency" v-model="frequency" required></v-text-field>
+                          </v-form>
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" text
+                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), frequency); getListDatabase()">
+                            Set
+                          </v-btn>
+                          <v-btn color="primary" text @click="dialogFreq = false">
+                            Close
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
                     </v-dialog>
                   </v-list-item>
                 </v-list>
@@ -776,12 +974,14 @@ export default {
       dialogImp1: false,
       dialogDelColl0: false,
       dialogDelColl1: false,
+      dialogStop: false,
       metaTL: null,
       metaDL: null, // frquency info
       metaBL: null,
       metaBR: null,
       active: false,
       online: false,
+      stop: false,
       flag: false, // for the selectable treeview option
       type: '',
       nameDb: '',
@@ -845,7 +1045,21 @@ export default {
           icon: 'mdi-database-export'
         }
       ],
-      itemsOtherCollection: [
+      itemsDynamicCollection: [
+        {
+          text: 'Manage url',
+          icon: 'mdi-file-link'
+        },
+        {
+          text: 'Set frequency',
+          icon: 'mdi-update'
+        },
+        {
+          text: 'Automatically update',
+          icon: 'mdi-play-circle'
+        }
+      ],
+      itemsVirtualCollection: [
         {
           text: 'Manage url',
           icon: 'mdi-file-link'
