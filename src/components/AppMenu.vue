@@ -3,7 +3,7 @@
     <v-row style="height: 8vh;">
       <v-container id="meta">
         <v-row style="height: 50%;" class="ma-0 pa-0">
-          <v-col cols="6" id="meta2" style="padding: 0px;">
+          <v-col cols="12" id="meta2" style="padding: 0px;">
             <v-container v-if="online" style="padding: 7px;" fill-height>
               <v-btn depressed block style="background-color: green; padding: 0px; height: 100%;">
                 ONLINE
@@ -20,9 +20,6 @@
                 </v-icon>
               </v-btn>
             </v-container>
-          </v-col>
-          <v-col cols="6">
-            <v-btn @click="updateDynamicCollection()">SetFreqProva</v-btn>
           </v-col>
         </v-row>
         <v-row style="height: 50%">
@@ -45,7 +42,7 @@
     <v-row style="height: 4vh">
       <template>
         <v-btn v-if="flag === false" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
-          @click="getListDatabase(); emptyWorkspace()">
+          @click="getListDatabase();">
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
         <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
