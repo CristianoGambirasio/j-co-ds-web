@@ -497,7 +497,7 @@ async function setFrequency (nameDb, nameColl, index, freq, idws) {
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
-  objParam.index = parseInt(indx)
+  objParam.index = parseInt(index)
   objParam.frequency = parseInt(freq)
 
   const reqParam = new Uint8Array(encoder.encode(JSON.stringify(objParam)))
