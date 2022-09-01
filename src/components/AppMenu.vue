@@ -13,12 +13,18 @@
               </v-btn>
             </v-container>
             <v-container v-else style="padding: 7px;" fill-height>
-              <v-btn depressed block style="background-color: red; padding: 0px;" @click="reconnect()">
-                OFFLINE
-                <v-icon>
-                  mdi-access-point-remove
-                </v-icon>
-              </v-btn>
+              <v-tooltip right>
+                <template v-slot:activator="{on, attrs}">
+                  <v-btn v-on="on" v-bind="attrs" depressed block style="background-color: red; padding: 0px;"
+                    @click="reconnect()">
+                    OFFLINE
+                    <v-icon>
+                      mdi-access-point-remove
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>click to go online</span>
+              </v-tooltip>
             </v-container>
           </v-col>
         </v-row>
@@ -41,15 +47,26 @@
 
     <v-row style="height: 4vh">
       <template>
-        <v-btn v-if="flag === false" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
-          @click="getListDatabase();">
-          <v-icon>mdi-refresh</v-icon>
-        </v-btn>
-        <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
-          <template v-slot:activator="{ on }">
-            <v-btn fab small class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
-              <v-icon>mdi-plus</v-icon>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs}">
+            <v-btn v-on="on" v-bind="attrs" v-if="flag === false" fab small class="ml-1" height="25px" rounded depressed
+              color=#5B5656 dark @click="getListDatabase();">
+              <v-icon>mdi-refresh</v-icon>
             </v-btn>
+          </template>
+          <span>refresh</span>
+        </v-tooltip>
+        <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
+          <template #activator="{ on: dialog }">
+            <v-tooltip bottom>
+              <template #activator="{ on: tooltip }">
+                <v-btn v-on="{ ...tooltip, ...dialog }" fab small class="ml-1" height="25px" rounded depressed
+                  color=#5B5656 dark>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span>create a new database</span>
+            </v-tooltip>
           </template>
           <v-card>
             <v-card-title>Creating new database</v-card-title>
@@ -70,9 +87,15 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-btn fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark @click="flag = !flag">
-          <v-icon>mdi-checkbox-multiple-marked</v-icon>
-        </v-btn>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
+              @click="flag = !flag">
+              <v-icon>mdi-checkbox-multiple-marked</v-icon>
+            </v-btn>
+          </template>
+          <span>menu for deleting more collections simultaneously</span>
+        </v-tooltip>
       </template>
     </v-row>
     <v-row style="height: 61vh">
@@ -91,7 +114,8 @@
               <v-menu bottom :offset-x="true">
                 <template v-slot:activator="{ on }">
                   <v-btn dark icon v-on="on">
-                    <v-icon v-if="hover">mdi-dots-vertical</v-icon>
+                    <v-icon v-if="hover">
+                      mdi-dots-vertical</v-icon>
                   </v-btn>
                 </template>
 
@@ -1072,12 +1096,6 @@ export default {
 
 <style scoped>
 
-/*
-* {
-  outline: 1px solid lime;
-}
-*/
-
 .activeNode{
   background-color: #5B5656;
 }
@@ -1103,6 +1121,12 @@ h5{
 
 .v-treeview-node__level{
   width: 15px;
+}
+
+.v-tooltip__content {
+  background-color: white;
+  color: black;
+  opacity: 1 !important
 }
 
 ::-webkit-scrollbar {
