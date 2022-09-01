@@ -744,38 +744,6 @@
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
-
-                    <v-dialog v-if="i === 1" v-model="dialogFreq" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
-                          <v-icon>{{ el.icon }}</v-icon>
-                          {{ el.text }}
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Set frequency</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
-                            <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
-                              hint="Select an url to modify his frequency-update" persistent-hint></v-select>
-                            <v-text-field label="Frequency" v-model="frequency" required></v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), frequency); getListDatabase()">
-                            Set
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogFreq = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -987,10 +955,6 @@ export default {
         {
           text: 'Manage url',
           icon: 'mdi-file-link'
-        },
-        {
-          text: 'Set frequency',
-          icon: 'mdi-update'
         }
       ],
       collTypes: ['Static', 'Dynamic', 'Virtual']
