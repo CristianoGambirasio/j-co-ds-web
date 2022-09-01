@@ -1163,9 +1163,9 @@ export default {
       this.$root.$refs.Workspace.updateParam(null, null)
     },
     updateDynamicCollection () {
-      this.setFrequency('test', 'd1', 0, 3600000)
-      this.setUpdateType('test', 'd1', 0, 0)
-      this.stopUpdate('test', 'd2')
+      this.setFrequency('Webist2022', 'valueArray', 0, 2147483647)
+      // this.setUpdateType('test', 'd1', 0, 0)
+      // this.stopUpdate('test', 'd2')
     }
   }
 }
