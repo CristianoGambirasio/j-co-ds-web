@@ -517,15 +517,25 @@
                             <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
                             <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
-                              hint="Select an url to modify his frequency-update" persistent-hint></v-select>
-                            <v-text-field label="Frequency" v-model="frequency" required></v-text-field>
+                              hint="Select an url to modify his frequency-update" persistent-hint
+                              :error-messages="selectErrors"></v-select>
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="week" v-model="frequencyWeek"></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="day" v-model="frequencyDay"></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="hour" v-model="frequencyHour"></v-text-field>
+                              </v-col>
+                            </v-row>
                           </v-form>
                         </v-card-text>
 
                         <v-card-actions>
-                          <v-spacer></v-spacer>
                           <v-btn color="primary" text
-                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), frequency); getListDatabase()">
+                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), msFrequency); getListDatabase();">
                             Set
                           </v-btn>
                           <v-btn color="primary" text @click="dialogFreq = false">
@@ -537,13 +547,9 @@
 
                     <v-dialog v-if="i === 2" v-model="dialogStop" width="400">
                       <template v-slot:activator="{ on }">
-                        <v-btn v-if="!stop" v-on="on" style="color: green">
+                        <v-btn v-if="!stop" v-on="on" style="color: red">
                           <v-icon>{{ el.icon }}</v-icon>
                           {{ el.text }}
-                        </v-btn>
-                        <v-btn v-if="stop" v-on="on" style="color: red">
-                          <v-icon>mdi-pause-octagon</v-icon>
-                          In pause
                         </v-btn>
                       </template>
                       <v-card>
@@ -777,9 +783,9 @@
           </c-treeview>
         </v-container>
         <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
-          <v-treeview dark dense activatable selectable v-model="colls" :items="listDatabases" :load-children="getListCollection"
-            :search='search' :filter='filter' item-key="id" open-on-click transition return-object
-            active-class="activeNode">
+          <v-treeview dark dense activatable selectable v-model="colls" :items="listDatabases"
+            :load-children="getListCollection" :search='search' :filter='filter' item-key="id" open-on-click transition
+            return-object active-class="activeNode">
             <template v-slot:prepend="{item, open}">
               <v-icon>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
@@ -805,20 +811,20 @@
                     Delete
                   </v-btn>
                 </template>
-                <v-card>
+                <v-card v-if="isColl(colls)">
                   <v-card-title>
-                    Are you sure that you want to delete these collections from: {{ colls[0].db }}?
+                    Are you sure that you want to delete these collections?
                   </v-card-title>
                   <v-card-text>
                     <v-scroll-x-transition group hide-on-leave>
                       <v-chip v-for="(node, i) in colls" :key="i" color="grey" dark small class="ma-1">
-                        {{ node.name }}
+                        {{ node.db }}.{{ node.name }}
                       </v-chip>
                     </v-scroll-x-transition>
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-dialog v-model="dialogDelMoreColls" width="500">
+                    <v-dialog v-model="dialogDelMoreColls" width="100">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">Yes</v-btn>
                       </template>
@@ -841,6 +847,17 @@
                       No
                     </v-btn>
                   </v-card-actions>
+                </v-card>
+
+                <v-card v-else>
+                  <v-card-title>
+                    Please select at least one collection
+                    <v-btn icon @click="dialogColls = false">
+                      <v-icon right>
+                        mdi-close
+                      </v-icon>
+                    </v-btn>
+                  </v-card-title>
                 </v-card>
               </v-dialog>
             </v-col>
@@ -904,7 +921,9 @@ export default {
       indexUrl: '',
       indexes: [],
       indexFreqUpdate: '',
-      frequency: '',
+      frequencyWeek: 0,
+      frequencyDay: 0,
+      frequencyHour: 0,
       searchKeySensitive: true,
       search: null,
       id: Math.floor(Math.random() * 10),
@@ -960,8 +979,8 @@ export default {
           icon: 'mdi-update'
         },
         {
-          text: 'Automatically update',
-          icon: 'mdi-play-circle'
+          text: 'Stop update',
+          icon: 'mdi-pause-octagon'
         }
       ],
       itemsVirtualCollection: [
@@ -983,8 +1002,8 @@ export default {
         ? (item, search, textKey) => item[textKey].indexOf(search) > -1
         : undefined
     },
-    isActive () {
-      return this.active
+    msFrequency () {
+      return (60 * 60 * 1000 * this.frequencyHour + 60 * 60 * 1000 * 24 * this.frequencyDay + 60 * 60 * 1000 * 24 * 7 * this.frequencyWeek)
     },
     nDB () {
       return this.listDatabases.length
@@ -1074,6 +1093,14 @@ export default {
     },
     generateKey (item) {
       return item.db + item.name
+    },
+    isColl (arr) {
+      arr.forEach(collection => {
+        if (collection.type !== 'database') {
+          return true
+        }
+      })
+      return false
     }
   }
 }
