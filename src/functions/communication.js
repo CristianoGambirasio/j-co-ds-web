@@ -122,7 +122,6 @@ export async function importCollection (item) {
       }
       fileread.readAsText(fileInput)
     }).then((res) => {
-      console.log(this.append)
       if (!this.append) {
         this.saveCollection(item.db, nameColl, res, this.append)
       } else {
@@ -134,8 +133,6 @@ export async function importCollection (item) {
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
-  console.log(index)
-  console.log(frequency)
   this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
   this.handleResponse()
 };
@@ -225,6 +222,7 @@ export function handleResponse (finished) {
         databaseJSON.name = database
         databaseJSON.type = 'database'
         databaseJSON.children = []
+        databaseJSON.id = databaseJSON.name
         this.listDatabases.push(databaseJSON)
       })
     }
@@ -239,6 +237,7 @@ export function handleResponse (finished) {
             collectionJSON.name = collection.split(' ')[0]
             collectionJSON.type = collection.split(' ')[1]
             collectionJSON.db = database.name
+            collectionJSON.id = collectionJSON.db + collectionJSON.name
             database.children.push(collectionJSON)
           })
         }

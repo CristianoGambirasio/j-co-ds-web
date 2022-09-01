@@ -83,7 +83,7 @@
         <v-container v-if="flag === false" style="max-height: 61vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
           <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
-            :search='search' :filter='filter' item-key="name" open-on-click transition return-object
+            :search='search' :filter='filter' item-key="id" open-on-click transition return-object
             active-class="activeNode" @update:active="buildWorkspace">
             <template v-slot:prepend="{item, open}">
               <v-icon>
@@ -368,53 +368,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
-                          {{ el.text }}
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Importing collection</v-card-title>
-                        <v-card-text>
-                          <div class="upload-container">
-                            <input type="file" id="file_upload" multiple />
-                          </div>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-dialog v-model="dialogImp1" width="400">
-                            <template v-slot:activator="{ on }">
-                              <v-btn v-on="on" class="upload-btn" color="primary" text>
-                                Upload
-                              </v-btn>
-                            </template>
-                            <v-card>
-                              <v-card-title>Do you want to append this collection to the existing: {{ item.name }}
-                                collection?</v-card-title>
-                              <v-card-actions>
-                                <v-btn
-                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
-                                  Yes
-                                </v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
-                                  No
-                                </v-btn>
-                              </v-card-actions>
-                            </v-card>
-                          </v-dialog>
-                          <v-btn color="primary" text @click="dialogImp = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -599,7 +553,8 @@
                         <v-card-title>Do you want to stop updating this collection automatically?</v-card-title>
 
                         <v-card-actions>
-                          <v-btn color="primary" text @click="dialogStop = false; stopUpdate(item.db, item.name); stop = true">
+                          <v-btn color="primary" text
+                            @click="dialogStop = false; stopUpdate(item.db, item.name); stop = true">
                             yes
                           </v-btn>
                           <v-btn color="primary" text @click="dialogStop = false; stop = false">
@@ -649,53 +604,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
-                          {{ el.text }}
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Importing collection</v-card-title>
-                        <v-card-text>
-                          <div class="upload-container">
-                            <input type="file" id="file_upload" multiple />
-                          </div>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-dialog v-model="dialogImp1" width="400">
-                            <template v-slot:activator="{ on }">
-                              <v-btn v-on="on" class="upload-btn" color="primary" text>
-                                Upload
-                              </v-btn>
-                            </template>
-                            <v-card>
-                              <v-card-title>Do you want to append this collection to the existing: {{ item.name }}
-                                collection?</v-card-title>
-                              <v-card-actions>
-                                <v-btn
-                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
-                                  Yes
-                                </v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item.name, append); getListDatabase()">
-                                  No
-                                </v-btn>
-                              </v-card-actions>
-                            </v-card>
-                          </v-dialog>
-                          <v-btn color="primary" text @click="dialogImp = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -871,18 +780,26 @@
           </c-treeview>
         </v-container>
         <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
-          <v-treeview dark dense selectable activatable v-model="colls" :items="listDatabases"
-            :load-children="getListCollection" :search='search' :filter='filter' item-key="name" open-on-click
-            transition return-object active-class="activeNode">
+          <v-list :items="listDatabases">
+            <v-list-item v-for="(e, i) in listDatabases" :key="i">
+              <v-treeview dark dense activatable selectable v-model="colls" :items="getListCollection(e)"
+                :search='search' :filter='filter' item-key="id" open-on-click transition return-object
+                active-class="activeNode" off-icon="mdi-check-circle-outline" on-icon="mdi-check-circle">
+              </v-treeview>
+            </v-list-item>
+          </v-list>
+          <!--<v-treeview dark dense activatable selectable :items="listDatabases" :load-children="getListCollection"
+            :search='search' :filter='filter' item-key="id" open-on-click transition return-object
+            active-class="activeNode" off-icon="mdi-check-circle-outline" on-icon="mdi-check-circle">
             <template v-slot:prepend="{item, open}">
               <v-icon>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
               </v-icon>
             </template>
-          </v-treeview>
+          </v-treeview>-->
           <v-row>
             <v-col cols="5">
-              <v-btn small style="background-color: white" @click="flag = false; getListDatabase()">
+              <v-btn small style="background-color: white" @click="flag = false">
                 <v-icon>mdi-arrow-u-left-top</v-icon>
                 Cancel
               </v-btn>
@@ -946,9 +863,12 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import * as com from '../functions/communication'
 import CTreeview from '@/functions/CTreeview.js'
 import { connect, returnWS } from '../functions/connection.js'
+
+Vue.config.silent = true
 
 export default {
   components: {
@@ -1037,10 +957,6 @@ export default {
           icon: 'mdi-close'
         },
         {
-          text: 'Import collection',
-          icon: 'mdi-arrow-down-circle'
-        },
-        {
           text: 'Export Collection',
           icon: 'mdi-database-export'
         }
@@ -1112,8 +1028,8 @@ export default {
     // Import communication function
     handleResponse: com.handleResponse,
     getListDatabase: com.getListDatabase,
-    getListCollection: com.getListCollection,
     getListUrl: com.getListUrl,
+    getListCollection: com.getListCollection,
     getCollectionCount: com.getCollectionCount,
     createDatabase: com.createDatabase,
     createCollection: com.createCollection,
@@ -1166,6 +1082,9 @@ export default {
       this.setFrequency('test', 'd1', 0, 3600000)
       this.setUpdateType('test', 'd1', 0, 0)
       this.stopUpdate('test', 'd2')
+    },
+    generateKey (item) {
+      return item.db + item.name
     }
   }
 }
