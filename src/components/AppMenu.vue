@@ -54,14 +54,13 @@
           <v-card>
             <v-card-title>Creating new database</v-card-title>
             <v-card-text>
-              <v-form>
-                <v-text-field label="Name" v-model="nameDb" required type="text"></v-text-field>
+              <v-form v-model="formValid">
+                <v-text-field label="Name" v-model="nameDb" :rules="[v => !!v || 'Insert DB name', v => dbNameCheck(v) || 'This name is already used']" required type="text"></v-text-field>
               </v-form>
             </v-card-text>
-
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text @click="createDatabase(nameDb); getListDatabase(); dialogDb = false">
+              <v-btn text :disabled="!formValid" @click="createDatabase(nameDb); getListDatabase(); dialogDb = false">
                 Create
               </v-btn>
               <v-btn text @click="dialogDb = false">
@@ -143,11 +142,11 @@
                       <v-card>
                         <v-card-title>Creating new collection</v-card-title>
                         <v-card-text>
-                          <v-form>
+                          <v-form v-model="formValid">
                             <v-text-field label='Database' v-model=item.name disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" required type="text"></v-text-field>
-                            <v-select label="Type" v-model="type" :items="collTypes"></v-select>
-                            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl"
+                            <v-text-field label="Collection" v-model="nameColl" :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used']" required type="text"></v-text-field>
+                            <v-select label="Type" v-model="type" :items="collTypes" :rules="[v => !!v || 'Select a collection type',]"></v-select>
+                            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl" :rules="[ v => !!v || 'Insert an URL']"
                               required type="text">
                             </v-text-field>
                           </v-form>
@@ -155,15 +154,15 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn v-if="type === 'Static'" text
+                          <v-btn v-if="type === 'Static'" text :disabled="!formValid"
                             @click="dialogColl = false; createCollection(item.name, nameColl); getListDatabase()">
                             Create
                           </v-btn>
-                          <v-btn v-else-if="type === 'Dynamic'" text
+                          <v-btn v-else-if="type === 'Dynamic'" text :disabled="!formValid"
                             @click="dialogColl = false; createDynamicCollection(item.name, nameColl, listUrl); getListDatabase()">
                             Create
                           </v-btn>
-                          <v-btn v-else text
+                          <v-btn v-else text :disabled="!formValid"
                             @click="dialogColl = false; createVirtualCollection(item.name, nameColl, listUrl); getListDatabase()">
                             Create
                           </v-btn>
@@ -303,10 +302,10 @@
                           </v-btn>
                         </v-card-title>
                         <v-card-text>
-                          <v-form>
+                          <v-form v-model="formValid">
                             <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
-                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
+                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" :rules="[ v => !!v || 'Insert a name']" required
                               type="text">
                             </v-text-field>
                           </v-form>
@@ -314,7 +313,7 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn color="primary" text
+                          <v-btn color="primary" text :disabled="!formValid"
                             @click="dialogExp = false; exportCollection(item.db, item.name, nameFile)">
                             Download
                           </v-btn>
@@ -380,10 +379,10 @@
                           </v-btn>
                         </v-card-title>
                         <v-card-text>
-                          <v-form>
+                          <v-form v-model="formValid">
                             <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
-                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
+                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" :rules="[ v => !!v || 'Insert a name']" required
                               type="text">
                             </v-text-field>
                           </v-form>
@@ -391,7 +390,7 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn color="primary" text
+                          <v-btn color="primary" text :disabled="!formValid"
                             @click="dialogExp = false; exportCollection(item.db, item.name, nameFile)">
                             Download
                           </v-btn>
@@ -447,19 +446,19 @@
                             <v-card>
                               <v-card-title>Adding urls</v-card-title>
                               <v-card-text>
-                                <v-form>
+                                <v-form v-model="formValid">
                                   <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl" required type="text">
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL']" required type="text">
                                   </v-text-field>
                                 </v-form>
                               </v-card-text>
 
                               <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" text
+                                <v-btn color="primary" text :disabled="!formValid"
                                   @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name)">
                                   Add urls
                                 </v-btn>
@@ -512,36 +511,35 @@
                       </template>
                       <v-card>
                         <v-card-title>Set frequency</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
-                            <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
-                              hint="Select an url to modify his frequency-update" persistent-hint
-                              :error-messages="selectErrors"></v-select>
-                            <v-row>
-                              <v-col>
-                                <v-text-field label="week" v-model="frequencyWeek"></v-text-field>
-                              </v-col>
-                              <v-col>
-                                <v-text-field label="day" v-model="frequencyDay"></v-text-field>
-                              </v-col>
-                              <v-col>
-                                <v-text-field label="hour" v-model="frequencyHour"></v-text-field>
-                              </v-col>
-                            </v-row>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-btn color="primary" text
-                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), msFrequency); getListDatabase();">
-                            Set
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogFreq = false">
-                            Close
-                          </v-btn>
-                        </v-card-actions>
+                            <v-card-text>
+                              <v-form v-model="formValid">
+                                <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                                <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                                <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
+                                  hint="Select an url to modify his frequency-update" persistent-hint
+                                  :rules="[v => v.length > 0 || 'Select an URL']" required></v-select>
+                                <v-row>
+                                  <v-col>
+                                    <v-text-field label="week" v-model="frequencyWeek"></v-text-field>
+                                  </v-col>
+                                  <v-col>
+                                    <v-text-field label="day" v-model="frequencyDay"></v-text-field>
+                                  </v-col>
+                                  <v-col>
+                                    <v-text-field label="hour" v-model="frequencyHour" :rules="[ msFrequency > 3600000 || 'The frequency is too low', msFrequency < 2147483647 || 'The frequency is too high' ]" required></v-text-field>
+                                  </v-col>
+                                </v-row>
+                              </v-form>
+                            </v-card-text>
+                            <v-card-actions>
+                              <v-btn color="primary" text :disabled="!formValid"
+                                @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), msFrequency); getListDatabase();">
+                                Set
+                              </v-btn>
+                              <v-btn color="primary" text @click="dialogFreq = false">
+                                Close
+                              </v-btn>
+                            </v-card-actions>
                       </v-card>
                     </v-dialog>
 
@@ -622,10 +620,10 @@
                           </v-btn>
                         </v-card-title>
                         <v-card-text>
-                          <v-form>
+                          <v-form v-model="formValid">
                             <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                             <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
-                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" required
+                            <v-text-field label="File" hint="Without file extension" v-model="nameFile" :rules="[ v => !!v || 'Insert a name']" required
                               type="text">
                             </v-text-field>
                           </v-form>
@@ -633,7 +631,7 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn color="primary" text
+                          <v-btn color="primary" text :disabled="!formValid"
                             @click="dialogExp = false; exportCollection(item.db, item.name, nameFile)">
                             Download
                           </v-btn>
@@ -689,19 +687,19 @@
                             <v-card>
                               <v-card-title>Adding urls</v-card-title>
                               <v-card-text>
-                                <v-form>
+                                <v-form v-model="formValid">
                                   <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl" required type="text">
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL']" required type="text">
                                   </v-text-field>
                                 </v-form>
                               </v-card-text>
 
                               <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" text
+                                <v-btn color="primary" text :disabled="!formValid"
                                   @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name)">
                                   Add urls
                                 </v-btn>
@@ -740,38 +738,6 @@
                           &nbsp;&nbsp;
                           <v-btn @click="dialogUrl = false">
                             Cancel
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-dialog v-if="i === 1" v-model="dialogFreq" width="600">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
-                          <v-icon>{{ el.icon }}</v-icon>
-                          {{ el.text }}
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title>Set frequency</v-card-title>
-                        <v-card-text>
-                          <v-form>
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
-                            <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
-                              hint="Select an url to modify his frequency-update" persistent-hint></v-select>
-                            <v-text-field label="Frequency" v-model="frequency" required></v-text-field>
-                          </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="primary" text
-                            @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), frequency); getListDatabase()">
-                            Set
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogFreq = false">
-                            Close
                           </v-btn>
                         </v-card-actions>
                       </v-card>
@@ -882,6 +848,7 @@ export default {
   },
   data () {
     return {
+      formValid: true,
       activeItem: null,
       dialogColls: false, // selectable treeview command
       dialogDelMoreColls: false, // selectable treeview command
@@ -921,9 +888,9 @@ export default {
       indexUrl: '',
       indexes: [],
       indexFreqUpdate: '',
-      frequencyWeek: 0,
-      frequencyDay: 0,
-      frequencyHour: 0,
+      frequencyWeek: null,
+      frequencyDay: null,
+      frequencyHour: null,
       searchKeySensitive: true,
       search: null,
       id: Math.floor(Math.random() * 10),
@@ -1101,6 +1068,27 @@ export default {
         }
       })
       return false
+    },
+    dbNameCheck (value) {
+      let res = true
+      this.listDatabases.forEach(db => {
+        if (db.name === value) {
+          res = false
+        }
+      })
+      return res
+    },
+    collNameCheck (value, item) {
+      let res = true
+      if (item.children.length === 0) {
+        this.getListCollection(item)
+      }
+      item.children.forEach(coll => {
+        if (coll.name === value) {
+          res = false
+        }
+      })
+      return res
     }
   }
 }

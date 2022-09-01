@@ -9,6 +9,7 @@ export function getListDatabase () {
 };
 
 export async function getListCollection (item) {
+  this.colls = []
   return await new Promise(resolve => {
     this.connection.send(consts.WS_LIST_COLLECTION + '###' + item.name)
     const finished = resolve
