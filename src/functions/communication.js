@@ -1,15 +1,16 @@
 import * as tool from './tools'
-// import WS from '../functions/connection.js'
+import * as consts from './constants'
 
 export function getListDatabase () {
   this.listDatabases = []
-  this.connection.send('LIST_DATABASE')
+  this.$root.$refs.Workspace.updateParam(null, null)
+  this.connection.send(consts.WS_LIST_DATABASE)
   this.handleResponse()
 };
 
 export async function getListCollection (item) {
   return await new Promise(resolve => {
-    this.connection.send('LIST_COLLECTIONS###' + item.name)
+    this.connection.send(consts.WS_LIST_COLLECTION + '###' + item.name)
     const finished = resolve
     this.handleResponse(finished)
   })
@@ -19,7 +20,7 @@ export async function getListUrl (nameDb, nameColl) {
   this.listUrls = []
   let list
   await new Promise(resolve => {
-    this.connection.send('LIST_URL###' + nameDb + '###' + nameColl)
+    this.connection.send(consts.WS_LIST_URL + '###' + nameDb + '###' + nameColl)
     this.handleResponse(resolve)
   }).then((value) => {
     list = value
@@ -30,7 +31,7 @@ export async function getListUrl (nameDb, nameColl) {
 export async function getCollectionCount (db, collection) {
   let countCollection
   await new Promise(resolve => {
-    this.connection.send('GET_COLLECTION_COUNT###' + db + '###' + collection)
+    this.connection.send(consts.WS_GET_COLLECTION_COUNT + '###' + db + '###' + collection)
     const finishCount = resolve
     this.handleResponse(finishCount)
   }).then((value) => {
@@ -40,34 +41,34 @@ export async function getCollectionCount (db, collection) {
 };
 
 export function createDatabase (nameDb) {
-  this.connection.send('CREATE_DATABASE###' + nameDb)
+  this.connection.send(consts.WS_CREATE_DATABASE + '###' + nameDb)
   this.handleResponse()
 };
 
 export function createCollection (nameDb, nameColl) {
-  this.connection.send('CREATE_COLLECTION###' + nameDb + '###' + nameColl)
+  this.connection.send(consts.WS_CREATE_COLLECTION + '###' + nameDb + '###' + nameColl)
   this.handleResponse()
 };
 
 export function createDynamicCollection (nameDb, nameColl, listUrl) {
-  this.connection.send('CREATE_DYNAMIC_COLLECTION###' + nameDb + '###' + nameColl + '###' + listUrl)
+  this.connection.send(consts.WS_CREATE_DYNAMIC_COLLECTION + '###' + nameDb + '###' + nameColl + '###' + listUrl)
   this.handleResponse()
 };
 
 export function createVirtualCollection (nameDb, nameColl, listUrl) {
-  this.connection.send('CREATE_VIRTUAL_COLLECTION###' + nameDb + '###' + nameColl + '###' + listUrl)
+  this.connection.send(consts.WS_CREATE_VIRTUAL_COLLECTION + '###' + nameDb + '###' + nameColl + '###' + listUrl)
   this.handleResponse()
 };
 
 export function addUrl (nameDb, nameColl, listUrl) {
-  this.connection.send('ADD_URL###' + nameDb + '###' + nameColl + '###' + listUrl)
+  this.connection.send(consts.WS_ADD_URL + '###' + nameDb + '###' + nameColl + '###' + listUrl)
   this.handleResponse()
 };
 
 export async function getCollection (nameDb, nameColl, limit, offset) {
   let documents
   await new Promise(resolve => {
-    this.connection.send('GET_COLLECTION###' + nameDb + '###' + nameColl + '###' + limit + '###' + offset)
+    this.connection.send(consts.WS_GET_COLLECTION + '###' + nameDb + '###' + nameColl + '###' + limit + '###' + offset)
     const finish = resolve
     this.handleResponse(finish)
   }).then((value) => {
@@ -77,7 +78,7 @@ export async function getCollection (nameDb, nameColl, limit, offset) {
 };
 
 export function saveCollection (nameDb, nameColl, docs, append) {
-  this.connection.send('SAVE_COLLECTION###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
+  this.connection.send(consts.WS_SAVE_COLLECTION + '###' + nameDb + '###' + nameColl + '###' + docs + '###' + append)
   this.handleResponse()
 };
 
@@ -133,59 +134,58 @@ export async function importCollection (item) {
 };
 
 export function setFrequency (nameDb, nameColl, index, frequency) {
-  this.connection.send('SET_FREQUENCY###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
+  this.connection.send(consts.WS_SET_FREQUENCY + '###' + nameDb + '###' + nameColl + '###' + index + '###' + frequency)
   this.handleResponse()
 };
 
 export function setUpdateType (nameDb, nameColl, index, type) {
-  this.connection.send('SET_UPDATE_TYPE###' + nameDb + '###' + nameColl + '###' + index + '###' + type)
+  this.connection.send(consts.WS_SET_UPDATE_TYPE + '###' + nameDb + '###' + nameColl + '###' + index + '###' + type)
   this.handleResponse()
 };
 
 export function stopUpdate (nameDb, nameColl) {
-  this.connection.send('STOP_UPDATE###' + nameDb + '###' + nameColl)
+  this.connection.send(consts.WS_STOP_UPDATE + '###' + nameDb + '###' + nameColl)
   this.handleResponse()
 };
 
 export function deleteDatabase (nameDb) {
-  this.connection.send('DELETE_DATABASE###' + nameDb)
+  this.connection.send(consts.WS_DELETE_DATABASE + '###' + nameDb)
   this.handleResponse()
 };
 
 export function deleteCollection (nameDb, nameColl) {
-  this.connection.send('DELETE_COLLECTION###' + nameDb + '###' + nameColl)
+  this.connection.send(consts.WS_DELETE_COLLECTION + '###' + nameDb + '###' + nameColl)
   this.handleResponse()
 };
 
 export function deleteMoreCollections (colls) {
   for (let i = 0; i < colls.length; i++) {
-    this.connection.send('DELETE_COLLECTION###' + colls[i].db + '###' + colls[i].name)
-    this.handleResponse()
+    if (colls[i].type !== 'database') {
+      console.log(colls[i].type)
+      this.connection.send(consts.WS_DELETE_COLLECTION + '###' + colls[i].db + '###' + colls[i].name)
+      this.handleResponse()
+    }
   }
 };
 
 export function removeUrl (nameDb, nameColl, index) {
-  this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + index)
+  this.connection.send(consts.WS_REMOVE_URL + '###' + nameDb + '###' + nameColl + '###' + index)
   this.handleResponse()
 };
 
 export function removeMoreUrls (nameDb, nameColl, indexes) {
-  console.log(nameDb)
-  console.log(nameColl)
-  console.log(indexes)
   for (let i = 0; i < indexes.length; i++) {
     console.log(indexes[i])
-    this.connection.send('REMOVE_URL###' + nameDb + '###' + nameColl + '###' + indexes[i])
+    this.connection.send(consts.WS_REMOVE_URL + '###' + nameDb + '###' + nameColl + '###' + indexes[i])
     this.handleResponse()
   }
 };
 
 export function ping () {
-  /* let errMessageSent = false
-  this.connection.send('PING')
+  let errMessageSent = false
+  this.connection.send(consts.WS_PING)
   setInterval(() => {
     if (this.connection === null || this.connection.readyState === 2 || this.connection.readyState === 3) {
-      // this.connection.close()
       this.online = false
       if (!errMessageSent) {
         console.log('No connection')
@@ -193,10 +193,10 @@ export function ping () {
       errMessageSent = true
     } else {
       errMessageSent = false
-      this.connection.send('PING')
+      this.connection.send(consts.WS_PING)
     }
   }
-  , 1000) */
+  , 1000)
 };
 
 export function handleResponse (finished) {
@@ -209,12 +209,11 @@ export function handleResponse (finished) {
     for (let i = 0; i < data.length; i++) {
       text += String.fromCharCode(data[i])
     }
-    // const text = String.fromCharCode(...data)
-    if (!tool.arrayEquals(command, [0, 0, 0, 2])) {
+    if (!tool.arrayEquals(command, consts.PING_RESPONSE)) {
       console.log('Command ' + command + ' recived')
     }
     // List Databases
-    if (tool.arrayEquals(command, [0, 1, 0, 2])) {
+    if (tool.arrayEquals(command, consts.LIST_DATABASE_RESPONSE)) {
       this.listDatabases = []
       const db = JSON.parse(text)
       db.databases.forEach(database => {
@@ -227,7 +226,7 @@ export function handleResponse (finished) {
       })
     }
     // List Collections
-    if (tool.arrayEquals(command, [0, 2, 0, 2])) {
+    if (tool.arrayEquals(command, consts.LIST_COLLECTION_RESPONSE)) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -245,7 +244,7 @@ export function handleResponse (finished) {
       finished()
     }
     // List Urls
-    if (tool.arrayEquals(command, [0, 3, 0, 6])) {
+    if (tool.arrayEquals(command, consts.LIST_URL_RESPONSE)) {
       this.listUrls = []
       const urls = JSON.parse(text)
       urls.list.forEach(url => {
@@ -255,7 +254,7 @@ export function handleResponse (finished) {
       finished(this.listUrls)
     }
     // Create Database
-    if (tool.arrayEquals(command, [0, 1, 0, 4])) {
+    if (tool.arrayEquals(command, consts.CREATE_DATABASE_RESPONSE)) {
       const db = JSON.parse(text)
       const databaseJSON = {}
       databaseJSON.name = db
@@ -264,7 +263,7 @@ export function handleResponse (finished) {
       this.listDatabases.push(databaseJSON)
     }
     // Create Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 4])) {
+    if (tool.arrayEquals(command, consts.CREATE_COLLECTION_RESPONSE)) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -277,7 +276,7 @@ export function handleResponse (finished) {
       })
     }
     // Create Dynamic Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 24])) {
+    if (tool.arrayEquals(command, consts.CREATE_DYNAMIC_COLLECTION_RESPONSE)) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -291,7 +290,7 @@ export function handleResponse (finished) {
       })
     }
     // Create Virtual Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 14])) {
+    if (tool.arrayEquals(command, consts.CREATE_VIRTUAL_COLLECTION_RESPONSE)) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -305,7 +304,7 @@ export function handleResponse (finished) {
       })
     }
     // Add Url
-    if (tool.arrayEquals(command, [0, 3, 0, 2])) {
+    if (tool.arrayEquals(command, consts.ADD_URL_RESPONSE)) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -319,16 +318,16 @@ export function handleResponse (finished) {
       })
     }
     // Get Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 8])) {
+    if (tool.arrayEquals(command, consts.GET_COLLECTION_RESPONSE)) {
       const res = JSON.parse(text)
       finished(res)
     }
     // Save Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 10])) {
+    if (tool.arrayEquals(command, consts.SAVE_COLLECTION_RESPONSE)) {
       console.log('Imported')
     }
     // Delete Database
-    if (tool.arrayEquals(command, [0, 1, 0, 6])) {
+    if (tool.arrayEquals(command, consts.DELETE_DATABASE_RESPONSE)) {
       const db = JSON.parse(text)
       const databaseJSON = {}
       databaseJSON.name = db
@@ -339,7 +338,7 @@ export function handleResponse (finished) {
       })
     }
     // Delete Collection
-    if (tool.arrayEquals(command, [0, 2, 0, 6])) {
+    if (tool.arrayEquals(command, consts.DELETE_COLLECTION_RESPONSE)) {
       const colls = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === colls.database) {
@@ -353,7 +352,7 @@ export function handleResponse (finished) {
       })
     }
     // Remove Url
-    if (tool.arrayEquals(command, [0, 3, 0, 4])) {
+    if (tool.arrayEquals(command, consts.REMOVE_URL_RESPONSE)) {
       const coll = JSON.parse(text)
       this.listDatabases.forEach(database => {
         if (database.name === coll.database) {
@@ -371,19 +370,18 @@ export function handleResponse (finished) {
       })
     }
     // Set Frequency
-    if (tool.arrayEquals(command, [0, 4, 0, 2])) {
+    if (tool.arrayEquals(command, consts.SET_FREQUENCY_RESPONSE)) {
       console.log('Frequency updated')
     }
     // Set Update Type
-    if (tool.arrayEquals(command, [0, 4, 0, 4])) {
+    if (tool.arrayEquals(command, consts.SET_UPDATE_TYPE_RESPONSE)) {
       console.log('Updated dynamic update type')
     }
-    // Stop update
-    if (tool.arrayEquals(command, [0, 4, 0, 6])) {
+    if (tool.arrayEquals(command, consts.STOP_UPDATE_RESPONSE)) {
       console.log('Stopped update')
     }
     // Ping
-    if (tool.arrayEquals(command, [0, 0, 0, 2])) {
+    if (tool.arrayEquals(command, consts.PING_RESPONSE)) {
       if (text === '') {
         this.online = true
       } else {
@@ -391,7 +389,7 @@ export function handleResponse (finished) {
       }
     }
     // Get collection count
-    if (tool.arrayEquals(command, [0, 2, 0, 12])) {
+    if (tool.arrayEquals(command, consts.GET_COLLECTION_COUNT_RESPONSE)) {
       const res = JSON.parse(text)
       finished(res.count)
     }

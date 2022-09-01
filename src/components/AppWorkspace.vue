@@ -13,7 +13,14 @@
             <h4>{{meta3}}</h4>
           </v-col>
           <v-col id="meta4" cols="3">
-            <h4>{{meta4}}</h4>
+            <v-container v-if="showDynamicFunctions">
+              <v-form>
+                <v-text-field v-model="dynamicFreq" label="Frequency" required>
+                </v-text-field>
+                <v-checkbox v-model="dynamicAppend" label="Append">
+                </v-checkbox>
+              </v-form>
+            </v-container>
           </v-col>
         </v-row>
       </v-container>
@@ -61,7 +68,10 @@ export default {
       meta2: null,
       meta3: null,
       meta4: null,
-      countCollection: 0
+      countCollection: 0,
+      showDynamicFunctions: false,
+      dynamicAppend: false,
+      dynamicFreq: 1000000
     }
   },
   created () {
@@ -97,6 +107,7 @@ export default {
       }
     },
     async buildWorkspace (obj) {
+      this.showDynamicFunctions = false
       if (this.dbSelected !== null && this.collSelected !== null) {
         const res = await this.getCollection(this.dbSelected, this.collSelected, this.numDoc, (this.page - 1) * this.numDoc)
         this.documentsLoaded = res.documents
@@ -106,9 +117,12 @@ export default {
           this.countCollection = await this.getCollectionCount(this.dbSelected, this.collSelected)
           this.nPages = Math.ceil(this.countCollection / this.numDoc)
           this.showMetadata(obj)
-        } else if (obj[0].type === 'virtual' || obj[0].type === 'dynamic') {
+        } else if (obj[0].type === 'virtual') {
           this.countCollection = (await this.getListUrl(this.dbSelected, this.collSelected)).length
-          console.log(await this.getListUrl(this.dbSelected, this.collSelected))
+          this.nPages = Math.ceil(this.countCollection / this.numDoc)
+          this.showMetadata(obj)
+        } else if (obj[0].type === 'dynamic') {
+          this.countCollection = (await this.getListUrl(this.dbSelected, this.collSelected)).length // Da sistemare
           this.nPages = Math.ceil(this.countCollection / this.numDoc)
           this.showMetadata(obj)
         }
@@ -123,6 +137,7 @@ export default {
         this.meta2 = 'TYPE: DYNAMIC'
         this.meta1 = 'NAME: ' + value[0].name
         this.meta3 = 'Documents: ' + this.countCollection
+        this.showDynamicFunctions = true
       } else if (value[0].type === 'virtual') {
         this.meta2 = 'TYPE: VIRTUAL'
         this.meta1 = 'NAME: ' + value[0].name

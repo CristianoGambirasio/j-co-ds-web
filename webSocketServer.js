@@ -1,43 +1,31 @@
 const net = require('net')
 const WebSocket = require('ws')
+const encoder = new TextEncoder()
+let isServerOn = false
+let isOccupied = false
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
+const consts = require('./src/functions/constants')
+
 // creation of a WebSocket Server for the communication with the WebApp
 const wss = new WebSocket.Server({ port: 3000 })
-const encoder = new TextEncoder()
 
-let isServerOn = false
+// Connection with J-CO-DS-Server
 // comunication with j-co-ds server
 let client = net.connect(17017, 'localhost', () => {
   isServerOn = true
 })
-let isOccupied = false
-
-const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 client.on('error', onError)
 
-function onError () {
-  isServerOn = false
-  console.log('No connection with the server')
-  setTimeout(() => {
-    console.log('Trying reconnecting...')
-    client = new net.connect(17017, 'localhost', () => {
-      console.log('Riconnesso al server')
-      isServerOn = true
-    })
-    client.on('error', onError)
-  }, 10000)
-}
 /*
 client.on('connect', function(){
   // client.write(Buffer.from([]))
   stopUpdate('test', 'd2')
-}) 
+})
 
 client.on('data', function(data){
   console.log(new Uint8Array(data).toString())
 }) */
-
-// Connection with J-CO-DS-Server
 
 // WebApp Connection handling different users
 wss.on('connection', function (ws) {
@@ -45,15 +33,15 @@ wss.on('connection', function (ws) {
 
   if (!isServerOn) {
     wss.clients.forEach((client) => {
-      client.close()
+      client.close() // Allow connection only if the server is on
     })
   }
 
   client.on('error', error => {
-    const err = new Uint8Array([0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1])
-    wss.clients.forEach((client) => {
-      client.send(err)
-      client.close()
+    const err = new Uint8Array(consts.WS_PING_ERROR_RESPONSE) //Send an error message to the WebApp
+    wss.clients.forEach((WSclient) => {
+      WSclient.send(err)
+      WSclient.close()
     })
     onError
   })
@@ -63,88 +51,88 @@ wss.on('connection', function (ws) {
     if (!isOccupied) {
       isOccupied = true
       const message = data.toString()
-      // '###' separano i parametri del comando
+      // '###' separate the command parameters
       const command = message.split('###')[0]
-      if (command !== 'PING') {
+      if (command !== consts.WS_PING) {
         console.log('Recived command: ' + command)
       }
       const idws = ws.protocol
-      if (command == 'LIST_DATABASE') {
+      if (command == consts.WS_LIST_DATABASE) {
         reqListDatabase(idws)
-      } else if (command == 'LIST_COLLECTIONS') {
+      } else if (command == consts.WS_LIST_COLLECTION) {
         const dbName = message.split('###')[1]
         reqListCollection(dbName, idws)
-      } else if (command == 'LIST_URL') {
+      } else if (command == consts.WS_LIST_URL) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         reqListUrl(dbName, collName, idws)
-      } else if (command == 'CREATE_DATABASE') {
+      } else if (command == consts.WS_CREATE_DATABASE) {
         const dbName = message.split('###')[1]
         createDatabase(dbName, idws)
-      } else if (command == 'CREATE_COLLECTION') {
+      } else if (command == consts.WS_CREATE_COLLECTION) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         createCollection(dbName, collName, idws)
-      } else if (command == 'CREATE_DYNAMIC_COLLECTION') {
+      } else if (command == consts.WS_CREATE_DYNAMIC_COLLECTION) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const urlList = message.split('###')[3]
         createDynamicCollection(dbName, collName, urlList, idws)
-      } else if (command == 'CREATE_VIRTUAL_COLLECTION') {
+      } else if (command == consts.WS_CREATE_VIRTUAL_COLLECTION) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const urlList = message.split('###')[3]
         createVirtualCollection(dbName, collName, urlList, idws)
-      } else if (command == 'ADD_URL') {
+      } else if (command == consts.WS_ADD_URL) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const urlList = message.split('###')[3]
         addUrl(dbName, collName, urlList, idws)
-      } else if (command == 'GET_COLLECTION') {
+      } else if (command == consts.WS_GET_COLLECTION) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const limit = message.split('###')[3]
         const offset = message.split('###')[4]
         getCollection(dbName, collName, limit, offset, idws)
-      } else if (command == 'GET_COLLECTION_COUNT') {
+      } else if (command == consts.WS_GET_COLLECTION_COUNT) {
         const db = message.split('###')[1]
         const collection = message.split('###')[2]
         getCollectionCount(idws, db, collection)
-      } else if (command == 'DELETE_DATABASE') {
+      } else if (command == consts.WS_DELETE_DATABASE) {
         const dbName = message.split('###')[1]
         deleteDatabase(dbName, idws)
-      } else if (command == 'DELETE_COLLECTION') {
+      } else if (command == consts.WS_DELETE_COLLECTION) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         deleteCollection(dbName, collName, idws)
-      } else if (command == 'REMOVE_URL') {
+      } else if (command == consts.WS_REMOVE_URL) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const index = message.split('###')[3]
         removeUrl(dbName, collName, index, idws)
-      } else if (command == 'SAVE_COLLECTION') {
+      } else if (command == consts.WS_SAVE_COLLECTION) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const docs = message.split('###')[3]
         const append = message.split('###')[4]
         saveCollection(dbName, collName, docs, append, idws)
-      } else if (command == 'SET_FREQUENCY') {
+      } else if (command == consts.WS_SET_FREQUENCY) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const index = message.split('###')[3]
         const freq = message.split('###')[4]
         setFrequency(dbName, collName, index, freq, idws)
-      } else if (command == 'SET_UPDATE_TYPE') {
+      } else if (command == consts.WS_SET_UPDATE_TYPE) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         const index = message.split('###')[3]
         const type = message.split('###')[4]
         setUpdateType(dbName, collName, index, type, idws)
-      } else if (command == 'STOP_UPDATE') {
+      } else if (command == consts.WS_STOP_UPDATE) {
         const dbName = message.split('###')[1]
         const collName = message.split('###')[2]
         stopUpdate(dbName, collName, idws)
-      } else if (command == 'PING') {
+      } else if (command == consts.WS_PING) {
         ping(idws)
       }
     } else {
@@ -156,7 +144,7 @@ wss.on('connection', function (ws) {
 
 // Communication with JCODS Server functions
 async function reqListDatabase (idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00010001'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.LIST_DATABASE))
   // Params:
   const objParam = {}
   // Popolare i parametri (Es: objParams.name = name etc)
@@ -188,7 +176,7 @@ async function reqListDatabase (idws) {
 }
 
 async function reqListCollection (nameDB, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020001'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.LIST_COLLECTION))
   const objParam = {}
   objParam.database = nameDB
 
@@ -210,7 +198,7 @@ async function reqListCollection (nameDB, idws) {
 }
 
 async function reqListUrl (nameDb, nameColl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00030005'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.LIST_URL))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
@@ -234,7 +222,7 @@ async function reqListUrl (nameDb, nameColl, idws) {
 
 async function createDatabase (nameDB, idws) {
   console.log(nameDB)
-  const commandCode = new Uint8Array(toBytesCommandCode('00010003'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.CREATE_DATABASE))
   const objParam = {}
   objParam.name = nameDB
 
@@ -257,7 +245,7 @@ async function createDatabase (nameDB, idws) {
 }
 
 async function createCollection (nameDB, nameColl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020003'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.CREATE_COLLECTION))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
@@ -280,7 +268,7 @@ async function createCollection (nameDB, nameColl, idws) {
 }
 
 async function createDynamicCollection (nameDB, nameColl, listUrl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020023'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.CREATE_DYNAMIC_COLLECTION))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
@@ -305,7 +293,7 @@ async function createDynamicCollection (nameDB, nameColl, listUrl, idws) {
 }
 
 async function createVirtualCollection (nameDB, nameColl, listUrl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020013'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.CREATE_VIRTUAL_COLLECTION))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
@@ -330,7 +318,7 @@ async function createVirtualCollection (nameDB, nameColl, listUrl, idws) {
 }
 
 async function addUrl (nameDB, nameColl, listUrl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00030001'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.ADD_URL))
   const objParam = {}
   objParam.database = nameDB
   objParam.name = nameColl
@@ -355,7 +343,7 @@ async function addUrl (nameDB, nameColl, listUrl, idws) {
 }
 
 async function getCollectionCount (idws, db, collection) {
-  const commandCode = new Uint8Array(toBytesCommandCode('0002000b'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.GET_COLLECTION_COUNT))
 
   const objParam = {}
   objParam.database = db
@@ -379,7 +367,7 @@ async function getCollectionCount (idws, db, collection) {
 }
 
 async function getCollection (nameDb, nameColl, lim, offs, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020007'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.GET_COLLECTION))
   const objParam = {}
   objParam.database = nameDb
   objParam.collection = nameColl
@@ -404,7 +392,7 @@ async function getCollection (nameDb, nameColl, lim, offs, idws) {
 }
 
 async function deleteDatabase (nameDb, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00010005'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.DELETE_DATABASE))
   const objParam = {}
   objParam.name = nameDb
 
@@ -426,7 +414,7 @@ async function deleteDatabase (nameDb, idws) {
 }
 
 async function deleteCollection (nameDb, nameColl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020005'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.DELETE_COLLECTION))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
@@ -449,7 +437,7 @@ async function deleteCollection (nameDb, nameColl, idws) {
 }
 
 async function removeUrl (nameDb, nameColl, index, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00030003'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.REMOVE_URL))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
@@ -473,7 +461,7 @@ async function removeUrl (nameDb, nameColl, index, idws) {
 }
 
 async function saveCollection (nameDb, nameColl, documents, append, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00020009'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.SAVE_COLLECTION))
   const objParam = {}
   const objBody = {}
 
@@ -505,7 +493,7 @@ async function saveCollection (nameDb, nameColl, documents, append, idws) {
 }
 
 async function setFrequency (nameDb, nameColl, index, freq, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00040001'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.SET_FREQUENCY))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
@@ -530,7 +518,7 @@ async function setFrequency (nameDb, nameColl, index, freq, idws) {
 }
 
 async function setUpdateType (nameDb, nameColl, indx, type, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00040003'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.SET_UPDATE_TYPE))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
@@ -555,7 +543,7 @@ async function setUpdateType (nameDb, nameColl, indx, type, idws) {
 }
 
 async function stopUpdate (nameDb, nameColl, idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00040005'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.STOP_UPDATE))
   const objParam = {}
   objParam.database = nameDb
   objParam.name = nameColl
@@ -578,7 +566,7 @@ async function stopUpdate (nameDb, nameColl, idws) {
 }
 
 async function ping (idws) {
-  const commandCode = new Uint8Array(toBytesCommandCode('00000001'))
+  const commandCode = new Uint8Array(toBytesCommandCode(consts.PING))
 
   const reqParam = new Uint8Array(0)
   const reqBody = new Uint8Array(0)
@@ -612,7 +600,7 @@ async function getResponse (idws) {
       if (isJsonString(textRes) || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 0, 0, 2])) == 0 || Buffer.compare(data.subarray(4, 8), Buffer.from([0, 2, 0, 10])) == 0) { // Check if the response is ping or a valid JSON
         let bytes = Buffer.concat(chunks)
         bytes = bytes.subarray(4) // the 4 first byte are equals to 0
-        if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 2])) == 0) {
+        if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.LIST_DATABASE_RESPONSE)) == 0) {
           console.log('LIST DATABASE: ')
           // if there are more clients connected
           wss.clients.forEach((client) => {
@@ -620,119 +608,119 @@ async function getResponse (idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 2])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.LIST_COLLECTION_RESPONSE)) == 0) {
           console.log('LIST_COLLECTION: ')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 6])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.LIST_URL_RESPONSE)) == 0) {
           console.log('LIST_URL: ')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 3])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.CREATE_DATABASE_RESPONSE)) == 0) {
           console.log('CREATE_DATABASE')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 3])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.CREATE_COLLECTION_RESPONSE)) == 0) {
           console.log('CREATE_COLLECTION')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 23])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.CREATE_DYNAMIC_COLLECTION_RESPONSE)) == 0) {
           console.log('CREATE_DYNAMIC_COLLECTION')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 13])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.CREATE_VIRTUAL_COLLECTION_RESPONSE)) == 0) {
           console.log('CREATE_VIRTUAL_COLLECTION')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 1])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.ADD_URL_RESPONSE)) == 0) {
           console.log('ADD_URL')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 8])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.GET_COLLECTION_RESPONSE)) == 0) {
           console.log('GET_COLLECTION')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 12])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.GET_COLLECTION_COUNT_RESPONSE)) == 0) {
           console.log('GET_COLLECTION_COUNT')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 1, 0, 5])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.DELETE_DATABASE_RESPONSE)) == 0) {
           console.log('DELETE_DATABASE')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 5])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.DELETE_COLLECTION_RESPONSE)) == 0) {
           console.log('DELETE_COLLECTION')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 3, 0, 4])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.REMOVE_URL_RESPONSE)) == 0) {
           console.log('REMOVE_URL')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 2, 0, 10])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.SAVE_COLLECTION_RESPONSE)) == 0) {
           console.log('SAVE_COLLECTION')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 2])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.SET_FREQUENCY_RESPONSE)) == 0) {
           console.log('SET_FREQUENCY')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 4])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.SET_UPDATE_TYPE_RESPONSE)) == 0) {
           console.log('SET_UPDATE_TYPE')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 4, 0, 6])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.STOP_UPDATE_RESPONSE)) == 0) {
           console.log('STOP_UPDATE')
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
               client.send(bytes)
             }
           })
-        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) == 0) {
+        } else if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.PING_RESPONSE)) == 0) {
         // PING
           wss.clients.forEach((client) => {
             if (client.protocol == idws) {
@@ -740,7 +728,7 @@ async function getResponse (idws) {
             }
           })
         }
-        if (Buffer.compare(bytes.subarray(0, 4), Buffer.from([0, 0, 0, 2])) !== 0) {
+        if (Buffer.compare(bytes.subarray(0, 4), Buffer.from(consts.PING_RESPONSE)) !== 0) {
           console.log(bytes.subarray(12).toString())
         }
         isOccupied = false
@@ -772,4 +760,17 @@ function isJsonString (str) {
     return false
   }
   return true
+}
+
+function onError () {
+  isServerOn = false
+  console.log('No connection with the server')
+  setTimeout(() => {
+    console.log('Trying reconnecting...')
+    client = new net.connect(17017, 'localhost', () => {
+      console.log('Riconnesso al server')
+      isServerOn = true
+    })
+    client.on('error', onError)
+  }, 10000)
 }
