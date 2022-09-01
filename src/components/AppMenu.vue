@@ -777,23 +777,15 @@
           </c-treeview>
         </v-container>
         <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
-          <v-list :items="listDatabases">
-            <v-list-item v-for="(e, i) in listDatabases" :key="i">
-              <v-treeview dark dense activatable selectable v-model="colls" :items="getListCollection(e)"
-                :search='search' :filter='filter' item-key="id" open-on-click transition return-object
-                active-class="activeNode" off-icon="mdi-check-circle-outline" on-icon="mdi-check-circle">
-              </v-treeview>
-            </v-list-item>
-          </v-list>
-          <!--<v-treeview dark dense activatable selectable :items="listDatabases" :load-children="getListCollection"
+          <v-treeview dark dense activatable selectable v-model="colls" :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="id" open-on-click transition return-object
-            active-class="activeNode" off-icon="mdi-check-circle-outline" on-icon="mdi-check-circle">
+            active-class="activeNode">
             <template v-slot:prepend="{item, open}">
               <v-icon>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
               </v-icon>
             </template>
-          </v-treeview>-->
+          </v-treeview>
           <v-row>
             <v-col cols="5">
               <v-btn small style="background-color: white" @click="flag = false">
