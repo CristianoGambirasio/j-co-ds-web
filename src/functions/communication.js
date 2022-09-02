@@ -96,11 +96,9 @@ export async function exportCollection (nameDb, nameColl, nameFile) {
   downloadAnchorNode.remove()
 };
 
-export async function importCollection (item) {
+export async function importCollection (item, nameColl) {
   if (!item.db) {
     const fileInput = document.getElementById('file_upload').files[0]
-    const nameC = fileInput.name.split('.')
-    const nameColl = nameC[0]
     const fileread = new FileReader()
     await new Promise(resolve => {
       fileread.onload = function (e) {
@@ -114,8 +112,6 @@ export async function importCollection (item) {
     this.handleResponse()
   } else {
     const fileInput = document.getElementById('file_upload').files[0]
-    const nameC = fileInput.name.split('.')
-    const nameColl = nameC[0]
     const fileread = new FileReader()
     await new Promise(resolve => {
       fileread.onload = function (e) {

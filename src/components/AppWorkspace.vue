@@ -13,14 +13,6 @@
             <h4>{{meta3}}</h4>
           </v-col>
           <v-col id="meta4" cols="3">
-            <v-container v-if="showDynamicFunctions">
-              <v-form>
-                <v-text-field v-model="dynamicFreq" label="Frequency" required>
-                </v-text-field>
-                <v-checkbox v-model="dynamicAppend" label="Append">
-                </v-checkbox>
-              </v-form>
-            </v-container>
           </v-col>
         </v-row>
       </v-container>
