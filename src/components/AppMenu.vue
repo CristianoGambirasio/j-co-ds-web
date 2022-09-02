@@ -956,6 +956,10 @@ export default {
           icon: 'mdi-close'
         },
         {
+          text: 'Import collection',
+          icon: 'mdi-arrow-down-circle'
+        },
+        {
           text: 'Export Collection',
           icon: 'mdi-database-export'
         }
