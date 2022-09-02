@@ -77,10 +77,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text :disabled="!formValid" @click="createDatabase(nameDb); getListDatabase(); dialogDb = false">
+              <v-btn text :disabled="!formValid" @click="createDatabase(nameDb); getListDatabase(); dialogDb = false; resetForm();">
                 Create
               </v-btn>
-              <v-btn text @click="dialogDb = false">
+              <v-btn text @click="resetForm(); dialogDb = false;">
                 Close
               </v-btn>
             </v-card-actions>
@@ -179,18 +179,18 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn v-if="type === 'Static'" text :disabled="!formValid"
-                            @click="dialogColl = false; createCollection(item.name, nameColl); getListDatabase()">
+                            @click="dialogColl = false; createCollection(item.name, nameColl); getListDatabase(); resetForm();">
                             Create
                           </v-btn>
                           <v-btn v-else-if="type === 'Dynamic'" text :disabled="!formValid"
-                            @click="dialogColl = false; createDynamicCollection(item.name, nameColl, listUrl); getListDatabase()">
+                            @click="dialogColl = false; createDynamicCollection(item.name, nameColl, listUrl); getListDatabase(); resetForm();">
                             Create
                           </v-btn>
                           <v-btn v-else text :disabled="!formValid"
-                            @click="dialogColl = false; createVirtualCollection(item.name, nameColl, listUrl); getListDatabase()">
+                            @click="dialogColl = false; createVirtualCollection(item.name, nameColl, listUrl); getListDatabase(); resetForm();">
                             Create
                           </v-btn>
-                          <v-btn text @click="dialogColl = false">
+                          <v-btn text @click="resetForm(); dialogColl = false;">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -338,10 +338,10 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" text :disabled="!formValid"
-                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile)">
+                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile); resetForm();">
                             Download
                           </v-btn>
-                          <v-btn color="primary" text @click="dialogExp = false">
+                          <v-btn color="primary" text @click="resetForm(); dialogExp = false">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -415,10 +415,10 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" text :disabled="!formValid"
-                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile)">
+                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile); resetForm();">
                             Download
                           </v-btn>
-                          <v-btn color="primary" text @click="dialogExp = false">
+                          <v-btn color="primary" text @click="resetForm(); dialogExp = false">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -483,10 +483,10 @@
                               <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary" text :disabled="!formValid"
-                                  @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name)">
+                                  @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name); resetForm();">
                                   Add urls
                                 </v-btn>
-                                <v-btn color="primary" text @cilck="dialogAddUrl = false">
+                                <v-btn color="primary" text @cilck="resetForm(); dialogAddUrl = false">
                                   Cancel
                                 </v-btn>
                               </v-card-actions>
@@ -557,10 +557,10 @@
                             </v-card-text>
                             <v-card-actions>
                               <v-btn color="primary" text :disabled="!formValid"
-                                @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), msFrequency); getListDatabase();">
+                                @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), msFrequency); getListDatabase(); resetForm();">
                                 Set
                               </v-btn>
-                              <v-btn color="primary" text @click="dialogFreq = false">
+                              <v-btn color="primary" text @click="resetForm(); dialogFreq = false">
                                 Close
                               </v-btn>
                             </v-card-actions>
@@ -656,10 +656,10 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" text :disabled="!formValid"
-                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile)">
+                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile); resetForm();">
                             Download
                           </v-btn>
-                          <v-btn color="primary" text @click="dialogExp = false">
+                          <v-btn color="primary" text @click="resetForm(); dialogExp = false">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -724,10 +724,10 @@
                               <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary" text :disabled="!formValid"
-                                  @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name)">
+                                  @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name); resetForm();">
                                   Add urls
                                 </v-btn>
-                                <v-btn color="primary" text @cilck="dialogAddUrl = false">
+                                <v-btn color="primary" text @cilck="resetForm(); dialogAddUrl = false">
                                   Cancel
                                 </v-btn>
                               </v-card-actions>
@@ -1056,7 +1056,6 @@ export default {
       }
     },
     getIndex (arr) {
-      console.log(this.listUrls)
       for (let i = 0; i < this.listUrls.length; i++) {
         const el1 = this.listUrls[i]
         if (!Array.isArray(arr)) {
@@ -1077,21 +1076,17 @@ export default {
     emptyWorkspace () {
       this.$root.$refs.Workspace.updateParam(null, null)
     },
-    updateDynamicCollection () {
-      this.setFrequency('test', 'd1', 0, 3600000)
-      this.setUpdateType('test', 'd1', 0, 0)
-      this.stopUpdate('test', 'd2')
-    },
     generateKey (item) {
       return item.db + item.name
     },
     isColl (arr) {
+      let res = false
       arr.forEach(collection => {
         if (collection.type !== 'database') {
-          return true
+          res = true
         }
       })
-      return false
+      return res
     },
     dbNameCheck (value) {
       let res = true
@@ -1113,6 +1108,18 @@ export default {
         }
       })
       return res
+    },
+    resetForm () {
+      this.type = ''
+      this.nameDb = ''
+      this.nameColl = ''
+      this.nameUrl = ''
+      this.nameFile = ''
+      this.frequencyDay = null
+      this.frequencyHour = null
+      this.frequencyWeek = null
+      this.listUrls = []
+      this.urls = []
     }
   }
 }
