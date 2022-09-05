@@ -2,9 +2,9 @@
   <v-sheet id="body">
     <v-row style="height: 8vh;">
       <v-container id="meta">
-        <v-row style="height: 50%;" class="ma-0 pa-0">
+        <v-row class="ma-0 pa-0">
           <v-col cols="12" id="meta2" style="padding: 0px;">
-            <v-container v-if="online" style="padding: 7px;" fill-height>
+            <v-container v-if="online" style="padding: 10px;" fill-height>
               <v-btn depressed block style="background-color: green; padding: 0px; height: 100%;">
                 ONLINE
                 <v-icon>
@@ -12,10 +12,10 @@
                 </v-icon>
               </v-btn>
             </v-container>
-            <v-container v-else style="padding: 7px;" fill-height>
+            <v-container v-else style="padding: 10px;" fill-height>
               <v-tooltip right open-delay=400>
                 <template v-slot:activator="{on, attrs}">
-                  <v-btn v-on="on" v-bind="attrs" depressed block style="background-color: red; padding: 0px;"
+                  <v-btn v-on="on" v-bind="attrs" depressed block style="background-color: red; padding: 0px; height: 100%"
                     @click="reconnect()">
                     OFFLINE
                     <v-icon>
@@ -28,25 +28,22 @@
             </v-container>
           </v-col>
         </v-row>
-        <v-row style="height: 50%">
-          <v-col cols="12" id="meta3" style="justify-content: center; padding: 0px" class="d-flex align-center">
-            <h4 style="color: white;">{{nDB}} DATABASES</h4>
-          </v-col>
-        </v-row>
       </v-container>
     </v-row>
-    <v-row style="height: 7vh; padding-top: 4%;">
-      <v-col cols="9">
-        <h2 class="ml-n2" style="color: #7FCD91; font-size: 1.2vw;">DATABASE LIST:</h2>
+    <v-row style="height: 5vh">
+      <v-col cols="6" id="meta3" style="justify-content: center; padding: 0px" class="d-flex align-center">
+        <h4 style="color: white;">{{nDB}} DATABASES:</h4>
       </v-col>
     </v-row>
-    <v-row style="height: 10vh;">
-      <v-text-field style="padding: 5px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
+    <v-row style="height: 9vh;">
+      <v-text-field style="padding: 2px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
         hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
     </v-row>
 
+    <!--Top buttons--------------------------------------------------------------->
     <v-row style="height: 4vh">
       <template>
+        <!--Refresh button-->
         <v-tooltip v-if="flag===false" bottom open-delay=400>
           <template v-slot:activator="{ on, attrs}">
             <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
@@ -56,6 +53,7 @@
           </template>
           <span>refresh</span>
         </v-tooltip>
+        <!--Create new database button-->
         <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
           <template #activator="{ on: dialog }">
             <v-tooltip bottom open-delay=400>
@@ -89,6 +87,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <!--Selectable treeview button-->
         <v-tooltip bottom open-delay=400>
           <template v-slot:activator="{ on, attrs }">
             <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
@@ -100,33 +99,36 @@
         </v-tooltip>
       </template>
     </v-row>
-    <v-row style="height: 61vh">
+    <!--Treeview------------------------------------------------------------------>
+    <v-row style="height: 64vh">
       <v-col style="padding: 0px">
         <v-container v-if="flag === false" style="max-height: 61vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
-          <c-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
+          <v-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="id" open-on-click transition return-object
             active-class="activeNode" @update:active="buildWorkspace">
             <template v-slot:prepend="{item, open}">
-              <v-icon>
+              <v-icon dense>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
               </v-icon>
             </template>
+            <!--Three dots menu button-->
             <template v-slot:append="{item, hover}">
               <v-menu bottom :offset-x="true">
                 <template v-slot:activator="{ on }">
-                  <v-btn class="threedotsBtn" dark icon v-on="on">
+                  <v-btn dark icon v-on="on">
                     <v-icon v-if="hover">
                       mdi-dots-vertical</v-icon>
                   </v-btn>
                 </template>
 
+                <!--Database buttons list-->
                 <v-list v-if="item.type === 'database'">
                   <v-list-item v-for="(el, i) in itemsDatabase" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogDelDb0" width="250">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -162,7 +164,7 @@
                     <v-dialog v-if="i === 1" v-model="dialogColl" width="700">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -207,7 +209,7 @@
                     <v-dialog v-if="i === 2" v-model="dialogImp" width="550">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -215,7 +217,7 @@
                         <v-card-title>Importing collection</v-card-title>
                         <v-card-text>
                           <div class="upload-container">
-                            <input type="file" id="file_upload" multiple @change="loaded()"/>
+                            <input type="file" id="file_upload" multiple @change="loaded()" />
                             <v-form v-model="formValid">
                               <v-text-field label='Collection name' v-model="nameColl" type="text" required
                                 :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
@@ -239,12 +241,13 @@
                   </v-list-item>
                 </v-list>
 
+                <!--Static collection buttons list-->
                 <v-list v-if="item.type === 'static'">
                   <v-list-item v-for="(el, i) in itemsCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -280,7 +283,7 @@
                     <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="dialogImp = true">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -326,7 +329,7 @@
                     <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -341,13 +344,23 @@
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                               :rules="[ v => !!v || 'Insert a name']" required type="text">
                             </v-text-field>
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                  v-model="limit"></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
+                                  v-model="offset"></v-text-field>
+                              </v-col>
+                            </v-row>
                           </v-form>
                         </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" text :disabled="!formValid"
-                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile); resetForm();">
+                            @click="dialogExp = false; exportCollection(item.db, item.name, nameFile, limit, offset); resetForm();">
                             Download
                           </v-btn>
                           <v-btn color="primary" text @click="resetForm(); dialogExp = false">
@@ -359,12 +372,13 @@
                   </v-list-item>
                 </v-list>
 
+                <!--Dynamic collection buttons list-->
                 <v-list v-if="item.type === 'dynamic'">
                   <v-list-item v-for="(el, i) in itemsDynamicCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -400,7 +414,7 @@
                     <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -415,6 +429,16 @@
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                               :rules="[ v => !!v || 'Insert a name']" required type="text">
                             </v-text-field>
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                  v-model="limit"></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
+                                  v-model="offset"></v-text-field>
+                              </v-col>
+                            </v-row>
                           </v-form>
                         </v-card-text>
 
@@ -434,7 +458,7 @@
                     <v-dialog v-if="i === 2" v-model="dialogUrl" width="500">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -535,7 +559,7 @@
                     <v-dialog v-if="i === 3" v-model="dialogFreq" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -578,7 +602,7 @@
                     <v-dialog v-if="i === 4" v-model="dialogStop" width="400">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" style="color: red">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -598,12 +622,13 @@
                   </v-list-item>
                 </v-list>
 
+                <!--Virtual collection buttons list-->
                 <v-list v-if="item.type === 'virtual'">
                   <v-list-item v-for="(el, i) in itemsVirtualCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -639,7 +664,7 @@
                     <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -654,6 +679,16 @@
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                               :rules="[ v => !!v || 'Insert a name']" required type="text">
                             </v-text-field>
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                  v-model="limit"></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
+                                  v-model="offset"></v-text-field>
+                              </v-col>
+                            </v-row>
                           </v-form>
                         </v-card-text>
 
@@ -673,7 +708,7 @@
                     <v-dialog v-if="i === 2" v-model="dialogUrl" width="500">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
-                          <v-icon>{{ el.icon }}</v-icon>
+                          <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
                       </template>
@@ -774,14 +809,15 @@
                 </v-list>
               </v-menu>
             </template>
-          </c-treeview>
+          </v-treeview>
         </v-container>
+        <!--Selectable treeview for deleting more collection simultaneously------->
         <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
           <v-treeview dark dense activatable selectable v-model="colls" :items="listDatabases"
             :load-children="getListCollection" :search='search' :filter='filter' item-key="id" open-on-click transition
             return-object active-class="activeNode">
             <template v-slot:prepend="{item, open}">
-              <v-icon>
+              <v-icon dense>
                 {{open ? iconOpen[item.type] : icon[item.type]}}
               </v-icon>
             </template>
@@ -854,21 +890,96 @@
 <script>
 import Vue from 'vue'
 import * as com from '../functions/communication'
-import CTreeview from '@/functions/CTreeview.js'
+import { VTreeviewNode } from 'vuetify/lib'
 import { connect, returnWS } from '../functions/connection.js'
 
+// To suppress all warnigns
 Vue.config.silent = true
 
-export default {
-  components: {
-    CTreeview
+VTreeviewNode.mixin({
+  data: () => ({
+    isHover: false
+  }),
+  computed: {
+    scopedProps () {
+      return {
+        item: this.item,
+        leaf: !this.children,
+        selected: this.isSelected,
+        indeterminate: this.isIndeterminate,
+        active: this.isActive,
+        open: this.isOpen,
+        hover: this.isHover
+      }
+    }
   },
+  methods: {
+    onMouseEnter () {
+      this.isHover = true
+    },
+    onMouseLeave () {
+      this.isHover = false
+    },
+    genNode () {
+      const children = [this.genContent()]
+
+      if (this.selectable) children.unshift(this.genCheckbox())
+
+      if (this.hasChildren) {
+        children.unshift(this.genToggle())
+      } else {
+        children.unshift(...this.genLevel(1))
+      }
+
+      children.unshift(...this.genLevel(this.level))
+
+      const element = this.$createElement(
+        'div',
+        this.setTextColor(this.isActive && this.color, {
+          staticClass: 'v-treeview-node__root',
+          class: {
+            [this.activeClass]: this.isActive
+          },
+          on: {
+            click: () => {
+              if (this.openOnClick && this.hasChildren) {
+                this.checkChildren().then(this.open)
+              } else if (this.activatable && !this.disabled) {
+                this.isActive = !this.isActive
+                this.treeview.updateActive(
+                  this.key,
+                  this.isActive
+                )
+                this.treeview.emitActive()
+              }
+            },
+            dblclick: () => {
+              this.treeview.emitDblclick(this.item)
+            }
+          }
+        }),
+        children
+      )
+
+      element.data = element.data || {}
+      this._g(element.data, {
+        mouseenter: this.onMouseEnter,
+        mouseleave: this.onMouseLeave
+      })
+
+      return element
+    }
+  }
+})
+
+export default {
   data () {
     return {
       formValid: true,
       activeItem: null,
-      dialogColls: false, // selectable treeview command
-      dialogDelMoreColls: false, // selectable treeview command
+      // dialogs opened when pressing a button
+      dialogColls: false, // selectable treeview dialog
+      dialogDelMoreColls: false, // selectable treeview dialog
       dialogDb: false,
       dialogDelDb: false,
       dialogDelDb0: false,
@@ -885,25 +996,23 @@ export default {
       dialogDelColl0: false,
       dialogDelColl1: false,
       dialogStop: false,
-      metaTL: null,
-      metaDL: null, // frquency info
-      metaBL: null,
-      metaBR: null,
+      // online parameters
       active: false,
       online: false,
-      flag: false, // for the selectable treeview option
+      flag: false, // boolean setted on true if we are in the selectable treeview
+      // functions parameters, compiled by the user
       type: '',
       typeJson: false,
       nameDb: '',
       nameColl: '',
       nameUrl: '',
       nameFile: '',
-      limit: -1,
-      offset: 0,
+      limit: '-1', // already set to default value
+      offset: '0', // already set to default value
       append: false,
+      imported: false,
       index: '',
       indexUrl: '',
-      indexes: [],
       indexFreqUpdate: '',
       frequencyWeek: null,
       frequencyDay: null,
@@ -912,11 +1021,11 @@ export default {
       search: null,
       id: Math.floor(Math.random() * 10),
       connection: null,
-      listDatabases: [],
-      listUrls: [],
       on: null,
-      imported: false,
+      listDatabases: [], // to display the list of DBs in the treeview
       colls: [],
+      listUrls: [],
+      indexes: [], // to display the list of urls in a collection
       urls: [],
       icon: {
         database: 'mdi-database',
@@ -1027,20 +1136,7 @@ export default {
     }
   },
   methods: {
-    reconnect () {
-      connect()
-      this.connection = returnWS()
-      this.$root.$refs.Workspace.reconnect()
-      this.connection.onopen = () => {
-        this.connection = returnWS()
-        console.log('Connecting...')
-        this.ping()
-        this.getListDatabase()
-        this.handleResponse()
-      }
-    },
-
-    // Import communication function
+    // Import communication functions
     handleResponse: com.handleResponse,
     getListDatabase: com.getListDatabase,
     getListUrl: com.getListUrl,
@@ -1064,6 +1160,21 @@ export default {
     deleteMoreCollections: com.deleteMoreCollections,
     removeMoreUrls: com.removeMoreUrls,
     ping: com.ping,
+    reconnect () {
+      connect()
+      this.connection = returnWS()
+      this.$root.$refs.Workspace.reconnect()
+      this.connection.onopen = () => {
+        this.connection = returnWS()
+        console.log('Connecting...')
+        this.ping()
+        this.getListDatabase()
+        this.handleResponse()
+      }
+    },
+    emitDblclick (item) {
+      this.$emit('item:dblclick', item)
+    },
     async buildWorkspace (value) {
       if (!value[0]) {
         this.emptyWorkspace()
@@ -1159,7 +1270,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 
 .activeNode{
   background-color: #5B5656;
@@ -1181,11 +1292,31 @@ h5{
 }
 
 .v-treeview-node__root{
-  padding-left: 0px;
+  padding: 0px;
+  margin: 0px;
+  font-size: medium;
 }
 
 .v-treeview-node__level{
-  width: 15px;
+  width: 18px;
+}
+
+.v-list{
+  padding: 0px;
+}
+
+.v-list .v-btn{
+  font-weight: 500;
+  size: small;
+  font-size: 0.8rem;
+  width: 200px;
+  align-self: auto;
+}
+
+.v-list-item{
+  padding: 0px;
+  margin: 0px;
+  min-height: 5px;
 }
 
 .v-tooltip__content {
@@ -1236,10 +1367,6 @@ h5{
 .upload-btn {
   margin-left: 300px;
   padding: 7px 20px;
-}
-
-.threedotsBtn:focus::before {
-  opacity: 0 !important;
 }
 
 </style>

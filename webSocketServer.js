@@ -38,7 +38,7 @@ wss.on('connection', function (ws) {
   }
 
   client.on('error', error => {
-    const err = new Uint8Array(consts.WS_PING_ERROR_RESPONSE) //Send an error message to the WebApp
+    const err = new Uint8Array(consts.WS_PING_ERROR_RESPONSE) // Send an error message to the WebApp
     wss.clients.forEach((WSclient) => {
       WSclient.send(err)
       WSclient.close()

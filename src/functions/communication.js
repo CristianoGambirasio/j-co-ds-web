@@ -83,8 +83,8 @@ export function saveCollection (nameDb, nameColl, docs, append) {
   this.handleResponse()
 };
 
-export async function exportCollection (nameDb, nameColl, nameFile) {
-  const coll = await this.getCollection(nameDb, nameColl, this.limit, this.offset)
+export async function exportCollection (nameDb, nameColl, nameFile, limit, offset) {
+  const coll = await this.getCollection(nameDb, nameColl, limit, offset)
   console.log(coll.documents[0])
   const data = coll.documents
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data))
