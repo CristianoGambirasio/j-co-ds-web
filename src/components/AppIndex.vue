@@ -1,11 +1,10 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 100vh">
+    <v-row style="height: 100vh;">
       <v-col cols="2" id="left" style="padding: 0;">
-        <v-row id="title" style="height: 10vh;">
+        <v-row id="title" style="height: 10vh; align-content: center; justify-content: center; padding: 0; padding-right: 10px;">
           <h1 style="color: #4D4646;
-          font-size: 2vw;
-          text-align: center;">
+          font-size: 2vw;">
           J-CO-DS WEB</h1>
         </v-row>
         <v-row id="appMenu" style="height: 90vh;">
@@ -20,6 +19,9 @@
 </template>
 
 <style scoped>
+/*  * {
+  outline: 1px solid lime;
+} */
 
 :root {
   --primary-color: green;

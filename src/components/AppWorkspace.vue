@@ -3,24 +3,17 @@
     <v-row style="height: 10vh;">
       <v-container fluid id="metadata" style="padding: 0;">
         <v-row style="height: 10vh;">
-          <v-col id="meta1" cols="3" style="align-items: center;">
-            <h4>{{meta1}}</h4>
+          <v-col id="meta1" cols="6" style="align-self: center;">
+            <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
+            <h5>{{metaTypeColl}}</h5>
           </v-col>
-          <v-col id="meta2" cols="3">
-            <h4>{{meta2}}</h4>
+          <v-col id="meta2" cols="3" style="align-self: center; justify-self: center;">
           </v-col>
-          <v-col id="meta3" cols="3">
-            <h4>{{meta3}}</h4>
-          </v-col>
-          <v-col id="meta4" cols="3">
-            <v-container v-if="showDynamicFunctions">
-              <v-form>
-                <v-text-field v-model="dynamicFreq" label="Frequency" required>
-                </v-text-field>
-                <v-checkbox v-model="dynamicAppend" label="Append">
-                </v-checkbox>
-              </v-form>
-            </v-container>
+          <v-col id="meta3" cols="3" style="align-self: center;">
+            <v-row style="justify-content: center;">
+              <h4>{{countCollection}}</h4>
+            </v-row>
+            <v-row style="justify-content: center;"><h5 v-if="selected">DOCUMENTS</h5></v-row>
           </v-col>
         </v-row>
       </v-container>
@@ -64,14 +57,13 @@ export default {
       listUrls: [], // List of urls of the selected collection
       numDoc: 5, // Number of doc showed in each page
       nPages: 0,
-      meta1: null,
-      meta2: null,
-      meta3: null,
+      metaNameColl: null,
+      metaNameDb: null,
+      metaTypeColl: null,
       meta4: null,
-      countCollection: 0,
+      countCollection: null,
       showDynamicFunctions: false,
-      dynamicAppend: false,
-      dynamicFreq: 1000000
+      selected: false
     }
   },
   created () {
@@ -87,17 +79,19 @@ export default {
     getListUrl: com.getListUrl,
 
     reconnect () {
-      console.log('AAA')
       this.connection = returnWS()
     },
 
     updateParam (db, coll, obj) {
       this.page = 1
       if (db !== null && coll !== null) {
+        this.selected = true
         this.dbSelected = db
         this.collSelected = coll
         this.buildWorkspace(obj)
       } else {
+        this.selected = false
+        this.countCollection = null
         this.documentsLoaded = []
         this.nPages = 0
         this.meta1 = null
@@ -129,22 +123,9 @@ export default {
       }
     },
     async showMetadata (value) {
-      if (value[0].type === 'static') {
-        this.meta2 = 'TYPE: STATIC'
-        this.meta1 = 'NAME: ' + value[0].name
-        this.meta3 = 'Documents: ' + this.countCollection
-      } else if (value[0].type === 'dynamic') {
-        this.meta2 = 'TYPE: DYNAMIC'
-        this.meta1 = 'NAME: ' + value[0].name
-        this.meta3 = 'Documents: ' + this.countCollection
-        this.showDynamicFunctions = true
-      } else if (value[0].type === 'virtual') {
-        this.meta2 = 'TYPE: VIRTUAL'
-        this.meta1 = 'NAME: ' + value[0].name
-        this.meta3 = 'Documents: ' + this.countCollection
-        // Gestione database | Stile select
-        // Prova
-      }
+      this.metaNameColl = value[0].name
+      this.metaNameDb = value[0].db
+      this.metaTypeColl = value[0].type
     }
   }
 }
@@ -156,7 +137,15 @@ export default {
 } */
 h4{
   color: white;
-  padding: 8px;
+  font-size: 2vw;
+}
+h5{
+  color: #7FCD91;
+  font-size: 1vw;
+}
+span{
+  color:#7FCD91;
+  font-size: 1.5vw;
 }
 #metadata{
   background-color: #4D4646;

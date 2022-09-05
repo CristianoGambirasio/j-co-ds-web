@@ -144,10 +144,14 @@
                         <v-card-text>
                           <v-form v-model="formValid">
                             <v-text-field label='Database' v-model=item.name disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model="nameColl" :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used']" required type="text"></v-text-field>
-                            <v-select label="Type" v-model="type" :items="collTypes" :rules="[v => !!v || 'Select a collection type',]"></v-select>
-                            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url" v-model="listUrl" :rules="[ v => !!v || 'Insert an URL']"
-                              required type="text">
+                            <v-text-field label="Collection" v-model="nameColl"
+                              :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used']"
+                              required type="text"></v-text-field>
+                            <v-select label="Type" v-model="type" :items="collTypes"
+                              :rules="[v => !!v || 'Select a collection type',]"></v-select>
+                            <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url"
+                              hint="To add more urls: write them separated by a ','" v-model="listUrl"
+                              :rules="[ v => !!v || 'Insert an URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']" required type="text">
                             </v-text-field>
                           </v-form>
                         </v-card-text>
@@ -190,11 +194,11 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn class="upload-btn" color="primary" text
-                            @click="dialogImp = false; importCollection(item); getListDatabase()">
+                          <v-btn class="upload-btn" color="primary" text :disabled="!formValid"
+                            @click="dialogImp = false; importCollection(item, nameColl); imported = false; getListDatabase(); resetForm();">
                             Upload
                           </v-btn>
-                          <v-btn color="primary" text @click="dialogImp = false">
+                          <v-btn color="primary" text @click="dialogImp = false; resetForm();">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -451,7 +455,8 @@
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL']" required type="text">
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL', , v => noSpace(v) || 'Do not insert spaces before or after the ,']" required
+                                    type="text">
                                   </v-text-field>
                                 </v-form>
                               </v-card-text>
@@ -692,7 +697,8 @@
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL']" required type="text">
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']" required
+                                    type="text">
                                   </v-text-field>
                                 </v-form>
                               </v-card-text>
@@ -1088,6 +1094,48 @@ export default {
           res = false
         }
       })
+      return res
+    },
+    resetForm () {
+      this.type = ''
+      this.nameDb = ''
+      this.nameColl = ''
+      this.nameUrl = ''
+      this.nameFile = ''
+      this.frequencyDay = null
+      this.frequencyHour = null
+      this.frequencyWeek = null
+      this.listUrls = []
+      this.urls = []
+      if (document.getElementById('file_upload')) {
+        document.getElementById('file_upload').value = null
+      }
+    },
+    async loaded () {
+      this.imported = true
+      const fileInput = document.getElementById('file_upload').files[0]
+      const fileread = new FileReader()
+      await new Promise(resolve => {
+        fileread.onload = function (e) {
+          const cond = fileInput.type.match('application/json')
+          resolve(cond)
+        }
+        fileread.readAsText(fileInput)
+      }).then((res) => {
+        if (res) {
+          this.typeJson = true
+        } else {
+          this.typeJson = false
+        }
+      })
+    },
+    noSpace (value) {
+      let res = true
+      if (value) {
+        if (value.split(', ').length > 1 || value.split(' ,').length > 1) {
+          res = false
+        }
+      }
       return res
     }
   }
