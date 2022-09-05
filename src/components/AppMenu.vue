@@ -180,7 +180,7 @@
                               :rules="[v => !!v || 'Select a collection type',]"></v-select>
                             <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url"
                               hint="To add more urls: write them separated by a ','" v-model="listUrl"
-                              :rules="[ v => !!v || 'Insert an URL']" required type="text">
+                              :rules="[ v => !!v || 'Insert an URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']" required type="text">
                             </v-text-field>
                           </v-form>
                         </v-card-text>
@@ -229,10 +229,10 @@
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn class="upload-btn" color="primary" text :disabled="!formValid"
-                            @click="dialogImp = false; importCollection(item, nameColl); imported = false; getListDatabase()">
+                            @click="dialogImp = false; importCollection(item, nameColl); imported = false; getListDatabase(); resetForm();">
                             Upload
                           </v-btn>
-                          <v-btn color="primary" text @click="dialogImp = false">
+                          <v-btn color="primary" text @click="dialogImp = false; resetForm();">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -503,7 +503,7 @@
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL']" required
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL', , v => noSpace(v) || 'Do not insert spaces before or after the ,']" required
                                     type="text">
                                   </v-text-field>
                                 </v-form>
@@ -753,7 +753,7 @@
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL']" required
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']" required
                                     type="text">
                                   </v-text-field>
                                 </v-form>
@@ -1247,6 +1247,9 @@ export default {
       this.frequencyWeek = null
       this.listUrls = []
       this.urls = []
+      if (document.getElementById('file_upload')) {
+        document.getElementById('file_upload').value = null
+      }
     },
     async loaded () {
       this.imported = true
@@ -1265,6 +1268,15 @@ export default {
           this.typeJson = false
         }
       })
+    },
+    noSpace (value) {
+      let res = true
+      if (value) {
+        if (value.split(', ').length > 1 || value.split(' ,').length > 1) {
+          res = false
+        }
+      }
+      return res
     }
   }
 }
