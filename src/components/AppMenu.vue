@@ -1,6 +1,6 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 5vh; padding: 2px; justify-content: center;">
+    <v-row style="padding: 2px; justify-content: center;">
       <v-col cols="auto" style="padding: 2px; font-size: medium;">
         <p style="color: white;">{{nDB}} DATABASES:</p>
       </v-col>
@@ -62,12 +62,12 @@
         </template>
       </v-col>
     </v-row>
-    <v-row style="height: 8vh;">
+    <v-row>
       <v-text-field style="padding: 2px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
         hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
     </v-row>
     <!--Treeview------------------------------------------------------------------>
-    <v-row style="height: 72vh">
+    <v-row>
       <v-col style="padding: 0px">
         <v-container v-if="flag === false" style="max-height: 72vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
@@ -882,26 +882,21 @@
         </v-container>
       </v-col>
     </v-row>
-    <v-row style="height: 5vh;">
-      <v-btn v-if="online" depressed block style="background-color: green; padding: 0px; height: 100%;">
-        ONLINE
-        <v-icon>
-          mdi-access-point-check
-        </v-icon>
-      </v-btn>
-      <v-tooltip v-else right open-delay=400>
-        <template v-slot:activator="{on, attrs}">
-          <v-btn v-on="on" v-bind="attrs" depressed block style="background-color: red; padding: 0px; height: 100%"
-            @click="reconnect()">
-            OFFLINE
-            <v-icon>
-              mdi-access-point-remove
-            </v-icon>
-          </v-btn>
-        </template>
-        <span>click to go online</span>
-      </v-tooltip>
-    </v-row>
+    <template>
+      <v-footer padless absolute max-width="16.5555vw">
+        <v-btn v-if="online" min-height="4vh" tile depressed block
+          style="background-color: green; padding: 0px; height: 100%;">
+          ONLINE
+          <v-icon>
+            mdi-access-point-check
+          </v-icon>
+        </v-btn>
+        <v-btn v-else tile depressed block min-height="4vh" style="background-color: red; padding: 0px; height: 100%"
+          @click="reconnect()">
+          CLICK TO GO ONLINE
+        </v-btn>
+      </v-footer>
+    </template>
   </v-sheet>
 </template>
 
