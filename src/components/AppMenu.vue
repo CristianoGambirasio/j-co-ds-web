@@ -29,6 +29,7 @@
         </v-row>
       </v-container>
     </v-row>
+<<<<<<< Updated upstream
     <v-row style="height: 7vh; padding-top: 4%;">
       <v-col cols="9">
         <h2 class="ml-n2" style="color: #7FCD91; font-size: 1.2vw;">DATABASE LIST:</h2>
@@ -50,6 +51,43 @@
             <v-btn fab small class="ml-1" v-on="on" height="25px" rounded depressed color=#5B5656 dark>
               <v-icon>mdi-plus</v-icon>
             </v-btn>
+=======
+    <v-row style="padding: 5px;">
+      <v-col cols="6" id="meta3" style="justify-content: left; padding: 0;" class="d-flex align-center">
+        <h4 style="color: #7FCD91;">{{nDB}} DATABASES:</h4>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-text-field style="padding: 0px; padding-left: 5px; padding-right: 5px;" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
+        hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
+    </v-row>
+
+    <!--Top buttons--------------------------------------------------------------->
+    <v-row style="padding: 5px;">
+      <template>
+        <!--Refresh button-->
+        <v-tooltip v-if="flag===false" bottom open-delay=400>
+          <template v-slot:activator="{ on, attrs}">
+            <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
+              @click="getListDatabase();">
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+          </template>
+          <span>refresh</span>
+        </v-tooltip>
+        <!--Create new database button-->
+        <v-dialog v-if="flag === false" v-model="dialogDb" width="600" @click:outside="resetForm()">
+          <template #activator="{ on: dialog }">
+            <v-tooltip bottom open-delay=400>
+              <template #activator="{ on: tooltip }">
+                <v-btn v-on="{ ...tooltip, ...dialog }" fab small class="ml-1" height="25px" rounded depressed
+                  color=#5B5656 dark retain-focus-on-click>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span>create a new database</span>
+            </v-tooltip>
+>>>>>>> Stashed changes
           </template>
           <v-card>
             <v-card-title>Creating new database</v-card-title>
@@ -60,7 +98,12 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
+<<<<<<< Updated upstream
               <v-btn text :disabled="!formValid" @click="createDatabase(nameDb); getListDatabase(); dialogDb = false">
+=======
+              <v-btn text :disabled="!formValid"
+                @click="createDatabase(nameDb); getListDatabase(); dialogDb = false; resetForm()">
+>>>>>>> Stashed changes
                 Create
               </v-btn>
               <v-btn text @click="dialogDb = false">
@@ -96,7 +139,7 @@
 
                 <v-list v-if="item.type === 'database'">
                   <v-list-item v-for="(el, i) in itemsDatabase" :key="i">
-                    <v-dialog v-if="i === 0" v-model="dialogDelDb0" width="250">
+                    <v-dialog v-if="i === 0" v-model="dialogDelDb0" width="250" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -106,7 +149,7 @@
                       <v-card>
                         <v-card-title>Are you sure?</v-card-title>
                         <v-card-actions>
-                          <v-dialog v-model="dialogDelDb1" width="400">
+                          <v-dialog v-model="dialogDelDb1" width="400" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">Yes</v-btn>
                             </template>
@@ -132,7 +175,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogColl" width="700">
+                    <v-dialog v-if="i === 1" v-model="dialogColl" width="700" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -177,7 +220,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 2" v-model="dialogImp" width="550">
+                    <v-dialog v-if="i === 2" v-model="dialogImp" width="550" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -188,8 +231,18 @@
                         <v-card-title>Importing collection</v-card-title>
                         <v-card-text>
                           <div class="upload-container">
+<<<<<<< Updated upstream
                             <input type="file" id="file_upload" multiple />
                           </div>
+=======
+                            <input type="file" id="file_upload" multiple @change="loaded()" />
+                          </div>
+                          <v-form v-model="formValid">
+                              <v-text-field label='Collection name' v-model="nameColl" type="text" required
+                                :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
+                              </v-text-field>
+                            </v-form>
+>>>>>>> Stashed changes
                         </v-card-text>
 
                         <v-card-actions>
@@ -209,7 +262,7 @@
 
                 <v-list v-if="item.type === 'static'">
                   <v-list-item v-for="(el, i) in itemsCollection" :key="i">
-                    <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
+                    <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -219,7 +272,7 @@
                       <v-card>
                         <v-card-title>Are you sure?</v-card-title>
                         <v-card-actions>
-                          <v-dialog v-model="dialogDelColl1" width="400">
+                          <v-dialog v-model="dialogDelColl1" width="400" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">Yes</v-btn>
                             </template>
@@ -245,7 +298,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550">
+                    <v-dialog v-if="i === 1" v-model="dialogImp" width="550" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="dialogImp = true">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -262,7 +315,7 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-dialog v-model="dialogImp1" width="400">
+                          <v-dialog v-model="dialogImp1" width="400" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on" class="upload-btn" color="primary" text>
                                 Upload
@@ -291,7 +344,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 2" v-model="dialogExp" width="600" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -312,6 +365,19 @@
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" :rules="[ v => !!v || 'Insert a name']" required
                               type="text">
                             </v-text-field>
+<<<<<<< Updated upstream
+=======
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                  v-model="limit" :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']" required></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
+                                  v-model="offset" :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']" required></v-text-field>
+                              </v-col>
+                            </v-row>
+>>>>>>> Stashed changes
                           </v-form>
                         </v-card-text>
 
@@ -331,8 +397,13 @@
                 </v-list>
 
                 <v-list v-if="item.type === 'dynamic'">
+<<<<<<< Updated upstream
                   <v-list-item v-for="(el, i) in itemsCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
+=======
+                  <v-list-item v-for="(el, i) in itemsDynamicCollection" :key="i">
+                    <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250" @click:outside="resetForm()">
+>>>>>>> Stashed changes
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -342,7 +413,7 @@
                       <v-card>
                         <v-card-title>Are you sure?</v-card-title>
                         <v-card-actions>
-                          <v-dialog v-model="dialogDelColl1" width="400">
+                          <v-dialog v-model="dialogDelColl1" width="400" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">Yes</v-btn>
                             </template>
@@ -368,7 +439,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -389,6 +460,19 @@
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" :rules="[ v => !!v || 'Insert a name']" required
                               type="text">
                             </v-text-field>
+<<<<<<< Updated upstream
+=======
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                  v-model="limit" :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']" required></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
+                                  v-model="offset" :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']" required></v-text-field>
+                              </v-col>
+                            </v-row>
+>>>>>>> Stashed changes
                           </v-form>
                         </v-card-text>
 
@@ -406,8 +490,12 @@
                     </v-dialog>
                   </v-list-item>
 
+<<<<<<< Updated upstream
                   <v-list-item v-for="(el, i) in itemsDynamicCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogUrl" width="500">
+=======
+                    <v-dialog v-if="i === 2" v-model="dialogUrl" width="500" @click:outside="resetForm()">
+>>>>>>> Stashed changes
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -441,7 +529,7 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-dialog v-model="dialogAddUrl" width="550">
+                          <v-dialog v-model="dialogAddUrl" width="550" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">
                                 Add url
@@ -477,7 +565,7 @@
                           <v-btn v-if="!urls.length" disabled>
                             Remove
                           </v-btn>
-                          <v-dialog v-else v-model="dialogRemoveUrl" width="550">
+                          <v-dialog v-else v-model="dialogRemoveUrl" width="550" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">
                                 Remove
@@ -507,7 +595,11 @@
                       </v-card>
                     </v-dialog>
 
+<<<<<<< Updated upstream
                     <v-dialog v-if="i === 1" v-model="dialogFreq" width="600">
+=======
+                    <v-dialog v-if="i === 3" v-model="dialogFreq" width="600" @click:outside="resetForm()">
+>>>>>>> Stashed changes
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -548,7 +640,11 @@
                       </v-card>
                     </v-dialog>
 
+<<<<<<< Updated upstream
                     <v-dialog v-if="i === 2" v-model="dialogStop" width="400">
+=======
+                    <v-dialog v-if="i === 4" v-model="dialogStop" width="400" @click:outside="resetForm()">
+>>>>>>> Stashed changes
                       <template v-slot:activator="{ on }">
                         <v-btn v-if="!stop" v-on="on" style="color: red">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -573,8 +669,13 @@
                 </v-list>
 
                 <v-list v-if="item.type === 'virtual'">
+<<<<<<< Updated upstream
                   <v-list-item v-for="(el, i) in itemsCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250">
+=======
+                  <v-list-item v-for="(el, i) in itemsVirtualCollection" :key="i">
+                    <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250" @click:outside="resetForm()">
+>>>>>>> Stashed changes
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -584,7 +685,7 @@
                       <v-card>
                         <v-card-title>Are you sure?</v-card-title>
                         <v-card-actions>
-                          <v-dialog v-model="dialogDelColl1" width="400">
+                          <v-dialog v-model="dialogDelColl1" width="400" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">Yes</v-btn>
                             </template>
@@ -610,7 +711,7 @@
                       </v-card>
                     </v-dialog>
 
-                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600">
+                    <v-dialog v-if="i === 1" v-model="dialogExp" width="600" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -631,6 +732,19 @@
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile" :rules="[ v => !!v || 'Insert a name']" required
                               type="text">
                             </v-text-field>
+<<<<<<< Updated upstream
+=======
+                            <v-row>
+                              <v-col>
+                                <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                  v-model="limit" :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']" required></v-text-field>
+                              </v-col>
+                              <v-col>
+                                <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
+                                  v-model="offset" :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']" required></v-text-field>
+                              </v-col>
+                            </v-row>
+>>>>>>> Stashed changes
                           </v-form>
                         </v-card-text>
 
@@ -648,8 +762,12 @@
                     </v-dialog>
                   </v-list-item>
 
+<<<<<<< Updated upstream
                   <v-list-item v-for="(el, i) in itemsVirtualCollection" :key="i">
                     <v-dialog v-if="i === 0" v-model="dialogUrl" width="500">
+=======
+                    <v-dialog v-if="i === 2" v-model="dialogUrl" width="500" @click:outside="resetForm()">
+>>>>>>> Stashed changes
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
                           <v-icon>{{ el.icon }}</v-icon>
@@ -683,7 +801,7 @@
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-dialog v-model="dialogAddUrl" width="550">
+                          <v-dialog v-model="dialogAddUrl" width="550" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">
                                 Add url
@@ -719,7 +837,7 @@
                           <v-btn v-if="!urls.length" disabled>
                             Remove
                           </v-btn>
-                          <v-dialog v-else v-model="dialogRemoveUrl" width="550">
+                          <v-dialog v-else v-model="dialogRemoveUrl" width="550" @click:outside="resetForm()">
                             <template v-slot:activator="{ on }">
                               <v-btn v-on="on">
                                 Remove
@@ -776,7 +894,7 @@
                 <v-icon>mdi-close</v-icon>
                 Delete
               </v-btn>
-              <v-dialog v-else v-model="dialogColls" width="600">
+              <v-dialog v-else v-model="dialogColls" width="600" @click:outside="resetForm()">
                 <template v-slot:activator="{ on }">
                   <v-btn small v-on="on" style="background-color: red">
                     <v-icon>mdi-close</v-icon>
@@ -796,7 +914,7 @@
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-dialog v-model="dialogDelMoreColls" width="100">
+                    <v-dialog v-model="dialogDelMoreColls" width="100" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
                         <v-btn v-on="on">Yes</v-btn>
                       </template>
@@ -1107,6 +1225,8 @@ export default {
       this.frequencyWeek = null
       this.listUrls = []
       this.urls = []
+      this.limit = '-1'
+      this.offset = '0'
       if (document.getElementById('file_upload')) {
         document.getElementById('file_upload').value = null
       }
@@ -1220,5 +1340,9 @@ h5{
   margin-left: 300px;
   padding: 7px 20px;
 }
+
+/* * {
+  outline: 1px solid lime;
+} */
 
 </style>
