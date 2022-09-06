@@ -1,108 +1,75 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 8vh;">
-      <v-container id="meta">
-        <v-row class="ma-0 pa-0">
-          <v-col cols="12" id="meta2" style="padding: 0px;">
-            <v-container v-if="online" style="padding: 10px;" fill-height>
-              <v-btn depressed block style="background-color: green; padding: 0px; height: 100%;">
-                ONLINE
-                <v-icon>
-                  mdi-access-point-check
-                </v-icon>
+    <v-row style="height: 5vh; padding: 2px; justify-content: center;">
+      <v-col cols="auto" style="padding: 2px; font-size: medium;">
+        <p style="color: white;">{{nDB}} DATABASES:</p>
+      </v-col>
+      <v-col style="padding: 0px" class="ml-7">
+        <!--Top buttons--------------------------------------------------------------->
+        <template>
+          <!--Refresh button-->
+          <v-tooltip v-if="flag===false" bottom open-delay=400>
+            <template v-slot:activator="{ on, attrs}">
+              <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white"
+                @click="getListDatabase();">
+                <v-icon>mdi-refresh</v-icon>
               </v-btn>
-            </v-container>
-            <v-container v-else style="padding: 10px;" fill-height>
-              <v-tooltip right open-delay=400>
-                <template v-slot:activator="{on, attrs}">
-                  <v-btn v-on="on" v-bind="attrs" depressed block
-                    style="background-color: red; padding: 0px; height: 100%" @click="reconnect()">
-                    OFFLINE
-                    <v-icon>
-                      mdi-access-point-remove
-                    </v-icon>
+            </template>
+            <span>refresh</span>
+          </v-tooltip>
+          <!--Create new database button-->
+          <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
+            <template #activator="{ on: dialog }">
+              <v-tooltip bottom open-delay=400>
+                <template #activator="{ on: tooltip }">
+                  <v-btn v-on="{ ...tooltip, ...dialog }" tile small dense depressed text icon color="white">
+                    <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </template>
-                <span>click to go online</span>
+                <span>create a new database</span>
               </v-tooltip>
-            </v-container>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-row>
-    <v-row style="height: 5vh">
-      <v-col cols="6" id="meta3" style="justify-content: center; padding: 0px" class="d-flex align-center">
-        <h4 style="color: white;">{{nDB}} DATABASES:</h4>
+            </template>
+            <v-card>
+              <v-card-title>Creating new database</v-card-title>
+              <v-card-text>
+                <v-form v-model="formValid">
+                  <v-text-field label="Name" v-model="nameDb"
+                    :rules="[v => !!v || 'Insert DB name', v => dbNameCheck(v) || 'This name is already used']" required
+                    type="text"></v-text-field>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text :disabled="!formValid"
+                  @click="createDatabase(nameDb); getListDatabase(); dialogDb = false; resetForm();">
+                  Create
+                </v-btn>
+                <v-btn text @click="resetForm(); dialogDb = false;">
+                  Close
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <!--Selectable treeview button-->
+          <v-tooltip bottom open-delay=400>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white" @click="flag = !flag">
+                <v-icon>mdi-checkbox-multiple-marked</v-icon>
+              </v-btn>
+            </template>
+            <span>menu for deleting more collections simultaneously</span>
+          </v-tooltip>
+        </template>
       </v-col>
     </v-row>
-    <v-row style="height: 9vh;">
+    <v-row style="height: 8vh;">
       <v-text-field style="padding: 2px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
         hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
     </v-row>
-
-    <!--Top buttons--------------------------------------------------------------->
-    <v-row style="height: 4vh">
-      <template>
-        <!--Refresh button-->
-        <v-tooltip v-if="flag===false" bottom open-delay=400>
-          <template v-slot:activator="{ on, attrs}">
-            <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
-              @click="getListDatabase();">
-              <v-icon>mdi-refresh</v-icon>
-            </v-btn>
-          </template>
-          <span>refresh</span>
-        </v-tooltip>
-        <!--Create new database button-->
-        <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
-          <template #activator="{ on: dialog }">
-            <v-tooltip bottom open-delay=400>
-              <template #activator="{ on: tooltip }">
-                <v-btn v-on="{ ...tooltip, ...dialog }" fab small class="ml-1" height="25px" rounded depressed
-                  color=#5B5656 dark>
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <span>create a new database</span>
-            </v-tooltip>
-          </template>
-          <v-card>
-            <v-card-title>Creating new database</v-card-title>
-            <v-card-text>
-              <v-form v-model="formValid">
-                <v-text-field label="Name" v-model="nameDb"
-                  :rules="[v => !!v || 'Insert DB name', v => dbNameCheck(v) || 'This name is already used']" required
-                  type="text"></v-text-field>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn text :disabled="!formValid"
-                @click="createDatabase(nameDb); getListDatabase(); dialogDb = false; resetForm();">
-                Create
-              </v-btn>
-              <v-btn text @click="resetForm(); dialogDb = false;">
-                Close
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <!--Selectable treeview button-->
-        <v-tooltip bottom open-delay=400>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
-              @click="flag = !flag">
-              <v-icon>mdi-checkbox-multiple-marked</v-icon>
-            </v-btn>
-          </template>
-          <span>menu for deleting more collections simultaneously</span>
-        </v-tooltip>
-      </template>
-    </v-row>
     <!--Treeview------------------------------------------------------------------>
-    <v-row style="height: 64vh">
+    <v-row style="height: 72vh">
       <v-col style="padding: 0px">
-        <v-container v-if="flag === false" style="max-height: 61vh; padding: 0px; padding-top: 3px"
+        <v-container v-if="flag === false" style="max-height: 72vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
           <v-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="id" open-on-click transition return-object
@@ -172,7 +139,8 @@
                         <v-card-title>Creating new collection</v-card-title>
                         <v-card-text>
                           <v-form v-model="formValid">
-                            <v-text-field label='Database' v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label='Database' v-model=item.name disabled type="text">
+                            </v-text-field>
                             <v-text-field label="Collection" v-model="nameColl"
                               :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used']"
                               required type="text"></v-text-field>
@@ -305,7 +273,8 @@
                               </v-btn>
                             </template>
                             <v-card>
-                              <v-card-title>Do you want to append this collection to the existing {{ item.name }}
+                              <v-card-title>Do you want to append this collection to the existing {{
+                                item.name }}
                                 collection?</v-card-title>
                               <v-card-actions>
                                 <v-btn
@@ -340,8 +309,10 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form v-model="formValid">
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text">
+                            </v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text">
+                            </v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                               :rules="[ v => !!v || 'Insert a name']" required type="text">
                             </v-text-field>
@@ -429,8 +400,10 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form v-model="formValid">
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text">
+                            </v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text">
+                            </v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                               :rules="[ v => !!v || 'Insert a name']" required type="text">
                             </v-text-field>
@@ -487,7 +460,8 @@
                                     </v-list-item-content>
 
                                     <v-list-item-action>
-                                      <v-checkbox :input-value="active" color="deep-purple accent-4"></v-checkbox>
+                                      <v-checkbox :input-value="active" color="deep-purple accent-4">
+                                      </v-checkbox>
                                     </v-list-item-action>
                                   </template>
                                 </v-list-item>
@@ -508,7 +482,8 @@
                               <v-card-title>Adding urls</v-card-title>
                               <v-card-text>
                                 <v-form v-model="formValid">
-                                  <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                                  <v-text-field label="Database" v-model=item.db disabled type="text">
+                                  </v-text-field>
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
@@ -577,11 +552,14 @@
                         <v-card-title>Set frequency</v-card-title>
                         <v-card-text>
                           <v-form v-model="formValid">
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text">
+                            </v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text">
+                            </v-text-field>
                             <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
                               hint="Select an url to modify his frequency-update" persistent-hint
-                              :rules="[v => v.length > 0 || 'Select an URL']" required></v-select>
+                              :rules="[v => v.length > 0 || 'Select an URL']" required>
+                            </v-select>
                             <v-row>
                               <v-col>
                                 <v-text-field label="week" v-model="frequencyWeek"></v-text-field>
@@ -617,7 +595,8 @@
                         </v-btn>
                       </template>
                       <v-card>
-                        <v-card-title>Do you want to stop updating this collection automatically?</v-card-title>
+                        <v-card-title>Do you want to stop updating this collection automatically?
+                        </v-card-title>
 
                         <v-card-actions>
                           <v-btn color="primary" text @click="dialogStop = false; stopUpdate(item.db, item.name)">
@@ -684,8 +663,10 @@
                         </v-card-title>
                         <v-card-text>
                           <v-form v-model="formValid">
-                            <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
-                            <v-text-field label="Collection" v-model=item.name disabled type="text"></v-text-field>
+                            <v-text-field label="Database" v-model=item.db disabled type="text">
+                            </v-text-field>
+                            <v-text-field label="Collection" v-model=item.name disabled type="text">
+                            </v-text-field>
                             <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                               :rules="[ v => !!v || 'Insert a name']" required type="text">
                             </v-text-field>
@@ -742,7 +723,8 @@
                                     </v-list-item-content>
 
                                     <v-list-item-action>
-                                      <v-checkbox :input-value="active" color="deep-purple accent-4"></v-checkbox>
+                                      <v-checkbox :input-value="active" color="deep-purple accent-4">
+                                      </v-checkbox>
                                     </v-list-item-action>
                                   </template>
                                 </v-list-item>
@@ -763,7 +745,8 @@
                               <v-card-title>Adding urls</v-card-title>
                               <v-card-text>
                                 <v-form v-model="formValid">
-                                  <v-text-field label="Database" v-model=item.db disabled type="text"></v-text-field>
+                                  <v-text-field label="Database" v-model=item.db disabled type="text">
+                                  </v-text-field>
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
@@ -898,6 +881,26 @@
           </v-row>
         </v-container>
       </v-col>
+    </v-row>
+    <v-row style="height: 5vh;">
+      <v-btn v-if="online" depressed block style="background-color: green; padding: 0px; height: 100%;">
+        ONLINE
+        <v-icon>
+          mdi-access-point-check
+        </v-icon>
+      </v-btn>
+      <v-tooltip v-else right open-delay=400>
+        <template v-slot:activator="{on, attrs}">
+          <v-btn v-on="on" v-bind="attrs" depressed block style="background-color: red; padding: 0px; height: 100%"
+            @click="reconnect()">
+            OFFLINE
+            <v-icon>
+              mdi-access-point-remove
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>click to go online</span>
+      </v-tooltip>
     </v-row>
   </v-sheet>
 </template>
