@@ -1,73 +1,106 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 5vh; padding: 2px; justify-content: center;">
-      <v-col cols="auto" style="padding: 2px; font-size: medium;">
-        <p style="color: white;">{{nDB}} DATABASES:</p>
-      </v-col>
-      <v-col style="padding: 0px" class="ml-7">
-        <template>
-          <!--Refresh button-->
-          <v-tooltip v-if="flag===false" bottom open-delay=400>
-            <template v-slot:activator="{ on, attrs}">
-              <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white"
-                @click="getListDatabase();">
-                <v-icon style="font-size: 22px">mdi-refresh</v-icon>
+    <v-row style="height: 8vh;">
+      <v-container id="meta">
+        <v-row class="ma-0 pa-0">
+          <v-col cols="12" id="meta2" style="padding: 0px;">
+            <v-container v-if="online" style="padding: 10px;" fill-height>
+              <v-btn depressed block style="background-color: green; padding: 0px; height: 100%;">
+                ONLINE
+                <v-icon>
+                  mdi-access-point-check
+                </v-icon>
               </v-btn>
-            </template>
-            <span>refresh</span>
-          </v-tooltip>
-          <!--Create new database button-->
-          <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
-            <template #activator="{ on: dialog }">
-              <v-tooltip bottom open-delay=400>
-                <template #activator="{ on: tooltip }">
-                  <v-btn v-on="{ ...tooltip, ...dialog }" tile dense small depressed text icon color="white">
-                    <v-icon style="font-size: 22px">mdi-plus</v-icon>
+            </v-container>
+            <v-container v-else style="padding: 10px;" fill-height>
+              <v-tooltip right open-delay=400>
+                <template v-slot:activator="{on, attrs}">
+                  <v-btn v-on="on" v-bind="attrs" depressed block style="background-color: red; padding: 0px; height: 100%"
+                    @click="reconnect()">
+                    OFFLINE
+                    <v-icon>
+                      mdi-access-point-remove
+                    </v-icon>
                   </v-btn>
                 </template>
-                <span>create a new database</span>
+                <span>click to go online</span>
               </v-tooltip>
-            </template>
-            <v-card>
-              <v-card-title>Creating new database</v-card-title>
-              <v-card-text>
-                <v-form v-model="formValid">
-                  <v-text-field label="Name" v-model="nameDb"
-                    :rules="[v => !!v || 'Insert DB name', v => dbNameCheck(v) || 'This name is already used']" required
-                    type="text"></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text :disabled="!formValid"
-                  @click="createDatabase(nameDb); getListDatabase(); dialogDb = false; resetForm();">
-                  Create
-                </v-btn>
-                <v-btn text @click="resetForm(); dialogDb = false;">
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <!--Selectable treeview button-->
-          <v-tooltip bottom open-delay=400>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white" @click="flag = !flag">
-                <v-icon style="font-size: 22px">mdi-checkbox-multiple-marked</v-icon>
-              </v-btn>
-            </template>
-            <span>menu for deleting more collections simultaneously</span>
-          </v-tooltip>
-        </template>
+            </v-container>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-row>
+    <v-row style="height: 5vh">
+      <v-col cols="6" id="meta3" style="justify-content: center; padding: 0px" class="d-flex align-center">
+        <h4 style="color: white;">{{nDB}} DATABASES:</h4>
       </v-col>
     </v-row>
-    <v-row style="height: 8vh;">
+    <v-row style="height: 9vh;">
       <v-text-field style="padding: 2px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
         hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
     </v-row>
 
+    <!--Top buttons--------------------------------------------------------------->
+    <v-row style="height: 4vh">
+      <template>
+        <!--Refresh button-->
+        <v-tooltip v-if="flag===false" bottom open-delay=400>
+          <template v-slot:activator="{ on, attrs}">
+            <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
+              @click="getListDatabase();">
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+          </template>
+          <span>refresh</span>
+        </v-tooltip>
+        <!--Create new database button-->
+        <v-dialog v-if="flag === false" v-model="dialogDb" width="600">
+          <template #activator="{ on: dialog }">
+            <v-tooltip bottom open-delay=400>
+              <template #activator="{ on: tooltip }">
+                <v-btn v-on="{ ...tooltip, ...dialog }" fab small class="ml-1" height="25px" rounded depressed
+                  color=#5B5656 dark>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span>create a new database</span>
+            </v-tooltip>
+          </template>
+          <v-card>
+            <v-card-title>Creating new database</v-card-title>
+            <v-card-text>
+              <v-form v-model="formValid">
+                <v-text-field label="Name" v-model="nameDb"
+                  :rules="[v => !!v || 'Insert DB name', v => dbNameCheck(v) || 'This name is already used']" required
+                  type="text"></v-text-field>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text :disabled="!formValid"
+                @click="createDatabase(nameDb); getListDatabase(); dialogDb = false; resetForm();">
+                Create
+              </v-btn>
+              <v-btn text @click="resetForm(); dialogDb = false;">
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!--Selectable treeview button-->
+        <v-tooltip bottom open-delay=400>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-on="on" v-bind="attrs" fab small class="ml-1" height="25px" rounded depressed color=#5B5656 dark
+              @click="flag = !flag">
+              <v-icon>mdi-checkbox-multiple-marked</v-icon>
+            </v-btn>
+          </template>
+          <span>menu for deleting more collections simultaneously</span>
+        </v-tooltip>
+      </template>
+    </v-row>
     <!--Treeview------------------------------------------------------------------>
-    <v-row style="height: 73vh">
+    <v-row style="height: 64vh">
       <v-col style="padding: 0px">
         <v-container v-if="flag === false" style="max-height: 61vh; padding: 0px; padding-top: 3px"
           class="overflow-y-auto">
@@ -147,8 +180,7 @@
                               :rules="[v => !!v || 'Select a collection type',]"></v-select>
                             <v-text-field v-if="type === 'Dynamic' || type === 'Virtual'" label="Url"
                               hint="To add more urls: write them separated by a ','" v-model="listUrl"
-                              :rules="[ v => !!v || 'Insert an URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']"
-                              required type="text">
+                              :rules="[ v => !!v || 'Insert an URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']" required type="text">
                             </v-text-field>
                           </v-form>
                         </v-card-text>
@@ -186,12 +218,12 @@
                         <v-card-text>
                           <div class="upload-container">
                             <input type="file" id="file_upload" multiple @change="loaded()" />
+                            <v-form v-model="formValid">
+                              <v-text-field label='Collection name' v-model="nameColl" type="text" required
+                                :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
+                              </v-text-field>
+                            </v-form>
                           </div>
-                          <v-form v-model="formValid">
-                            <v-text-field label='Collection name' v-model="nameColl" type="text" required
-                              :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
-                            </v-text-field>
-                          </v-form>
                         </v-card-text>
 
                         <v-card-actions>
@@ -250,7 +282,7 @@
 
                     <v-dialog v-if="i === 1" v-model="dialogImp" width="550" @click:outside="resetForm()">
                       <template v-slot:activator="{ on }">
-                        <v-btn v-on="on">
+                        <v-btn v-on="on" @click="dialogImp = true">
                           <v-icon light dense>{{ el.icon }}</v-icon>
                           {{ el.text }}
                         </v-btn>
@@ -259,28 +291,35 @@
                         <v-card-title>Importing collection</v-card-title>
                         <v-card-text>
                           <div class="upload-container">
-                            <input type="file" id="file_upload" multiple @change="loaded()" />
+                            <input type="file" id="file_upload" multiple />
                           </div>
-                          <br />
-                          <p><b>Check the box if you want to append this collection to an existing one</b></p>
-                          <v-row style="align: center">
-                            <v-checkbox v-model="append" hide-details class="shrink mr-2 mt-0"></v-checkbox>
-                            <v-text-field v-if="append" label="Collection name" v-model=item.name type="text" disabled
-                              :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
-                            </v-text-field>
-                            <v-text-field v-else label="Collection name" v-model="nameColl" type="text" required
-                              :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
-                            </v-text-field>
-                          </v-row>
                         </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
-                          <v-btn class="upload-btn" color="primary" text :disabled="!formValid"
-                            @click="dialogImp = false; importCollection(item, nameColl, append); imported = false; append = false; getListDatabase(); resetForm();">
-                            Upload
-                          </v-btn>
-                          <v-btn color="primary" text @click="dialogImp = false; append = false; resetForm();">
+                          <v-dialog v-model="dialogImp1" width="400">
+                            <template v-slot:activator="{ on }">
+                              <v-btn v-on="on" class="upload-btn" color="primary" text>
+                                Upload
+                              </v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>Do you want to append this collection to the existing {{ item.name }}
+                                collection?</v-card-title>
+                              <v-card-actions>
+                                <v-btn
+                                  @click="append = true; dialogImp = false; dialogImp1 = false; importCollection(item); getListDatabase()">
+                                  Yes
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  @click="append = false; dialogImp = false; dialogImp1 = false; importCollection(item); getListDatabase()">
+                                  No
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-btn color="primary" text @click="dialogImp = false">
                             Close
                           </v-btn>
                         </v-card-actions>
@@ -465,9 +504,8 @@
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl"
-                                    :rules="[ v => !!v || 'Insert at least one URL', , v => noSpace(v) || 'Do not insert spaces before or after the ,']"
-                                    required type="text">
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL', , v => noSpace(v) || 'Do not insert spaces before or after the ,']" required
+                                    type="text">
                                   </v-text-field>
                                 </v-form>
                               </v-card-text>
@@ -715,9 +753,8 @@
                                   <v-text-field label="Collection" v-model=item.name disabled type="text">
                                   </v-text-field>
                                   <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
-                                    v-model="nameUrl"
-                                    :rules="[ v => !!v || 'Insert at least one URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']"
-                                    required type="text">
+                                    v-model="nameUrl" :rules="[ v => !!v || 'Insert at least one URL', v => noSpace(v) || 'Do not insert spaces before or after the ,']" required
+                                    type="text">
                                   </v-text-field>
                                 </v-form>
                               </v-card-text>
@@ -846,26 +883,6 @@
           </v-row>
         </v-container>
       </v-col>
-    </v-row>
-    <v-row style="height: 5vh;">
-      <v-btn v-if="online" depressed block style="background-color: green; padding: 0px; height: 100%;">
-        ONLINE
-        <v-icon>
-          mdi-access-point-check
-        </v-icon>
-      </v-btn>
-      <v-tooltip v-else right open-delay=400>
-        <template v-slot:activator="{on, attrs}">
-          <v-btn v-on="on" v-bind="attrs" depressed block
-            style="background-color: red; padding: 0px; height: 100%" @click="reconnect()">
-            OFFLINE
-            <v-icon>
-              mdi-access-point-remove
-            </v-icon>
-          </v-btn>
-        </template>
-        <span>click to go online</span>
-      </v-tooltip>
     </v-row>
   </v-sheet>
 </template>
@@ -1308,7 +1325,6 @@ h5{
   font-size: 0.8rem;
   width: 200px;
   align-self: auto;
-  letter-spacing: 0em;
 }
 
 .v-list-item{
