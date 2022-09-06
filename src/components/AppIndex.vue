@@ -29,7 +29,7 @@
   --on-primary-color: black;
 }
 #title {
-  background-color: #7FCD91;
+  background-color: #17A493;
   padding-top: 25px;
 }
 #appMenu {

@@ -3,7 +3,7 @@
     <v-row style="height: 10vh; padding: 0;">
       <v-container fluid id="metadata" style="padding: 0;">
         <v-row style="height: 10vh; padding: 0;">
-          <v-col id="meta1" cols="6" style="align-self: center; padding: 0;">
+          <v-col id="meta1" cols="6" style="align-self: center; padding: 0; padding-left: 5px;">
             <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
             <h5 v-if="selected">{{metaTypeColl}}</h5>
           </v-col>
@@ -139,11 +139,11 @@ h4{
   font-size: 2vw;
 }
 h5{
-  color: #7FCD91;
+  color: #17A493;
   font-size: 1vw;
 }
 span{
-  color:#7FCD91;
+  color:#17A493;
   font-size: 1.5vw;
 }
 #metadata{
@@ -173,7 +173,7 @@ span{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7FCD91
+  background: #17A493
 }
 </style>
 <style lang="scss">

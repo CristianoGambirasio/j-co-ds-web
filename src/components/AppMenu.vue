@@ -1370,7 +1370,7 @@ h5{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7FCD91
+  background: #17A493
 }
 
 .upload-container {
