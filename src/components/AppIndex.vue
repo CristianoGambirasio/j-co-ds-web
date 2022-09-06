@@ -18,10 +18,7 @@
   </v-sheet>
 </template>
 
-<style scoped>
-/*  * {
-  outline: 1px solid lime;
-} */
+<style>
 
 :root {
   --primary-color: green;

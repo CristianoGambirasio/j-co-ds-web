@@ -13,28 +13,27 @@
             <v-row style="justify-content: center; padding: 0;">
               <h4>{{countCollection}}</h4>
             </v-row>
-            <v-row style="justify-content: center; padding: 0;"><h5 v-if="selected">DOCUMENTS</h5></v-row>
+            <v-row style="justify-content: center; padding: 0;">
+              <h5 v-if="selected">DOCUMENTS</h5>
+            </v-row>
           </v-col>
         </v-row>
       </v-container>
     </v-row>
     <v-row style="height: 84vh;">
       <v-container fluid class="overflow-y-auto" style="max-height: 84vh; padding: 0;">
-      <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards" class="overflow-y-auto" >
-        <json-viewer :value="doc" boxed theme="json-viewer-theme"></json-viewer>
+        <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards" class="overflow-y-auto">
+          <json-viewer :value="doc" boxed theme="json-viewer-theme"></json-viewer>
+        </v-container>
       </v-container>
-    </v-container>
     </v-row>
-    <v-row style="height: 6vh;">
-      <v-container fluid class="text-center" id="footer">
-      <v-pagination
-        v-model="page"
-        :length="nPages"
-        :total-visible="10"
-        @input="buildWorkspace"
-    > </v-pagination>
-    </v-container>
-    </v-row>
+    <template>
+      <v-footer padless>
+        <v-container fluid class="text-center" id="footer">
+          <v-pagination v-model="page" :length="nPages" :total-visible="10" @input="buildWorkspace"> </v-pagination>
+        </v-container>
+      </v-footer>
+    </template>
   </v-sheet>
 </template>
 
