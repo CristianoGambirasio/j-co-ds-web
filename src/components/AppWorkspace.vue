@@ -20,16 +20,16 @@
         </v-row>
       </v-container>
     </v-row>
-    <v-row style="height: 84vh;">
-      <v-container fluid class="overflow-y-auto" style="max-height: 84vh; padding: 0;">
-        <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards" class="overflow-y-auto">
+    <v-row style="height: calc(100% - 10vh - 50px);">
+      <v-container fluid class="overflow-y-auto" style="max-height: calc(100vh - 10vh - 50px); padding: 0;">
+        <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards">
           <json-viewer :value="doc" boxed theme="json-viewer-theme"></json-viewer>
         </v-container>
       </v-container>
     </v-row>
     <template>
-      <v-footer padless>
-        <v-container fluid class="text-center" id="footer">
+      <v-footer padless style="height: 50px;" id="footer">
+        <v-container  fluid class="text-center" style="padding: 0;">
           <v-pagination v-model="page" :length="nPages" :total-visible="10" @input="buildWorkspace"> </v-pagination>
         </v-container>
       </v-footer>
@@ -157,7 +157,8 @@ span{
   background-color: #F5EAEA;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 #cards{
   padding-bottom: 0;

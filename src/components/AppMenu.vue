@@ -1,6 +1,6 @@
 <template>
-  <v-sheet id="body">
-    <v-row style="padding: 2px; justify-content: center;">
+  <v-container id="body">
+    <v-row ref="buttons" style="padding: 2px; justify-content: center; height: max-content; height: 30px;">
       <v-col cols="auto" style="padding: 2px; font-size: medium;">
         <p style="color: white;">{{nDB}} DATABASES:</p>
       </v-col>
@@ -62,15 +62,13 @@
         </template>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row style="height: 50px;">
       <v-text-field style="padding: 2px" background-color=#5B5656 v-model="search" label="Search..." flat dark solo
         hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
     </v-row>
     <!--Treeview------------------------------------------------------------------>
-    <v-row>
-      <v-col style="padding: 0px">
-        <v-container v-if="flag === false" style="max-height: 70vh; padding: 0px; padding-top: 3px"
-          class="overflow-y-auto">
+    <v-row style="height: calc(100% - 50px - 40px - 30px)">
+        <v-container v-if="flag === false" class="overflow-y-auto" style="padding: 0px; padding-top: 3px; max-height: 100%;">
           <v-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
             :search='search' :filter='filter' item-key="id" open-on-click transition return-object
             active-class="activeNode" @update:active="buildWorkspace">
@@ -804,7 +802,7 @@
           </v-treeview>
         </v-container>
         <!--Selectable treeview for deleting more collection simultaneously------->
-        <v-container v-else style="max-height: 61vh; padding: 0px; padding-top: 3px" class="overflow-y-auto">
+        <v-container v-else style="padding: 0px; padding-top: 3px" class="overflow-y-auto">
           <v-treeview dark dense activatable selectable v-model="colls" :items="listDatabases"
             :load-children="getListCollection" :search='search' :filter='filter' item-key="id" open-on-click transition
             return-object active-class="activeNode">
@@ -874,24 +872,23 @@
             </v-col>
           </v-row>
         </v-container>
-      </v-col>
     </v-row>
     <template>
-      <v-footer padless absolute max-width="16.5555vw">
-        <v-btn v-if="online" min-height="4vh" tile depressed block
-          style="background-color: green; padding: 0px; height: 100%;">
+      <v-footer style="height: 40px;" padless>
+        <v-btn v-if="online" tile depressed block
+          style="background-color: green; padding: 0px; height: 40px;">
           ONLINE
-          <v-icon>
+          <v-icon size="3vh">
             mdi-access-point-check
           </v-icon>
         </v-btn>
-        <v-btn v-else tile depressed block min-height="4vh" style="background-color: red; padding: 0px; height: 100%"
+        <v-btn v-else tile depressed block style="background-color: red; padding: 0px; height: 40px;"
           @click="reconnect()">
           CLICK TO GO ONLINE
         </v-btn>
       </v-footer>
     </template>
-  </v-sheet>
+  </v-container>
 </template>
 
 <script>
@@ -1130,6 +1127,10 @@ export default {
     },
     rightType () {
       return this.typeJson
+    },
+    treeviewHeight () {
+      console.log(this.$refs.buttons.clientHeight)
+      return '100vh'
     }
   },
   mounted () {
@@ -1321,6 +1322,8 @@ h5{
 #body{
   background-color: #4D4646;
   width: 100%;
+  padding: 0;
+  height: 100%;
 }
 
 .v-treeview-node__root{

@@ -8,11 +8,15 @@
           J-CO-DS WEB</h1>
         </v-row>
         <v-row id="appMenu" style="height: 90vh;">
-          <AppMenu />
+          <v-container fluid fill-height style="padding: 0;">
+            <AppMenu />
+          </v-container>
         </v-row>
       </v-col>
       <v-col cols="10" id="workspace" style="padding: 0;">
-        <AppWorkspace />
+        <v-container fluid fill-height style="padding: 0;">
+          <AppWorkspace />
+        </v-container>
       </v-col>
     </v-row>
   </v-sheet>
