@@ -1,9 +1,9 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 10vh;">
+    <v-row style="height: 10vh; padding: 0;">
       <v-container fluid id="metadata" style="padding: 0;">
         <v-row style="height: 10vh; padding: 0;">
-          <v-col id="meta1" cols="6" style="align-self: center; padding: 0; padding-left: 4;">
+          <v-col id="meta1" cols="6" style="align-self: center; padding: 0;">
             <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
             <h5 v-if="selected">{{metaTypeColl}}</h5>
           </v-col>
@@ -132,9 +132,9 @@ export default {
 </script>
 
 <style scoped>
-* {
+/* * {
   outline: 1px solid lime;
-}
+} */
 h4{
   color: white;
   font-size: 2vw;
