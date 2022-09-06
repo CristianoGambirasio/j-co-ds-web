@@ -96,7 +96,7 @@ export async function exportCollection (nameDb, nameColl, nameFile, limit, offse
   downloadAnchorNode.remove()
 };
 
-export async function importCollection (item, nameColl) {
+export async function importCollection (item, nameColl, append) {
   if (!item.db) {
     const fileInput = document.getElementById('file_upload').files[0]
     const fileread = new FileReader()
@@ -107,7 +107,7 @@ export async function importCollection (item, nameColl) {
       }
       fileread.readAsText(fileInput)
     }).then((res) => {
-      this.saveCollection(item.name, nameColl, res, this.append)
+      this.saveCollection(item.name, nameColl, res, append)
     })
     this.handleResponse()
   } else {
@@ -121,9 +121,9 @@ export async function importCollection (item, nameColl) {
       fileread.readAsText(fileInput)
     }).then((res) => {
       if (!this.append) {
-        this.saveCollection(item.db, nameColl, res, this.append)
+        this.saveCollection(item.db, nameColl, res, append)
       } else {
-        this.saveCollection(item.db, item.name, res, this.append)
+        this.saveCollection(item.db, item.name, res, append)
       }
     })
     this.handleResponse()
