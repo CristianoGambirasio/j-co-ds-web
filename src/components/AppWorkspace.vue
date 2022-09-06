@@ -2,15 +2,15 @@
   <v-sheet id="body">
     <v-row style="height: 10vh;">
       <v-container fluid id="metadata" style="padding: 0;">
-        <v-row style="height: 10vh; padding: 0;">
-          <v-col id="meta1" cols="6" style="align-self: center; padding: 0; padding-left: 4px;">
+        <v-row style="height: 10vh;">
+          <v-col id="meta1" cols="6" style="align-self: center;">
             <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
-            <h5 v-if="selected">{{metaTypeColl}}</h5>
+            <h5>{{metaTypeColl}}</h5>
           </v-col>
-          <v-col id="meta2" cols="3" style="align-self: center; justify-self: center; padding: 0;">
+          <v-col id="meta2" cols="3" style="align-self: center; justify-self: center;">
           </v-col>
-          <v-col id="meta3" cols="3" style="align-self: center; padding: 0;">
-            <v-row style="justify-content: center; padding: 0;">
+          <v-col id="meta3" cols="3" style="align-self: center;">
+            <v-row style="justify-content: center;">
               <h4>{{countCollection}}</h4>
             </v-row>
             <v-row style="justify-content: center;"><h5 v-if="selected">DOCUMENTS</h5></v-row>
@@ -125,25 +125,23 @@ export default {
     async showMetadata (value) {
       this.metaNameColl = value[0].name
       this.metaNameDb = value[0].db
-      this.metaTypeColl = (value[0].type)[0].toUpperCase() + (value[0].type).substring(1)
+      this.metaTypeColl = value[0].type
     }
   }
 }
 </script>
 
 <style scoped>
-* {
+/* * {
   outline: 1px solid lime;
-}
+} */
 h4{
   color: white;
   font-size: 2vw;
-  padding: 0;
 }
 h5{
   color: #7FCD91;
   font-size: 1vw;
-  padding: 0;
 }
 span{
   color:#7FCD91;
