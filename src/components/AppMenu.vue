@@ -30,7 +30,7 @@
               </v-tooltip>
             </template>
             <v-card>
-              <v-card-title>Creating new database</v-card-title>
+              <v-card-title>Create database</v-card-title>
               <v-card-text>
                 <v-form v-model="formValid">
                   <v-text-field label="Name" v-model="nameDb"
@@ -54,10 +54,12 @@
           <v-tooltip bottom open-delay=400>
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white" @click="flag = !flag">
-                <v-icon>mdi-checkbox-multiple-marked</v-icon>
+                <v-icon v-if="!flag">mdi-checkbox-multiple-marked</v-icon>
+                <v-icon v-else>mdi-arrow-u-left-top</v-icon>
               </v-btn>
             </template>
-            <span>menu for deleting more collections simultaneously</span>
+            <span v-if="!flag">menu for deleting more collections simultaneously</span>
+            <span v-else>go back</span>
           </v-tooltip>
         </template>
       </v-col>
@@ -82,7 +84,7 @@
           <template v-slot:append="{item, hover}">
             <v-menu bottom :offset-x="true">
               <template v-slot:activator="{ on }">
-                <v-btn dark icon v-on="on">
+                <v-btn icon v-on="on">
                   <v-icon v-if="hover">
                     mdi-dots-vertical</v-icon>
                 </v-btn>
@@ -91,7 +93,7 @@
               <!--Database buttons list-->
               <v-list v-if="item.type === 'database'">
                 <v-list-item v-for="(el, i) in itemsDatabase" :key="i">
-                  <v-dialog v-if="i === 0" v-model="dialogDelDb0" width="250" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 0" v-model="dialogDelDb0" width="175" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -101,25 +103,26 @@
                     <v-card>
                       <v-card-title>Are you sure?</v-card-title>
                       <v-card-actions>
-                        <v-dialog v-model="dialogDelDb1" width="400" @click:outside="resetForm()">
+                        <v-spacer></v-spacer>
+                        <v-dialog v-model="dialogDelDb1" width="285" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
                             <v-btn v-on="on">Yes</v-btn>
                           </template>
                           <v-card>
                             <v-card-title>Really?!</v-card-title>
                             <v-card-actions>
-                              <v-btn
+                              <v-btn style="background-color: red"
                                 @click="dialogDelDb0 = false; dialogDelDb1 = false; deleteDatabase(item.name); getListDatabase()">
                                 Delete database
                               </v-btn>
-                              <v-spacer></v-spacer>
+                              &nbsp;&nbsp;&nbsp;
                               <v-btn @click="dialogDelDb0 = false; dialogDelDb1 = false">
                                 Cancel
                               </v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-dialog>
-                        <v-spacer></v-spacer>
+                        &nbsp;&nbsp;&nbsp;
                         <v-btn v-on="on" @click="dialogDelDb0 = false">
                           No
                         </v-btn>
@@ -127,7 +130,7 @@
                     </v-card>
                   </v-dialog>
 
-                  <v-dialog v-if="i === 1" v-model="dialogColl" width="700" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 1" v-model="dialogColl" width="500" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -135,7 +138,7 @@
                       </v-btn>
                     </template>
                     <v-card>
-                      <v-card-title>Creating new collection</v-card-title>
+                      <v-card-title>Create collection</v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
                           <v-text-field label='Database' v-model=item.name disabled type="text">
@@ -196,11 +199,11 @@
 
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn class="upload-btn" color="primary" text :disabled="!formValid"
+                        <v-btn class="upload-btn" text :disabled="!formValid"
                           @click="importCollection(item, nameColl); dialogImp = false; imported = false; getListDatabase(); resetForm();">
                           Upload
                         </v-btn>
-                        <v-btn color="primary" text @click="dialogImp = false; resetForm();">
+                        <v-btn text @click="dialogImp = false; resetForm();">
                           Close
                         </v-btn>
                       </v-card-actions>
@@ -212,7 +215,7 @@
               <!--Static collection buttons list-->
               <v-list v-if="item.type === 'static'">
                 <v-list-item v-for="(el, i) in itemsCollection" :key="i">
-                  <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="175" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -222,25 +225,25 @@
                     <v-card>
                       <v-card-title>Are you sure?</v-card-title>
                       <v-card-actions>
-                        <v-dialog v-model="dialogDelColl1" width="400" @click:outside="resetForm()">
+                        <v-dialog v-model="dialogDelColl1" width="295" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
                             <v-btn v-on="on">Yes</v-btn>
                           </template>
                           <v-card>
                             <v-card-title>Really?!</v-card-title>
                             <v-card-actions>
-                              <v-btn
+                              <v-btn style="background-color: red"
                                 @click="dialogDelColl0 = false; dialogDelColl1 = false; deleteCollection(item.db, item.name); getListDatabase()">
                                 Delete collection
                               </v-btn>
-                              <v-spacer></v-spacer>
+                              &nbsp;&nbsp;&nbsp;
                               <v-btn @click="dialogDelColl0 = false; dialogDelColl1 = false">
                                 Cancel
                               </v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-dialog>
-                        <v-spacer></v-spacer>
+                        &nbsp;&nbsp;&nbsp;
                         <v-btn v-on="on" @click="dialogDelColl0 = false">
                           No
                         </v-btn>
@@ -256,7 +259,7 @@
                       </v-btn>
                     </template>
                     <v-card>
-                      <v-card-title>Importing collection</v-card-title>
+                      <v-card-title>Import collection</v-card-title>
                       <v-card-text>
                         <div class="upload-container">
                           <input type="file" id="file_upload" multiple @change="loaded()" />
@@ -277,11 +280,11 @@
 
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn class="upload-btn" color="primary" text :disabled="!formValid"
+                        <v-btn class="upload-btn" text :disabled="!formValid"
                           @click="dialogImp = false; importCollection(item, nameColl, append); imported = false; getListDatabase(); resetForm();">
                           Upload
                         </v-btn>
-                        <v-btn color="primary" text @click="dialogImp = false; resetForm();">
+                        <v-btn text @click="dialogImp = false; resetForm();">
                           Close
                         </v-btn>
                       </v-card-actions>
@@ -327,11 +330,11 @@
 
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" text :disabled="!formValid"
+                        <v-btn text :disabled="!formValid"
                           @click="dialogExp = false; exportCollection(item.db, item.name, nameFile, limit, offset); resetForm();">
                           Download
                         </v-btn>
-                        <v-btn color="primary" text @click="resetForm(); dialogExp = false">
+                        <v-btn text @click="resetForm(); dialogExp = false">
                           Close
                         </v-btn>
                       </v-card-actions>
@@ -343,7 +346,7 @@
               <!--Dynamic collection buttons list-->
               <v-list v-if="item.type === 'dynamic'">
                 <v-list-item v-for="(el, i) in itemsDynamicCollection" :key="i">
-                  <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="175" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -353,25 +356,25 @@
                     <v-card>
                       <v-card-title>Are you sure?</v-card-title>
                       <v-card-actions>
-                        <v-dialog v-model="dialogDelColl1" width="400" @click:outside="resetForm()">
+                        <v-dialog v-model="dialogDelColl1" width="295" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
                             <v-btn v-on="on">Yes</v-btn>
                           </template>
                           <v-card>
                             <v-card-title>Really?!</v-card-title>
                             <v-card-actions>
-                              <v-btn
+                              <v-btn style="background-color: red"
                                 @click="dialogDelColl0 = false; dialogDelColl1 = false; deleteCollection(item.db, item.name); getListDatabase()">
                                 Delete collection
                               </v-btn>
-                              <v-spacer></v-spacer>
+                              &nbsp;&nbsp;&nbsp;
                               <v-btn @click="dialogDelColl0 = false; dialogDelColl1 = false">
                                 Cancel
                               </v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-dialog>
-                        <v-spacer></v-spacer>
+                        &nbsp;&nbsp;&nbsp;
                         <v-btn v-on="on" @click="dialogDelColl0 = false">
                           No
                         </v-btn>
@@ -388,7 +391,7 @@
                     </template>
                     <v-card>
                       <v-card-title>
-                        Exporting collection
+                        Export collection
                       </v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
@@ -418,18 +421,18 @@
 
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" text :disabled="!formValid"
+                        <v-btn text :disabled="!formValid"
                           @click="dialogExp = false; exportCollection(item.db, item.name, nameFile); resetForm();">
                           Download
                         </v-btn>
-                        <v-btn color="primary" text @click="resetForm(); dialogExp = false">
+                        <v-btn text @click="resetForm(); dialogExp = false">
                           Close
                         </v-btn>
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
 
-                  <v-dialog v-if="i === 2" v-model="dialogUrl" width="700" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 2" v-model="dialogUrl" width="500" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on" @click="getListUrl(item.db, item.name)">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -437,7 +440,7 @@
                       </v-btn>
                     </template>
                     <v-card>
-                      <v-card-title>Managing urls</v-card-title>
+                      <v-card-title>Manage urls</v-card-title>
                       <v-card-text>
                         <v-list>
                           <v-list-item-group v-model="urls" multiple>
@@ -448,10 +451,12 @@
                                 active-class="deep-blue--text text--accent-4">
                                 <template v-slot:default="{ active }">
                                   <v-list-item-content>
-                                    <v-checkbox :input-value="active" :label="url" multiple color="deep-blue accent-4">
-                                    </v-checkbox>
-                                    <!--<v-list-item-title v-text="url"></v-list-item-title>-->
+                                    <v-list-item-title v-text="url"></v-list-item-title>
                                   </v-list-item-content>
+
+                                  <v-list-item-action>
+                                    <v-checkbox :input-value="active" multiple color="deep-blue accent-4"></v-checkbox>
+                                  </v-list-item-action>
                                 </template>
                               </v-list-item>
                             </template>
@@ -463,7 +468,7 @@
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialogAddUrl" width="550" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
-                            <v-btn v-on="on">
+                            <v-btn text v-on="on">
                               Add url
                             </v-btn>
                           </template>
@@ -485,11 +490,11 @@
 
                             <v-card-actions>
                               <v-spacer></v-spacer>
-                              <v-btn color="primary" text :disabled="!formValid"
+                              <v-btn text :disabled="!formValid"
                                 @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name); resetForm();">
                                 Add urls
                               </v-btn>
-                              <v-btn color="primary" text
+                              <v-btn text
                                 @click="dialogAddUrl = false; getListUrl(item.db, item.name); resetForm()">
                                 Cancel
                               </v-btn>
@@ -497,25 +502,25 @@
                           </v-card>
                         </v-dialog>
                         &nbsp;&nbsp;
-                        <v-btn v-if="!urls.length" disabled>
+                        <v-btn text v-if="!urls.length" disabled>
                           Remove
                         </v-btn>
                         <v-dialog v-else v-model="dialogRemoveUrl" width="550" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
-                            <v-btn v-on="on">
+                            <v-btn text v-on="on">
                               Remove
                             </v-btn>
                           </template>
                           <v-card>
-                            <v-card-title>Removing urls</v-card-title>
+                            <v-card-title>Remove urls</v-card-title>
 
                             <v-card-actions>
                               <v-spacer></v-spacer>
-                              <v-btn color="primary" text
+                              <v-btn text
                                 @click="dialogRemoveUrl = false; removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)">
-                                Remove urls
+                                Remove
                               </v-btn>
-                              <v-btn color="primary" text @cilck="dialogRemoveUrl = false">
+                              <v-btn text @cilck="dialogRemoveUrl = false">
                                 Cancel
                               </v-btn>
                             </v-card-actions>
@@ -523,7 +528,7 @@
                         </v-dialog>
 
                         &nbsp;&nbsp;
-                        <v-btn @click="dialogUrl = false">
+                        <v-btn text @click="dialogUrl = false">
                           Cancel
                         </v-btn>
                       </v-card-actions>
@@ -565,11 +570,12 @@
                         </v-form>
                       </v-card-text>
                       <v-card-actions>
-                        <v-btn color="primary" text :disabled="!formValid"
+                        <v-spacer></v-spacer>
+                        <v-btn text :disabled="!formValid"
                           @click="dialogFreq = false; setFrequency(item.db, item.name, getIndex(urls), msFrequency); getListDatabase(); resetForm();">
                           Set
                         </v-btn>
-                        <v-btn color="primary" text @click="resetForm(); dialogFreq = false">
+                        <v-btn text @click="dialogFreq = false; resetForm()">
                           Close
                         </v-btn>
                       </v-card-actions>
@@ -584,14 +590,16 @@
                       </v-btn>
                     </template>
                     <v-card>
-                      <v-card-title>Do you want to stop updating this collection automatically?
+                      <v-card-title>Stop {{ item.name }} updating automatically?
                       </v-card-title>
 
                       <v-card-actions>
-                        <v-btn color="primary" text @click="dialogStop = false; stopUpdate(item.db, item.name)">
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="dialogStop = false; stopUpdate(item.db, item.name)">
                           yes
                         </v-btn>
-                        <v-btn color="primary" text @click="dialogStop = false">
+                        &nbsp;&nbsp;&nbsp;
+                        <v-btn text @click="dialogStop = false">
                           No
                         </v-btn>
                       </v-card-actions>
@@ -603,7 +611,7 @@
               <!--Virtual collection buttons list-->
               <v-list v-if="item.type === 'virtual'">
                 <v-list-item v-for="(el, i) in itemsVirtualCollection" :key="i">
-                  <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="250" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 0" v-model="dialogDelColl0" width="175" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -613,25 +621,25 @@
                     <v-card>
                       <v-card-title>Are you sure?</v-card-title>
                       <v-card-actions>
-                        <v-dialog v-model="dialogDelColl1" width="400" @click:outside="resetForm()">
+                        <v-dialog v-model="dialogDelColl1" width="295" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
                             <v-btn v-on="on">Yes</v-btn>
                           </template>
                           <v-card>
                             <v-card-title>Really?!</v-card-title>
                             <v-card-actions>
-                              <v-btn
+                              <v-btn style="background-color: red"
                                 @click="dialogDelColl0 = false; dialogDelColl1 = false; deleteCollection(item.db, item.name); getListDatabase()">
                                 Delete collection
                               </v-btn>
-                              <v-spacer></v-spacer>
+                              &nbsp;&nbsp;&nbsp;
                               <v-btn @click="dialogDelColl0 = false; dialogDelColl1 = false">
                                 Cancel
                               </v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-dialog>
-                        <v-spacer></v-spacer>
+                        &nbsp;&nbsp;&nbsp;
                         <v-btn v-on="on" @click="dialogDelColl0 = false">
                           No
                         </v-btn>
@@ -648,7 +656,7 @@
                     </template>
                     <v-card>
                       <v-card-title>
-                        Exporting collection
+                        Export collection
                       </v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
@@ -678,11 +686,11 @@
 
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" text :disabled="!formValid"
+                        <v-btn text :disabled="!formValid"
                           @click="dialogExp = false; exportCollection(item.db, item.name, nameFile); resetForm();">
                           Download
                         </v-btn>
-                        <v-btn color="primary" text @click="resetForm(); dialogExp = false">
+                        <v-btn text @click="dialogExp = false; resetForm()">
                           Close
                         </v-btn>
                       </v-card-actions>
@@ -697,9 +705,9 @@
                       </v-btn>
                     </template>
                     <v-card>
-                      <v-card-title>Managing urls</v-card-title>
+                      <v-card-title>Manage urls</v-card-title>
                       <v-card-text>
-                        <v-list shaped>
+                        <v-list>
                           <v-list-item-group v-model="urls" multiple>
                             <template v-for="(url, i) in listUrls">
                               <v-divider v-if="!url" :key="`divider-${i}`"></v-divider>
@@ -726,7 +734,7 @@
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialogAddUrl" width="550" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
-                            <v-btn v-on="on">
+                            <v-btn text v-on="on">
                               Add url
                             </v-btn>
                           </template>
@@ -748,11 +756,11 @@
 
                             <v-card-actions>
                               <v-spacer></v-spacer>
-                              <v-btn color="primary" text :disabled="!formValid"
+                              <v-btn text :disabled="!formValid"
                                 @click="dialogAddUrl = false; addUrl(item.db, item.name, nameUrl); getListUrl(item.db, item.name); resetForm();">
                                 Add urls
                               </v-btn>
-                              <v-btn color="primary" text
+                              <v-btn text
                                 @click="dialogAddUrl = false; getListUrl(item.db, item.name); resetForm()">
                                 Cancel
                               </v-btn>
@@ -760,25 +768,25 @@
                           </v-card>
                         </v-dialog>
                         &nbsp;&nbsp;
-                        <v-btn v-if="!urls.length" disabled>
+                        <v-btn text v-if="!urls.length" disabled>
                           Remove
                         </v-btn>
                         <v-dialog v-else v-model="dialogRemoveUrl" width="550" @click:outside="resetForm()">
                           <template v-slot:activator="{ on }">
-                            <v-btn v-on="on">
+                            <v-btn text v-on="on">
                               Remove
                             </v-btn>
                           </template>
                           <v-card>
-                            <v-card-title>Removing urls</v-card-title>
+                            <v-card-title>Remove urls</v-card-title>
 
                             <v-card-actions>
                               <v-spacer></v-spacer>
-                              <v-btn color="primary" text
+                              <v-btn text
                                 @click="dialogRemoveUrl = false; removeMoreUrls(item.db, item.name, getIndex(urls)); getListUrl(item.db, item.name)">
-                                Remove urls
+                                Remove
                               </v-btn>
-                              <v-btn color="primary" text @cilck="dialogRemoveUrl = false">
+                              <v-btn text @cilck="dialogRemoveUrl = false">
                                 Cancel
                               </v-btn>
                             </v-card-actions>
@@ -786,7 +794,7 @@
                         </v-dialog>
 
                         &nbsp;&nbsp;
-                        <v-btn @click="dialogUrl = false">
+                        <v-btn text @click="dialogUrl = false">
                           Cancel
                         </v-btn>
                       </v-card-actions>
@@ -821,7 +829,7 @@
               <v-icon>mdi-close</v-icon>
               Delete
             </v-btn>
-            <v-dialog v-else v-model="dialogColls" width="600" @click:outside="resetForm()">
+            <v-dialog v-else v-model="dialogColls" width="500" @click:outside="resetForm()">
               <template v-slot:activator="{ on }">
                 <v-btn small v-on="on" style="background-color: red">
                   <v-icon>mdi-close</v-icon>
@@ -841,25 +849,26 @@
                 </v-card-text>
 
                 <v-card-actions>
-                  <v-dialog v-model="dialogDelMoreColls" width="100" @click:outside="resetForm()">
+                  <v-spacer></v-spacer>
+                  <v-dialog v-model="dialogDelMoreColls" width="295" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on">Yes</v-btn>
                     </template>
                     <v-card>
                       <v-card-title>Really?!</v-card-title>
                       <v-card-actions>
-                        <v-btn
+                        <v-btn style="background-color: red"
                           @click="dialogColls = false; dialogDelMoreColls = false; deleteMoreCollections(colls); getListDatabase(); flag = false">
                           Delete collections
                         </v-btn>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="dialogDelMoreColls = false; dialogColls = false">
+                        &nbsp;&nbsp;&nbsp;
+                        <v-btn @click="dialogDelMoreColls = false">
                           Cancel
                         </v-btn>
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
-                  <v-spacer></v-spacer>
+                  &nbsp;&nbsp;&nbsp;
                   <v-btn v-on="on" @click="dialogColls = false">
                     No
                   </v-btn>
@@ -875,7 +884,7 @@
         <v-row style="max-height: 40px">
           <v-col cols="auto" style="background-color: green"></v-col>
           <v-col style="padding: 0px;">
-            <v-btn v-if="online" tile depressed block style="background-color: lightgray; padding: 0px; height: 40px;">
+            <v-btn v-if="online" tile depressed block style="color: white; background-color: gray; padding: 0px; height: 40px;">
               ONLINE
               <v-icon size="3vh">
                 mdi-access-point-check
