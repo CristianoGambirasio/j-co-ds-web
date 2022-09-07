@@ -30,7 +30,7 @@
     <template>
       <v-footer padless style="height: 50px;" id="footer">
         <v-container  fluid class="text-center" style="padding: 0;">
-          <v-pagination v-model="page" :length="nPages" :total-visible="10" @input="buildWorkspace"> </v-pagination>
+          <v-pagination v-model="page" :length="nPages" :total-visible="10" @input="buildWorkspace" color="#61D2DC"> </v-pagination>
         </v-container>
       </v-footer>
     </template>
@@ -139,11 +139,11 @@ h4{
   font-size: 2vw;
 }
 h5{
-  color: #17A493;
+  color: #61D2DC;
   font-size: 1vw;
 }
 span{
-  color:#17A493;
+  color: #61D2DC;
   font-size: 1.5vw;
 }
 #metadata{
@@ -173,7 +173,7 @@ span{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #17A493
+  background: #61D2DC
 }
 </style>
 <style lang="scss">

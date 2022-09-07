@@ -73,11 +73,11 @@
       <v-container v-if="flag === false" class="overflow-y-auto"
         style="padding: 0px; padding-top: 3px; max-height: 100%;">
         <v-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
-          :search='search' :filter='filter' item-key="id" open-on-click transition return-object
-          active-class="activeNode" @update:active="buildWorkspace">
-          <template v-slot:prepend="{item, open}">
+          :search='search' :filter='filter' item-key="id" open-on-click transition return-object color="#41B3D3"
+         @update:active="buildWorkspace">
+          <template v-slot:prepend="{item, open, active}">
             <v-icon dense>
-              {{open ? iconOpen[item.type] : icon[item.type]}}
+              {{open || active ? iconOpen[item.type] : icon[item.type]}}
             </v-icon>
           </template>
           <!--Menu button-->
@@ -883,14 +883,14 @@
       <v-footer style="height: 40px;" padless>
         <v-row style="max-height: 40px;">
           <v-col style="padding: 0px;">
-            <v-btn v-if="online" tile depressed block style="background-color: #5B5656; padding: 0px; height: 40px;">
+            <v-btn v-if="online" tile depressed block style="background-color: gray; padding: 0px; height: 40px;">
               <v-icon color="#28d904" style="padding-right: 5px;">mdi-radiobox-marked</v-icon>
-              ONLINE
+              <h4 style="color: white;">ONLINE</h4>
             </v-btn>
-            <v-btn v-else tile depressed block style="background-color: #5B5656; padding: 0px; height: 40px;"
+            <v-btn v-else tile depressed block style="background-color: gray; padding: 0px; height: 40px;"
               @click="reconnect()">
               <v-icon color="#fa1505" style="padding-right: 5px;">mdi-radiobox-marked</v-icon>
-              OFFLINE
+              <h4 style="color: white;">OFFLINE</h4>
             </v-btn>
           </v-col>
         </v-row>
@@ -1047,7 +1047,7 @@ export default {
       },
       iconOpen: {
         database: 'mdi-database-eye',
-        static: 'mdi-folder-outline',
+        static: 'mdi-folder-open',
         dynamic: 'mdi-folder-sync-outline',
         virtual: 'mdi-folder-search-outline'
       },
@@ -1315,10 +1315,6 @@ export default {
     outline: 1px solid lime;
 } */
 
-.activeNode{
-  background-color: #5B5656;
-}
-
 h5{
   color: white;
   padding: 8px;
@@ -1337,12 +1333,14 @@ h5{
 }
 
 .v-treeview-node__root{
+  color: white;
   padding: 0px;
   margin: 0px;
   font-size: medium;
 }
 
 .v-treeview-node__level{
+  color: white;
   width: 18px;
 }
 
@@ -1380,7 +1378,7 @@ h5{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #17A493
+  background: #61D2DC
 }
 
 .upload-container {
@@ -1406,7 +1404,7 @@ h5{
   bottom: 50px;
   left: 150px;
   content: " (or) Drag and Drop files here. ";
-  color: #3f8188;
+  color: #41B3D3;
   font-weight: 900;
 }
 
