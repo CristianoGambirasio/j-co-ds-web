@@ -2,7 +2,7 @@
   <v-container id="body">
     <v-row ref="buttons" style="padding: 2px; justify-content: center; height: max-content; height: 30px;">
       <v-col cols="auto" style="padding: 2px; font-size: medium;">
-        <p style="color: white;">{{nDB}} DATABASES:</p>
+        <p style="color: #61D2DC; font-weight: bold;">{{nDB}} DATABASES:</p>
       </v-col>
       <v-col style="padding: 0px" class="text-right">
         <!--Top buttons--------------------------------------------------------------->
@@ -269,8 +269,8 @@
                           <v-checkbox label="Append to the selected collection?" v-model="append" hide-details>
                           </v-checkbox>
                           <br />
-                          <v-text-field v-if="append" label='Collection name' v-model=item.name type="text" disabled
-                            :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
+                          <v-text-field v-if="append" label='Collection name' v-model=item.name type="text" disabled required
+                            :rules="[v => !!v || 'Insert a name', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
                           </v-text-field>
                           <v-text-field v-else label='Collection name' v-model="nameColl" type="text" required
                             :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
@@ -881,18 +881,16 @@
     </v-row>
     <template>
       <v-footer style="height: 40px;" padless>
-        <v-row style="max-height: 40px">
-          <v-col cols="auto" style="background-color: green"></v-col>
+        <v-row style="max-height: 40px;">
           <v-col style="padding: 0px;">
-            <v-btn v-if="online" tile depressed block style="color: white; background-color: gray; padding: 0px; height: 40px;">
+            <v-btn v-if="online" tile depressed block style="background-color: #5B5656; padding: 0px; height: 40px;">
+              <v-icon color="#28d904" style="padding-right: 5px;">mdi-radiobox-marked</v-icon>
               ONLINE
-              <v-icon size="3vh">
-                mdi-access-point-check
-              </v-icon>
             </v-btn>
-            <v-btn v-else tile depressed block style="background-color: red; padding: 0px; height: 40px;"
+            <v-btn v-else tile depressed block style="background-color: #5B5656; padding: 0px; height: 40px;"
               @click="reconnect()">
-              CLICK TO GO ONLINE
+              <v-icon color="#fa1505" style="padding-right: 5px;">mdi-radiobox-marked</v-icon>
+              OFFLINE
             </v-btn>
           </v-col>
         </v-row>
@@ -1243,6 +1241,14 @@ export default {
       return res
     },
     collNameCheck (value, item) {
+      if (!item.children) { // If item is a collection and not a db
+        for (const db of this.listDatabases) {
+          if (db.name === item.db) {
+            item = db // item = db that contain the collection
+            break
+          }
+        }
+      }
       let res = true
       if (item.children.length === 0) {
         this.getListCollection(item)
