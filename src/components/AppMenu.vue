@@ -808,9 +808,9 @@
       </v-container>
       <!--Selectable treeview for deleting more collection simultaneously------->
       <v-container v-else style="padding: 0px; padding-top: 3px" class="overflow-y-auto">
-        <v-treeview dark dense activatable selectable v-model="colls" :items="listDatabases"
+        <v-treeview dark dense selectable v-model="colls" :items="listDatabases"
           :load-children="getListCollection" :search='search' :filter='filter' item-key="id" open-on-click transition
-          return-object active-class="activeNode">
+          return-object>
           <template v-slot:prepend="{item, open}">
             <v-icon dense>
               {{open ? iconOpen[item.type] : icon[item.type]}}
