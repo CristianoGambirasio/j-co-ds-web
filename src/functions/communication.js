@@ -197,6 +197,9 @@ export function ping () {
 };
 
 export function handleResponse (finished) {
+  const timer = setTimeout(() => {
+    this.$root.loading = true
+  }, 50)
   this.connection.onmessage = async (message) => {
     const dataBuffer = await message.data.arrayBuffer()
     let data = new Uint8Array(dataBuffer)
@@ -390,5 +393,7 @@ export function handleResponse (finished) {
       const res = JSON.parse(text)
       finished(res.count)
     }
+    clearTimeout(timer)
+    this.$root.loading = false
   }
 }

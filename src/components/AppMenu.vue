@@ -10,7 +10,7 @@
           <!--Refresh button-->
           <v-tooltip v-if="flag===false" bottom open-delay=400>
             <template v-slot:activator="{ on, attrs}">
-              <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white"
+              <v-btn v-on="on" v-bind="attrs" tile small :disabled="isLoading" dense depressed text icon color="white"
                 @click="getListDatabase();">
                 <v-icon>mdi-refresh</v-icon>
               </v-btn>
@@ -22,7 +22,7 @@
             <template #activator="{ on: dialog }">
               <v-tooltip bottom open-delay=400>
                 <template #activator="{ on: tooltip }">
-                  <v-btn v-on="{ ...tooltip, ...dialog }" tile small dense depressed text icon color="white">
+                  <v-btn v-on="{ ...tooltip, ...dialog }" tile small :disabled="isLoading" dense depressed text icon color="white">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </template>
@@ -53,7 +53,7 @@
           <!--Selectable treeview button-->
           <v-tooltip bottom open-delay=400>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-on="on" v-bind="attrs" tile small dense depressed text icon color="white" @click="flag = !flag">
+              <v-btn v-on="on" v-bind="attrs" tile small dense depressed :disabled="isLoading" text icon color="white" @click="flag = !flag">
                 <v-icon v-if="!flag">mdi-checkbox-multiple-marked</v-icon>
                 <v-icon v-else>mdi-arrow-u-left-top</v-icon>
               </v-btn>
@@ -72,7 +72,7 @@
     <v-row style="height: calc(100% - 50px - 40px - 30px)">
       <v-container v-if="flag === false" class="overflow-y-auto"
         style="padding: 0px; padding-top: 3px; max-height: 100%;">
-        <v-treeview dark dense activatable hoverable :items="listDatabases" :load-children="getListCollection"
+        <v-treeview dark dense :disabled="isLoading" activatable hoverable :items="listDatabases" :load-children="getListCollection"
           :search='search' :filter='filter' item-key="id" open-on-click transition return-object color="#41B3D3"
          @update:active="buildWorkspace">
           <template v-slot:prepend="{item, open, active}">
@@ -84,7 +84,7 @@
           <template v-slot:append="{item, hover}">
             <v-menu bottom :offset-x="true">
               <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on">
+                <v-btn icon :disabled="isLoading" v-on="on">
                   <v-icon v-if="hover">
                     mdi-dots-vertical</v-icon>
                 </v-btn>
@@ -1136,9 +1136,8 @@ export default {
     rightType () {
       return this.typeJson
     },
-    treeviewHeight () {
-      console.log(this.$refs.buttons.clientHeight)
-      return '100vh'
+    isLoading () {
+      return this.$root.loading
     }
   },
   mounted () {

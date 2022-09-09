@@ -1,39 +1,50 @@
 <template>
   <v-sheet id="body">
-    <v-row style="height: 10vh; padding: 0;">
-      <v-container fluid id="metadata" style="padding: 0;">
-        <v-row style="height: 10vh; padding: 0;">
-          <v-col id="meta1" cols="6" style="align-self: center; padding: 0; padding-left: 5px;">
-            <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
-            <h5 v-if="selected">{{metaTypeColl}}</h5>
-          </v-col>
-          <v-col id="meta2" cols="3" style="align-self: center; justify-self: center; padding: 0;">
-          </v-col>
-          <v-col id="meta3" cols="3" style="align-self: center; padding: 0;">
-            <v-row style="justify-content: center; padding: 0;">
-              <h4>{{countCollection}}</h4>
-            </v-row>
-            <v-row style="justify-content: center; padding: 0;">
-              <h5 v-if="selected">DOCUMENTS</h5>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-row>
-    <v-row style="height: calc(100% - 10vh - 50px);">
-      <v-container fluid class="overflow-y-auto" style="max-height: calc(100vh - 10vh - 50px); padding: 0;">
-        <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards">
-          <json-viewer :value="doc" boxed theme="json-viewer-theme"></json-viewer>
+      <v-row style="height: 10vh; padding: 0;">
+        <v-container fluid id="metadata" style="padding: 0;">
+          <v-row style="height: 10vh; padding: 0;">
+            <v-col id="meta1" cols="6" style="align-self: center; padding: 0; padding-left: 5px;">
+              <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
+              <h5 v-if="selected">{{metaTypeColl}}</h5>
+            </v-col>
+            <v-col id="meta2" cols="3" style="align-self: center; justify-self: center; padding: 0;">
+            </v-col>
+            <v-col id="meta3" cols="3" style="align-self: center; padding: 0;">
+              <v-row style="justify-content: center; padding: 0;">
+                <h4>{{countCollection}}</h4>
+              </v-row>
+              <v-row style="justify-content: center; padding: 0;">
+                <h5 v-if="selected">DOCUMENTS</h5>
+              </v-row>
+            </v-col>
+          </v-row>
         </v-container>
-      </v-container>
-    </v-row>
-    <template>
-      <v-footer padless style="height: 50px;" id="footer">
-        <v-container  fluid class="text-center" style="padding: 0;">
-          <v-pagination v-model="page" :length="nPages" :total-visible="10" @input="buildWorkspace" color="#61D2DC"> </v-pagination>
+      </v-row>
+      <v-row style="height: calc(100% - 10vh - 50px);">
+        <v-container v-if="$root.loading" style="padding: 0;align-self: center;" class="text-center">
+          <v-progress-circular
+          :size="100"
+          :width="8"
+          color="#41B3D3"
+          indeterminate
+          ></v-progress-circular>
+          <br />
+          <br />
+          <h2 style="color: #4D4646">Loading documents...</h2>
         </v-container>
-      </v-footer>
-    </template>
+        <v-container v-else fluid class="overflow-y-auto" style="max-height: calc(100vh - 10vh - 50px); padding: 0;">
+          <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards">
+            <json-viewer :value="doc" boxed theme="json-viewer-theme"></json-viewer>
+          </v-container>
+        </v-container>
+      </v-row>
+      <template>
+        <v-footer padless style="height: 50px;" id="footer">
+          <v-container  fluid class="text-center" style="padding: 0;">
+            <v-pagination v-if="!$root.loading" v-model="page" :length="nPages" :total-visible="10" @input="buildWorkspace" color="#41B3D3"> </v-pagination>
+          </v-container>
+        </v-footer>
+      </template>
   </v-sheet>
 </template>
 
@@ -102,8 +113,6 @@ export default {
     async buildWorkspace (obj) {
       this.showDynamicFunctions = false
       if (this.dbSelected !== null && this.collSelected !== null) {
-        const res = await this.getCollection(this.dbSelected, this.collSelected, this.numDoc, (this.page - 1) * this.numDoc)
-        this.documentsLoaded = res.documents
         if (!obj[0]) {
           console.log('Changed page')
         } else if (obj[0].type === 'static') {
@@ -119,6 +128,8 @@ export default {
           this.nPages = Math.ceil(this.countCollection / this.numDoc)
           this.showMetadata(obj)
         }
+        const res = await this.getCollection(this.dbSelected, this.collSelected, this.numDoc, (this.page - 1) * this.numDoc)
+        this.documentsLoaded = res.documents
       }
     },
     async showMetadata (value) {
