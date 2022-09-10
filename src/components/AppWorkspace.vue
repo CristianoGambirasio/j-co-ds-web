@@ -30,7 +30,7 @@
           ></v-progress-circular>
           <br />
           <br />
-          <h2 style="color: #4D4646">Loading documents...</h2>
+          <h3 style="color: #4D4646">Loading documents...</h3>
         </v-container>
         <v-container v-else fluid class="overflow-y-auto" style="max-height: calc(100vh - 10vh - 50px); padding: 0;">
           <v-container fluid v-for="doc in documentsLoaded" :key="doc.id" id="cards">
