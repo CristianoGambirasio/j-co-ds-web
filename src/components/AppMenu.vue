@@ -454,7 +454,7 @@
                                   </v-list-item-content>
 
                                   <v-list-item-action>
-                                    <v-checkbox :input-value="active" multiple color="deep-blue accent-4"></v-checkbox>
+                                    <v-checkbox :input-value="active" color="deep-blue accent-4"></v-checkbox>
                                   </v-list-item-action>
                                 </template>
                               </v-list-item>
