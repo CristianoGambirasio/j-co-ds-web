@@ -194,7 +194,7 @@ span{
 .v-pagination__navigation{
   margin: 5px !important
 }
-  .json-viewer-theme {
+.json-viewer-theme {
   background: lightgray;
   color: #525252;
   font-family: Consolas, Menlo, Courier, monospace;
@@ -210,11 +210,6 @@ span{
     vertical-align: 2px;
     cursor: pointer;
     user-select: none;
-  }
-  .jv-button {
-    color: black;
-    background-color: #eee;
-    border-radius: 10px;
   }
   .jv-key {
     font-weight: bold;
