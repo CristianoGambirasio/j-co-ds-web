@@ -215,4 +215,10 @@ span{
     font-weight: bold;
   }
 }
+.jv-node.toggle{
+  margin-left: 0px !important
+}
+.jv-node.toggle .jv-node{
+  margin-left: 15px !important
+}
 </style>

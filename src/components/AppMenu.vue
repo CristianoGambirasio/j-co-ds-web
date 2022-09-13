@@ -313,16 +313,15 @@
                           </v-text-field>
                           <v-row>
                             <v-col>
-                              <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
-                                v-model="limit"
-                                :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']"
-                                required></v-text-field>
-                            </v-col>
-                            <v-col>
                               <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
                                 v-model="offset"
                                 :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']"
                                 required></v-text-field>
+                            </v-col>
+                            <v-col>
+                              <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)" v-model="limit"
+                                :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']" required>
+                              </v-text-field>
                             </v-col>
                           </v-row>
                         </v-form>
@@ -404,15 +403,15 @@
                           </v-text-field>
                           <v-row>
                             <v-col>
-                              <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
-                                v-model="limit"
-                                :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']"
-                                required></v-text-field>
-                            </v-col>
-                            <v-col>
                               <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
                                 v-model="offset"
                                 :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']"
+                                required></v-text-field>
+                            </v-col>
+                            <v-col>
+                              <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
+                                v-model="limit"
+                                :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']"
                                 required></v-text-field>
                             </v-col>
                           </v-row>
@@ -582,7 +581,7 @@
                     </v-card>
                   </v-dialog>
 
-                  <v-dialog v-if="i === 4" v-model="dialogStop" width="400" @click:outside="resetForm()">
+                  <v-dialog v-if="i === 4" v-model="dialogStop" width="425" @click:outside="resetForm()">
                     <template v-slot:activator="{ on }">
                       <v-btn v-on="on" style="color: red">
                         <v-icon light dense>{{ el.icon }}</v-icon>
@@ -669,15 +668,13 @@
                           </v-text-field>
                           <v-row>
                             <v-col>
+                              <v-text-field label="Offset" hint="The first document to retrieve (default = 0)" v-model="offset"
+                                :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']" required></v-text-field>
+                            </v-col>
+                            <v-col>
                               <v-text-field label="Limit" hint="Maximum number of documents to retrive (default = -1)"
                                 v-model="limit"
                                 :rules="[ v => !!v || 'Insert a value', v => v >= -1 || 'Insert a valid value (-1 for no limit)']"
-                                required></v-text-field>
-                            </v-col>
-                            <v-col>
-                              <v-text-field label="Offset" hint="The first document to retrieve (default = 0)"
-                                v-model="offset"
-                                :rules="[ v => !!v || 'Insert a value', v => v >= 0 || 'Insert a valid value']"
                                 required></v-text-field>
                             </v-col>
                           </v-row>
@@ -720,7 +717,7 @@
                                   </v-list-item-content>
 
                                   <v-list-item-action>
-                                    <v-checkbox :input-value="active" color="deep-purple accent-4">
+                                    <v-checkbox :input-value="active" color="deep-blue accent-4">
                                     </v-checkbox>
                                   </v-list-item-action>
                                 </template>
