@@ -4,18 +4,47 @@
         <v-container fluid id="metadata" style="padding: 0;">
           <v-row style="height: 10vh; padding: 0;">
             <v-col id="meta1" cols="6" style="align-self: center; padding: 0; padding-left: 5px;">
-              <h4 v-if="selected">{{metaNameDb}}.<span>{{metaNameColl}}</span></h4>
-              <h5 v-if="selected">{{metaTypeColl}}</h5>
+              <h4 v-if="selected">{{metaNameColl}}@<span>{{metaNameDb}}</span></h4>
+              <h5 v-if="selected">{{metaTypeColl}} collection</h5>
             </v-col>
-            <v-col id="meta2" cols="3" style="align-self: center; justify-self: center; padding: 0;">
+            <v-col id="meta2" cols="4" style="align-self: center; justify-self: center; padding: 0;">
             </v-col>
-            <v-col id="meta3" cols="3" style="align-self: center; padding: 0;">
+            <v-col id="meta3" cols="1" style="align-self: center; text-align: end; padding: 0;">
               <v-row style="justify-content: center; padding: 0;">
                 <h4>{{countCollection}}</h4>
               </v-row>
               <v-row style="justify-content: center; padding: 0;">
                 <h5 v-if="selected">DOCUMENTS</h5>
               </v-row>
+            </v-col>
+            <v-col id="settings" cols="1" style="align-self:center; text-align: center; padding: 0">
+              <v-dialog v-model="openSettings" fullscreen hide-overlay scrollable transition="dialog-bottom-transition">
+                <v-card tile style="background-color: #F5EAEA;">
+                  <v-toolbar color="#41B3D3" flat dark>
+                    <v-btn style="font-weight: bolder;" icon dark @click="resetSettings()"><v-icon color="#4D4646">mdi-close</v-icon></v-btn>
+                    <v-toolbar-title color="#4D4646">Settings</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                      <v-btn style="font-weight: bolder; font-size:medium;" color="#4D4646" dark text @click="saveSettings()">SAVE</v-btn>
+                    </v-toolbar-items>
+                  </v-toolbar>
+                  <v-card-text style="padding: 0;">
+                    <v-form v-model="formValid">
+                      <v-row style="align-content:center; padding:0;">
+                        <v-col cols="2" style="align-self: center">
+                          <h5 style="color: #363633">Number of document per page:</h5>
+                        </v-col>
+                        <v-col cols="auto">
+                          <v-text-field outlined v-model="settingNumDoc" style="width: 50px; text-align: center;" class="centered-input text--darken-3 mt-3"></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-divider></v-divider>
+                    </v-form>
+                  </v-card-text>
+                  <div style="flex: 200 1 auto;"></div>
+                </v-card>
+              </v-dialog>
+              <v-btn icon x-large color="white" @click.stop="openSettings=!openSettings"><v-icon>mdi-cog-outline</v-icon></v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -59,6 +88,7 @@ Vue.use(JsonViewer)
 export default {
   data () {
     return {
+      openSettings: false,
       connection: null,
       page: 1,
       dbSelected: null,
@@ -66,6 +96,7 @@ export default {
       documentsLoaded: [], // numDoc documents loadaded of the selected page
       listUrls: [], // List of urls of the selected collection
       numDoc: 5, // Number of doc showed in each page
+      settingNumDoc: 5,
       nPages: 0,
       metaNameColl: null,
       metaNameDb: null,
@@ -111,7 +142,6 @@ export default {
       }
     },
     async buildWorkspace (obj) {
-      this.showDynamicFunctions = false
       if (this.dbSelected !== null && this.collSelected !== null) {
         if (!obj[0]) {
           console.log('Changed page')
@@ -136,15 +166,24 @@ export default {
       this.metaNameColl = value[0].name
       this.metaNameDb = value[0].db
       this.metaTypeColl = (value[0].type)[0].toUpperCase() + (value[0].type).substring(1)
+    },
+    async saveSettings () {
+      this.openSettings = false
+      this.numDoc = this.settingNumDoc
+      this.updateParam(null, null)
+    },
+    resetSettings () {
+      this.openSettings = false
+      this.settingNumDoc = this.numDoc
     }
   }
 }
 </script>
 
 <style scoped>
-/* * {
+/** {
   outline: 1px solid lime;
-} */
+}*/
 h4{
   color: white;
   font-size: 2vw;
@@ -186,6 +225,9 @@ span{
 ::-webkit-scrollbar-thumb {
   background: #61D2DC
 }
+.centered-input input {
+  text-align: center
+}
 </style>
 <style lang="scss">
 .v-pagination__item {
@@ -194,9 +236,13 @@ span{
 .v-pagination__navigation{
   margin: 5px !important
 }
+.v-toolbar__title{
+  color: #4D4646;
+  font-weight: bolder;
+}
 .json-viewer-theme {
   background: lightgray;
-  color: #525252;
+  color: #363633;
   font-family: Consolas, Menlo, Courier, monospace;
 
   .jv-ellipsis {
@@ -218,7 +264,6 @@ span{
 .jv-node.toggle{
   margin-left: 0px !important
 }
-.jv-node.toggle .jv-node{
-  margin-left: 15px !important
-}
+
+.jv-node .jv-node{padding-left: 20px;}
 </style>
