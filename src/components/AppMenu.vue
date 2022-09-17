@@ -141,7 +141,7 @@
                       <v-card-title>Create collection</v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
-                          <v-text-field label='Database' v-model=item.name disabled type="text">
+                          <v-text-field label='Database' v-model=item.name readonly type="text">
                           </v-text-field>
                           <v-text-field label="Collection" v-model="nameColl"
                             :rules="[v => !!v || 'Insert a name', v => collNameCheck(v, item) || 'This name is already used']"
@@ -269,7 +269,7 @@
                           <v-checkbox label="Append to the selected collection?" v-model="append" hide-details>
                           </v-checkbox>
                           <br />
-                          <v-text-field v-if="append" label='Collection name' v-model=item.name type="text" disabled required
+                          <v-text-field v-if="append" label='Collection name' v-model=item.name type="text" readonly required
                             :rules="[v => !!v || 'Insert a name', importing || 'Import a file', rightType || 'Invalid file type, must be a .json']">
                           </v-text-field>
                           <v-text-field v-else label='Collection name' v-model="nameColl" type="text" required
@@ -304,9 +304,9 @@
                       </v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
-                          <v-text-field label="Database" v-model=item.db disabled type="text">
+                          <v-text-field label="Database" v-model=item.db readonly type="text">
                           </v-text-field>
-                          <v-text-field label="Collection" v-model=item.name disabled type="text">
+                          <v-text-field label="Collection" v-model=item.name readonly type="text">
                           </v-text-field>
                           <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                             :rules="[ v => !!v || 'Insert a name']" required type="text">
@@ -394,9 +394,9 @@
                       </v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
-                          <v-text-field label="Database" v-model=item.db disabled type="text">
+                          <v-text-field label="Database" v-model=item.db readonly type="text">
                           </v-text-field>
-                          <v-text-field label="Collection" v-model=item.name disabled type="text">
+                          <v-text-field label="Collection" v-model=item.name readonly type="text">
                           </v-text-field>
                           <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                             :rules="[ v => !!v || 'Insert a name']" required type="text">
@@ -475,9 +475,9 @@
                             <v-card-title>Adding urls</v-card-title>
                             <v-card-text>
                               <v-form v-model="formValid">
-                                <v-text-field label="Database" v-model=item.db disabled type="text">
+                                <v-text-field label="Database" v-model=item.db readonly type="text">
                                 </v-text-field>
-                                <v-text-field label="Collection" v-model=item.name disabled type="text">
+                                <v-text-field label="Collection" v-model=item.name readonly type="text">
                                 </v-text-field>
                                 <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
                                   v-model="nameUrl"
@@ -545,9 +545,9 @@
                       <v-card-title>Set frequency</v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
-                          <v-text-field label="Database" v-model=item.db disabled type="text">
+                          <v-text-field label="Database" v-model=item.db readonly type="text">
                           </v-text-field>
-                          <v-text-field label="Collection" v-model=item.name disabled type="text">
+                          <v-text-field label="Collection" v-model=item.name readonly type="text">
                           </v-text-field>
                           <v-select v-model="urls" :items="listUrls" :menu-props="{ maxHeight: '400' }" label="Select"
                             hint="Select an url to modify his frequency-update" persistent-hint
@@ -659,9 +659,9 @@
                       </v-card-title>
                       <v-card-text>
                         <v-form v-model="formValid">
-                          <v-text-field label="Database" v-model=item.db disabled type="text">
+                          <v-text-field label="Database" v-model=item.db readonly type="text">
                           </v-text-field>
-                          <v-text-field label="Collection" v-model=item.name disabled type="text">
+                          <v-text-field label="Collection" v-model=item.name readonly type="text">
                           </v-text-field>
                           <v-text-field label="File" hint="Without file extension" v-model="nameFile"
                             :rules="[ v => !!v || 'Insert a name']" required type="text">
@@ -739,9 +739,9 @@
                             <v-card-title>Adding urls</v-card-title>
                             <v-card-text>
                               <v-form v-model="formValid">
-                                <v-text-field label="Database" v-model=item.db disabled type="text">
+                                <v-text-field label="Database" v-model=item.db readonly type="text">
                                 </v-text-field>
-                                <v-text-field label="Collection" v-model=item.name disabled type="text">
+                                <v-text-field label="Collection" v-model=item.name readonly type="text">
                                 </v-text-field>
                                 <v-text-field label="Url list" hint="To add more urls: write them separated by a ','"
                                   v-model="nameUrl"
