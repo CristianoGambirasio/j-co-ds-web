@@ -10,22 +10,11 @@ const consts = require('./src/functions/constants')
 const wss = new WebSocket.Server({ port: 3000 })
 
 // Connection with J-CO-DS-Server
-// comunication with j-co-ds server
 let client = net.connect(17017, 'localhost', () => {
   isServerOn = true
 })
 
 client.on('error', onError)
-
-/*
-client.on('connect', function(){
-  // client.write(Buffer.from([]))
-  stopUpdate('test', 'd2')
-})
-
-client.on('data', function(data){
-  console.log(new Uint8Array(data).toString())
-}) */
 
 // WebApp Connection handling different users
 wss.on('connection', function (ws) {
