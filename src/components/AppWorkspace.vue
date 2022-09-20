@@ -186,15 +186,15 @@ export default {
 }*/
 h4{
   color: white;
-  font-size: 2vw;
+  font-size: 4vh;
 }
 h5{
   color: #61D2DC;
-  font-size: 1vw;
+  font-size: 2vh;
 }
 span{
   color: #61D2DC;
-  font-size: 1.5vw;
+  font-size: 3vh;
 }
 #metadata{
   background-color: #4D4646;
